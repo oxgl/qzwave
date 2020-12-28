@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.oxyggen.qzw.SerialDriverTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-12-28T17:05:31" hostname="install" time="13.351">
+  <properties/>
+  <testcase name="Device open &amp; close test()" classname="com.oxyggen.qzw.SerialDriverTest" time="13.351"/>
+  <system-out><![CDATA[REQ: com.oxyggen.qzw.function.FunctionZWApplicationUpdate@5ebfae30
+REQ: com.oxyggen.qzw.function.FunctionZWApplicationUpdate@67e03083
+REQ: com.oxyggen.qzw.function.FunctionZWApplicationUpdate@200102af
+REQ: com.oxyggen.qzw.function.FunctionZWApplicationUpdate@4b1797af
+18:05:44.597 DEBUG com.oxyggen.qzw.factory.FrameFactory - java.io.IOException: Function not yet implemented!
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

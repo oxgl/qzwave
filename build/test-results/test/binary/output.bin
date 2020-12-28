@@ -1,0 +1,22 @@
+‘22:01:00.827 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for frame with signature byte 0x06 com.oxyggen.qzw.frame.FrameACK
+‘22:01:00.831 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for frame with signature byte 0x15 com.oxyggen.qzw.frame.FrameNAK
+‘22:01:00.833 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for frame with signature byte 0x18 com.oxyggen.qzw.frame.FrameCAN
+‘22:01:00.838 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for frame with signature byte 0x01 com.oxyggen.qzw.frame.FrameSOF
+°22:01:00.852 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0x04 com.oxyggen.qzw.function.FunctionApplicationCommandHandler
+ª22:01:00.861 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0x49 com.oxyggen.qzw.function.FunctionZWApplicationUpdate
+¥22:01:00.862 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0xf0 com.oxyggen.qzw.function.FunctionProprietaryAny
+¥22:01:00.862 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0xf1 com.oxyggen.qzw.function.FunctionProprietaryAny
+¥22:01:00.862 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0xf2 com.oxyggen.qzw.function.FunctionProprietaryAny
+¥22:01:00.862 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0xf3 com.oxyggen.qzw.function.FunctionProprietaryAny
+¥22:01:00.862 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0xf4 com.oxyggen.qzw.function.FunctionProprietaryAny
+¥22:01:00.862 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0xf5 com.oxyggen.qzw.function.FunctionProprietaryAny
+¥22:01:00.862 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0xf6 com.oxyggen.qzw.function.FunctionProprietaryAny
+¥22:01:00.863 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0xf7 com.oxyggen.qzw.function.FunctionProprietaryAny
+¥22:01:00.863 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0xf8 com.oxyggen.qzw.function.FunctionProprietaryAny
+¥22:01:00.863 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0xf9 com.oxyggen.qzw.function.FunctionProprietaryAny
+¥22:01:00.863 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0xfa com.oxyggen.qzw.function.FunctionProprietaryAny
+¥22:01:00.863 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0xfb com.oxyggen.qzw.function.FunctionProprietaryAny
+¥22:01:00.863 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0xfc com.oxyggen.qzw.function.FunctionProprietaryAny
+¥22:01:00.863 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0xfd com.oxyggen.qzw.function.FunctionProprietaryAny
+¥22:01:00.863 DEBUG com.oxyggen.qzw.factory.BinaryDeserializerHandler - Handler for function with signature byte 0xfe com.oxyggen.qzw.function.FunctionProprietaryAny
+IREQ: com.oxyggen.qzw.function.FunctionApplicationCommandHandler@2b17570b
