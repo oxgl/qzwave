@@ -1,16 +1,17 @@
 package com.oxyggen.qzw.frame
 
-import com.oxyggen.qzw.driver.BinaryDeserializer
 import com.oxyggen.qzw.extensions.putByte
+import com.oxyggen.qzw.serialization.BinaryDeserializer
+import com.oxyggen.qzw.serialization.BinaryDeserializerFrameContext
 import java.io.InputStream
 import java.io.OutputStream
 
 class FrameNAK : FrameState() {
 
-    companion object : BinaryDeserializer<FrameNAK> {
+    companion object : BinaryDeserializer<FrameNAK, BinaryDeserializerFrameContext> {
         const val SIGNATURE = 0x15.toByte()
         override fun getHandledSignatureBytes() = setOf(SIGNATURE)
-        override fun deserialize(signatureByte: Byte, inputStream: InputStream): FrameNAK = FrameNAK()
+        override fun deserialize(inputStream: InputStream, context: BinaryDeserializerFrameContext): FrameNAK = FrameNAK()
     }
 
     override fun serialize(outputStream: OutputStream) {

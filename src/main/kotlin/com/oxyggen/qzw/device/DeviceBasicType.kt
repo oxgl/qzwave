@@ -8,6 +8,6 @@ enum class DeviceBasicType(val byteValue: Byte) {
 
     companion object {
         fun getByByteValue(byteValue: Byte): DeviceBasicType? =
-            DeviceBasicType.values().firstOrNull { it.byteValue == byteValue }
+            values().firstOrNull { it.byteValue == byteValue }
     }
 }

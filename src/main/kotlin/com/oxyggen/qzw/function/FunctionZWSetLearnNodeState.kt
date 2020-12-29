@@ -1,16 +1,20 @@
 package com.oxyggen.qzw.function
 
-import com.oxyggen.qzw.driver.BinaryDeserializer
+import com.oxyggen.qzw.serialization.BinaryDeserializer
+import com.oxyggen.qzw.serialization.BinaryDeserializerFunctionContext
 import java.io.InputStream
 
 class FunctionZWSetLearnNodeState : Function() {
-    companion object : BinaryDeserializer<FunctionZWSetLearnNodeState> {
+    companion object : BinaryDeserializer<FunctionZWSetLearnNodeState, BinaryDeserializerFunctionContext> {
         const val SIGNATURE = 0x40.toByte()
     
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(SIGNATURE)
 
         @ExperimentalUnsignedTypes
-        override fun deserialize(signatureByte: Byte, inputStream: InputStream): FunctionZWSetLearnNodeState {
+        override fun deserialize(
+            inputStream: InputStream,
+            context: BinaryDeserializerFunctionContext
+        ): FunctionZWSetLearnNodeState {
             return FunctionZWSetLearnNodeState()
         }
     }

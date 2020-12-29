@@ -3,7 +3,7 @@ package com.oxyggen.qzw.extensions
 import java.io.OutputStream
 
 fun OutputStream.putByte(b: Byte) {
-    var ba = ByteArray(1)
+    val ba = ByteArray(1)
     ba[0] = b
     this.write(ba)
 }

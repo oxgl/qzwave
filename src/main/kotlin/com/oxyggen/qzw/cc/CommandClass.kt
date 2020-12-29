@@ -1,7 +1,5 @@
 package com.oxyggen.qzw.cc
 
-import com.oxyggen.qzw.status.UpdateState
-
 enum class CommandClass(val byteValue: Byte, val version: Int = 1) {
     ALARM(0x71.toByte()),
     ALARM_V2(0x71.toByte(), 2),
@@ -214,6 +212,6 @@ enum class CommandClass(val byteValue: Byte, val version: Int = 1) {
 
     companion object {
         fun getByByteValue(byteValue: Byte, version: Int = 1): CommandClass? =
-            CommandClass.values().firstOrNull { it.byteValue == byteValue && it.version == version }
+            values().firstOrNull { it.byteValue == byteValue && it.version == version }
     }
 }

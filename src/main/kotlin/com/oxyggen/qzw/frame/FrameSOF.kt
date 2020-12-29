@@ -1,10 +1,13 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.oxyggen.qzw.frame
 
-import com.oxyggen.qzw.driver.BinaryDeserializer
 import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.extensions.putByte
 import com.oxyggen.qzw.factory.FunctionFactory
 import com.oxyggen.qzw.function.Function
+import com.oxyggen.qzw.serialization.BinaryDeserializer
+import com.oxyggen.qzw.serialization.BinaryDeserializerFrameContext
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -19,11 +22,11 @@ open class FrameSOF(val frameType: FrameType, val function: Function) : Frame() 
 
         companion object {
             fun getByByteValue(byteValue: Byte): FrameType? =
-                FrameType.values().firstOrNull { it.byteValue == byteValue }
+                values().firstOrNull { it.byteValue == byteValue }
         }
     }
 
-    companion object : BinaryDeserializer<FrameSOF> {
+    companion object : BinaryDeserializer<FrameSOF, BinaryDeserializerFrameContext> {
         const val SIGNATURE = 0x01.toByte()
 
         override fun getHandledSignatureBytes() = setOf(SIGNATURE)
@@ -37,7 +40,7 @@ open class FrameSOF(val frameType: FrameType, val function: Function) : Frame() 
         }
 
         @ExperimentalUnsignedTypes
-        override fun deserialize(signatureByte: Byte, inputStream: InputStream): FrameSOF {
+        override fun deserialize(inputStream: InputStream, context: BinaryDeserializerFrameContext): FrameSOF {
             // First is always the length byte
             val lengthByte = inputStream.getByte()
             val length = lengthByte.toUByte().toInt()
@@ -69,7 +72,7 @@ open class FrameSOF(val frameType: FrameType, val function: Function) : Frame() 
                 throw IOException("Invalid checksum received!")
 
             // Create function from data (data already contains only function data)
-            val function = FunctionFactory.deserializeFunction(data.inputStream())
+            val function = FunctionFactory.deserializeFunction(data.inputStream(), context, frameType)
 
             // Create new SOF frame
             return FrameSOF(frameType, function)
@@ -83,10 +86,10 @@ open class FrameSOF(val frameType: FrameType, val function: Function) : Frame() 
 
         var resultData = ByteArray(0)
 
-        var functionOS = ByteArrayOutputStream()
-        function.serialize(functionOS)
+        val functionOS = ByteArrayOutputStream()
+        function.serialize(functionOS, this)
 
-        var functionData = functionOS.toByteArray()
+        val functionData = functionOS.toByteArray()
 
         // Put size byte (function data + length + type)
         val size = functionData.size + 2
@@ -106,7 +109,7 @@ open class FrameSOF(val frameType: FrameType, val function: Function) : Frame() 
             FrameType.RESPONSE -> "RES"
         }
 
-        return "$typeDescr: ${function.toString()}"
+        return "$typeDescr: $function"
     }
 
 }

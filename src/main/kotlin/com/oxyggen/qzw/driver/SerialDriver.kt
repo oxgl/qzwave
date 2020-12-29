@@ -14,11 +14,11 @@ open class SerialDriver(private val device: String) : Driver, Logging {
 
     override fun start(): Boolean {
         if (!started && port.openPort()) {
-            port.setBaudRate(115200)
-            port.setNumDataBits(8)
-            port.setNumStopBits(1)
-            port.setParity(0)
-            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
+            port.baudRate = 115200
+            port.numDataBits = 8
+            port.numStopBits = 1
+            port.parity = 0
+            port.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0)
         }
         return started
     }
@@ -34,18 +34,18 @@ open class SerialDriver(private val device: String) : Driver, Logging {
         while (port.bytesAvailable() <= 0) {
             delay(10)
         }
-        var buffer = ByteArray(1)
+        val buffer = ByteArray(1)
         port.readBytes(buffer, 1)
         return buffer[0]
     }
 
     override suspend fun getFrame(): Frame? {
         if (!started) return null
-        try {
-            return FrameFactory.deserializeFrame(port.inputStream)
+        return try {
+            FrameFactory.deserializeFrame(port.inputStream)
         } catch (e: Throwable) {
             logger.debug(e)
-            return null
+            null
         }
     }
 
@@ -61,7 +61,7 @@ open class SerialDriver(private val device: String) : Driver, Logging {
 
 
     override fun toString(): String {
-        return super.toString() + " device: ${device}, is opened: ${started}"
+        return super.toString() + " device: ${device}, is opened: $started"
     }
 
 

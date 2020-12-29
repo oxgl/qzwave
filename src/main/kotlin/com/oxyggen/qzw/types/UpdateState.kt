@@ -1,4 +1,4 @@
-package com.oxyggen.qzw.status
+package com.oxyggen.qzw.types
 
 enum class UpdateState(val byteValue:Byte) {
     NODE_INFO_RECEIVED(0x84.toByte()),
@@ -11,6 +11,6 @@ enum class UpdateState(val byteValue:Byte) {
 
     companion object {
         fun getByByteValue(byteValue: Byte): UpdateState? =
-            UpdateState.values().firstOrNull { it.byteValue == byteValue }
+            values().firstOrNull { it.byteValue == byteValue }
     }
 }

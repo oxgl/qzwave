@@ -4,13 +4,13 @@ import com.oxyggen.qzw.cc.CommandClass
 import com.oxyggen.qzw.device.DeviceBasicType
 import com.oxyggen.qzw.device.DeviceGenericType
 import com.oxyggen.qzw.device.DeviceSpecificType
-import com.oxyggen.qzw.driver.BinaryDeserializer
 import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.extensions.getUByte
-import com.oxyggen.qzw.status.UpdateState
+import com.oxyggen.qzw.serialization.BinaryDeserializer
+import com.oxyggen.qzw.serialization.BinaryDeserializerFunctionContext
+import com.oxyggen.qzw.types.UpdateState
 import com.oxyggen.qzw.types.NodeID
 import org.apache.logging.log4j.kotlin.Logging
-import org.apache.logging.log4j.kotlin.logger
 import java.io.IOException
 import java.io.InputStream
 
@@ -22,16 +22,19 @@ class FunctionZWApplicationUpdate(
     val deviceSpecificType: DeviceSpecificType,
     val commandClassList: List<CommandClass>
 ) : Function() {
-    companion object : BinaryDeserializer<FunctionZWApplicationUpdate>, Logging {
+    companion object : BinaryDeserializer<FunctionZWApplicationUpdate, BinaryDeserializerFunctionContext>, Logging {
         const val SIGNATURE = 0x49.toByte()
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(SIGNATURE)
 
         @ExperimentalUnsignedTypes
-        override fun deserialize(signatureByte: Byte, inputStream: InputStream): FunctionZWApplicationUpdate {
+        override fun deserialize(
+            inputStream: InputStream,
+            context: BinaryDeserializerFunctionContext
+        ): FunctionZWApplicationUpdate {
             val updateState =
                 UpdateState.getByByteValue(inputStream.getByte()) ?: throw IOException("Invalid update state!")
-            val nodeId = inputStream.getUByte().toInt()
+            val nodeId = inputStream.getUByte()
             val cmdLength = inputStream.getUByte().toInt()
             val deviceBasicType =
                 DeviceBasicType.getByByteValue(inputStream.getByte()) ?: throw IOException("Invalid basic device type!")
@@ -63,13 +66,13 @@ class FunctionZWApplicationUpdate(
     override fun toString(): String {
         var ccListDescr = ""
         commandClassList.forEach {
-            if (!ccListDescr.isBlank()) ccListDescr += ", "
+            if (ccListDescr.isNotBlank()) ccListDescr += ", "
             ccListDescr += it.toString()
         }
 
-        return "ZW_APPLICATION_UPDATE(state: ${updateState.toString()}, " +
+        return "ZW_APPLICATION_UPDATE(state: $updateState, " +
                 "source: ${nodeID}, " +
-                "device: ${deviceBasicType.toString()} / ${deviceGenericType.toString()} / ${deviceSpecificType.toString()}, " +
+                "device: $deviceBasicType / $deviceGenericType / $deviceSpecificType, " +
                 "CC: [$ccListDescr]"
 
     }

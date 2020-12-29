@@ -30,6 +30,6 @@ enum class DeviceGenericType(val byteValue: Byte) {
 
     companion object {
         fun getByByteValue(byteValue: Byte): DeviceGenericType? =
-            DeviceGenericType.values().firstOrNull { it.byteValue == byteValue }
+            values().firstOrNull { it.byteValue == byteValue }
     }
 }

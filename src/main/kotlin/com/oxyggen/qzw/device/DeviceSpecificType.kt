@@ -100,6 +100,6 @@ enum class DeviceSpecificType(val genericType: DeviceGenericType?, val byteValue
             if (byteValue == NOT_USED.byteValue)
                 NOT_USED
             else
-                DeviceSpecificType.values().firstOrNull { it.genericType == genericType && it.byteValue == byteValue }
+                values().firstOrNull { it.genericType == genericType && it.byteValue == byteValue }
     }
 }

@@ -1,4 +1,4 @@
-package com.oxyggen.qzw.driver
+package com.oxyggen.qzw.serialization
 
 import java.io.OutputStream
 

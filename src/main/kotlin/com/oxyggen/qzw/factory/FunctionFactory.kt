@@ -1,14 +1,19 @@
 package com.oxyggen.qzw.factory
 
+import com.oxyggen.qzw.extensions.getByte
+import com.oxyggen.qzw.frame.FrameSOF
 import com.oxyggen.qzw.function.*
 import com.oxyggen.qzw.function.Function
+import com.oxyggen.qzw.serialization.BinaryDeserializerFrameContext
+import com.oxyggen.qzw.serialization.BinaryDeserializerFunctionContext
+import com.oxyggen.qzw.serialization.BinaryDeserializerHandler
 import org.apache.logging.log4j.kotlin.Logging
 import java.io.InputStream
 
 class FunctionFactory {
     companion object : Logging {
         private val bdh by lazy {
-            BinaryDeserializerHandler<Function>(
+            BinaryDeserializerHandler<Function, BinaryDeserializerFunctionContext>(
                 objectDescription = "function",
 //               FunctionSerialApiGetInitData::class,
 //               FunctionSerialApiApplNodeInformation::class,
@@ -20,7 +25,7 @@ class FunctionFactory {
 //               FunctionSerialApiSetup::class,
 //               FunctionZWSendNodeInformation::class,
 //               FunctionZWSendData::class,
-//               FunctionZWGetVersion::class,
+               FunctionZWGetVersion::class,
 //               FunctionZWRFPowerLevelSet::class,
 //               FunctionZWGetRandom::class,
 //               FunctionZWMemoryGetId::class,
@@ -67,7 +72,14 @@ class FunctionFactory {
             )
         }
 
-        fun deserializeFunction(inputStream: InputStream): Function =
-            bdh.deserialize(inputStream)
+        fun deserializeFunction(
+            inputStream: InputStream,
+            frameContext: BinaryDeserializerFrameContext,
+            frameType: FrameSOF.FrameType
+        ): Function {
+            val signatureByte = inputStream.getByte()
+            val context = BinaryDeserializerFunctionContext(signatureByte, frameContext, frameType)
+            return bdh.deserialize(inputStream, context)
+        }
     }
 }

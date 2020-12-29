@@ -1,6 +1,4 @@
 package com.oxyggen.qzw.frame
 
 
-abstract class FrameState : Frame() {
-
-}
+abstract class FrameState : Frame()
