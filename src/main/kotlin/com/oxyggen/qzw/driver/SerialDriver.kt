@@ -3,6 +3,7 @@ package com.oxyggen.qzw.driver
 import com.fazecast.jSerialComm.SerialPort
 import com.oxyggen.qzw.factory.FrameFactory
 import com.oxyggen.qzw.frame.Frame
+import com.oxyggen.qzw.function.Function
 import kotlinx.coroutines.delay
 import org.apache.logging.log4j.kotlin.Logging
 
@@ -59,6 +60,9 @@ open class SerialDriver(private val device: String) : Driver, Logging {
         }
     }
 
+    override fun putFunction(function: Function) {
+        putFrame(function.getFrame())
+    }
 
     override fun toString(): String {
         return super.toString() + " device: ${device}, is opened: $started"

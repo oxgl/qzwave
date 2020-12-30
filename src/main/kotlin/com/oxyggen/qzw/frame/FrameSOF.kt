@@ -6,27 +6,20 @@ import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.extensions.putByte
 import com.oxyggen.qzw.factory.FunctionFactory
 import com.oxyggen.qzw.function.Function
-import com.oxyggen.qzw.serialization.BinaryDeserializer
-import com.oxyggen.qzw.serialization.BinaryDeserializerFrameContext
+import com.oxyggen.qzw.function.FunctionRequest
+import com.oxyggen.qzw.function.FunctionResponse
+import com.oxyggen.qzw.serialization.BinaryFrameDeserializer
+import com.oxyggen.qzw.serialization.BinaryFrameDeserializerContext
+import com.oxyggen.qzw.types.FrameType
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import kotlin.experimental.xor
 
-open class FrameSOF(val frameType: FrameType, val function: Function) : Frame() {
+open class FrameSOF(val function: Function) : Frame() {
 
-    enum class FrameType(val byteValue: Byte) {
-        REQUEST(0x00),
-        RESPONSE(0x01);
-
-        companion object {
-            fun getByByteValue(byteValue: Byte): FrameType? =
-                values().firstOrNull { it.byteValue == byteValue }
-        }
-    }
-
-    companion object : BinaryDeserializer<FrameSOF, BinaryDeserializerFrameContext> {
+    companion object : BinaryFrameDeserializer {
         const val SIGNATURE = 0x01.toByte()
 
         override fun getHandledSignatureBytes() = setOf(SIGNATURE)
@@ -40,7 +33,7 @@ open class FrameSOF(val frameType: FrameType, val function: Function) : Frame() 
         }
 
         @ExperimentalUnsignedTypes
-        override fun deserialize(inputStream: InputStream, context: BinaryDeserializerFrameContext): FrameSOF {
+        override fun deserialize(inputStream: InputStream, context: BinaryFrameDeserializerContext): FrameSOF {
             // First is always the length byte
             val lengthByte = inputStream.getByte()
             val length = lengthByte.toUByte().toInt()
@@ -75,10 +68,15 @@ open class FrameSOF(val frameType: FrameType, val function: Function) : Frame() 
             val function = FunctionFactory.deserializeFunction(data.inputStream(), context, frameType)
 
             // Create new SOF frame
-            return FrameSOF(frameType, function)
+            return FrameSOF(function)
         }
     }
 
+    val frameType = when (function) {
+        is FunctionRequest -> FrameType.REQUEST
+        is FunctionResponse -> FrameType.RESPONSE
+        else -> FrameType.REQUEST
+    }
 
     @ExperimentalUnsignedTypes
     override fun serialize(outputStream: OutputStream) {
@@ -103,13 +101,6 @@ open class FrameSOF(val frameType: FrameType, val function: Function) : Frame() 
         outputStream.write(resultData)
     }
 
-    override fun toString(): String {
-        val typeDescr = when (frameType) {
-            FrameType.REQUEST -> "REQ"
-            FrameType.RESPONSE -> "RES"
-        }
-
-        return "$typeDescr: $function"
-    }
+    override fun toString() = "${frameType.toString().substring(0..2)}: $function"
 
 }

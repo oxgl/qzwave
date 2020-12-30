@@ -1,14 +1,16 @@
 package com.oxyggen.qzw.function
 
-import com.oxyggen.qzw.serialization.BinaryDeserializer
-import com.oxyggen.qzw.serialization.BinaryDeserializerFunctionContext
+import com.oxyggen.qzw.serialization.BinaryFunctionDeserializer
+import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
+import com.oxyggen.qzw.types.FrameType
+import com.oxyggen.qzw.types.FunctionId
 import java.io.InputStream
 
-class FunctionProprietaryAny : Function() {
-    companion object : BinaryDeserializer<FunctionProprietaryAny, BinaryDeserializerFunctionContext> {
+abstract class FunctionProprietaryAny : Function() {
+    companion object : BinaryFunctionDeserializer {
         override fun getHandledSignatureBytes(): Set<Byte> {
             val result = mutableSetOf<Byte>()
-            (0xf0..0xfe).forEach {
+            (FunctionId.PROPRIETARY_0.byteValue..FunctionId.PROPRIETARY_E.byteValue).forEach {
                 result.add(it.toByte())
             }
             return result
@@ -17,9 +19,15 @@ class FunctionProprietaryAny : Function() {
         @ExperimentalUnsignedTypes
         override fun deserialize(
             inputStream: InputStream,
-            context: BinaryDeserializerFunctionContext
-        ): FunctionProprietaryAny {
-            return FunctionProprietaryAny()
-        }
+            context: BinaryFunctionDeserializerContext
+        ): Function =
+            when (context.frameType) {
+                FrameType.REQUEST -> Request()
+                FrameType.RESPONSE -> Response()
+            }
     }
+
+    open class Request:FunctionRequest()
+    open class Response:FunctionResponse()
+
 }            

@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">13.351s</div>
+<div class="counter">39.220s</div>
 <p>duration</p>
 </div>
 </td>
@@ -78,8 +78,8 @@
 </tr>
 </thead>
 <tr>
-<td class="success">Device open &amp; close test()</td>
-<td class="success">13.351s</td>
+<td class="success">Test get capabilities()</td>
+<td class="success">39.220s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -87,11 +87,31 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>REQ: com.oxyggen.qzw.function.FunctionZWApplicationUpdate@5ebfae30
-REQ: com.oxyggen.qzw.function.FunctionZWApplicationUpdate@67e03083
-REQ: com.oxyggen.qzw.function.FunctionZWApplicationUpdate@200102af
-REQ: com.oxyggen.qzw.function.FunctionZWApplicationUpdate@4b1797af
-18:05:44.597 DEBUG com.oxyggen.qzw.factory.FrameFactory - java.io.IOException: Function not yet implemented!
+<pre>22:44:36.722 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for frame with signature byte 0x06 class com.oxyggen.qzw.frame.FrameACK
+22:44:36.726 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for frame with signature byte 0x15 class com.oxyggen.qzw.frame.FrameNAK
+22:44:36.728 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for frame with signature byte 0x18 class com.oxyggen.qzw.frame.FrameCAN
+22:44:36.733 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for frame with signature byte 0x01 class com.oxyggen.qzw.frame.FrameSOF
+22:44:36.743 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0x02 class com.oxyggen.qzw.function.FunctionSerialApiGetInitData
+22:44:36.744 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0x07 class com.oxyggen.qzw.function.FunctionSerialApiGetCapabilities
+22:44:36.746 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0x15 class com.oxyggen.qzw.function.FunctionZWGetVersion
+22:44:36.748 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0x1c class com.oxyggen.qzw.function.FunctionZWGetRandom
+22:44:36.750 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0x49 class com.oxyggen.qzw.function.FunctionZWApplicationUpdate
+22:44:36.751 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf0 class com.oxyggen.qzw.function.FunctionProprietaryAny
+22:44:36.751 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf1 class com.oxyggen.qzw.function.FunctionProprietaryAny
+22:44:36.751 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf2 class com.oxyggen.qzw.function.FunctionProprietaryAny
+22:44:36.751 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf3 class com.oxyggen.qzw.function.FunctionProprietaryAny
+22:44:36.752 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf4 class com.oxyggen.qzw.function.FunctionProprietaryAny
+22:44:36.752 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf5 class com.oxyggen.qzw.function.FunctionProprietaryAny
+22:44:36.752 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf6 class com.oxyggen.qzw.function.FunctionProprietaryAny
+22:44:36.752 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf7 class com.oxyggen.qzw.function.FunctionProprietaryAny
+22:44:36.752 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf8 class com.oxyggen.qzw.function.FunctionProprietaryAny
+22:44:36.752 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf9 class com.oxyggen.qzw.function.FunctionProprietaryAny
+22:44:36.752 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xfa class com.oxyggen.qzw.function.FunctionProprietaryAny
+22:44:36.752 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xfb class com.oxyggen.qzw.function.FunctionProprietaryAny
+22:44:36.752 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xfc class com.oxyggen.qzw.function.FunctionProprietaryAny
+22:44:36.753 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xfd class com.oxyggen.qzw.function.FunctionProprietaryAny
+22:44:36.753 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xfe class com.oxyggen.qzw.function.FunctionProprietaryAny
+RES: SERIAL_API_GET_CAPABILITIES(appl: 1.1, manuf: 0/134, prod type: 0/1, prod id: 0/90, supported func: [SERIAL_API_GET_INIT_DATA, SERIAL_API_APPL_NODE_INFORMATION, APPLICATION_COMMAND_HANDLER, ZW_GET_CONTROLLER_CAPABILITIES, SERIAL_API_SET_TIMEOUTS, SERIAL_API_GET_CAPABILITIES, SERIAL_API_SOFT_RESET, ZW_GET_PROTOCOL_VERSION, ZW_SET_RF_RECEIVE_MODE, ZW_SET_SLEEP_MODE, ZW_SEND_NODE_INFORMATION, ZW_SEND_DATA, ZW_SEND_DATA_MULTI, ZW_GET_VERSION, ZW_SEND_DATA_ABORT, ZW_RF_POWER_LEVEL_SET, ZW_SEND_DATA_META, ZW_GET_RANDOM, MEMORY_GET_ID, MEMORY_GET_BYTE, MEMORY_PUT_BYTE, MEMORY_GET_BUFFER, MEMORY_PUT_BUFFER, AUTO_PROGRAMMING, NVM_GET_ID, NVM_EXT_READ_LONG_BUFFER, NVM_EXT_WRITE_LONG_BUFFER, NVM_EXT_READ_LONG_BYTE, NVM_EXT_WRITE_LONG_BYTE, ZW_GET_NODE_PROTOCOL_INFO, ZW_SET_DEFAULT, ZW_REPLICATION_COMMAND_COMPLETE, ZW_REPLICATION_SEND_DATA, ZW_ASSIGN_RETURN_ROUTE, ZW_DELETE_RETURN_ROUTE, ZW_REQUEST_NODE_NEIGHBOR_UPDATE, ZW_APPLICATION_CONTROLLER_UPDATE, ZW_ADD_NODE_TO_NETWORK, ZW_REMOVE_NODE_FROM_NETWORK, ZW_CREATE_NEW_PRIMARY, ZW_CONTROLLER_CHANGE, ZW_SET_LEARN_MODE, ZW_ASSIGN_SUC_RETURN_ROUTE, ZW_REQUEST_NETWORK_UPDATE, ZW_SET_SUC_NODE_ID, ZW_DELETE_SUC_RETURN_ROUTE, ZW_GET_SUC_NODE_ID, ZW_SEND_SUC_ID, ZW_EXPLORE_REQUEST_INCLUSION, ZW_REQUEST_NODE_INFO, ZW_REMOVE_FAILED_NODE_ID, ZW_IS_FAILED_NODE_ID, ZW_REPLACE_FAILED_NODE, ZW_IS_PRIMARY_CTRL, ZW_AES_ECB, GET_ROUTING_TABLE_LINE, LOCK_ROUTE_RESPONSE, ZW_GET_LAST_WORKING_ROUTE, ZW_SET_LAST_WORKING_ROUTE, SERIAL_API_EXT, ZW_SET_WUT_TIMEOUT, ZW_WATCHDOG_ENABLE, ZW_WATCHDOG_DISABLE, ZW_WATCHDOG_KICK, ZW_INT_EXT_LEVEL_SET, ZW_RF_POWER_LEVEL_GET, ZW_TYPE_LIBRARY, ZW_SEND_TEST_FRAME, ZW_GET_PROTOCOL_STATUS, ZW_WATCHDOG_START, ZW_WATCHDOG_STOP, ZW_SET_ROUTING_MAX, SERIAL_API_POWER_MANAGEMENT, SERIAL_API_READY]
 </pre>
 </span>
 </div>
@@ -103,7 +123,7 @@ REQ: com.oxyggen.qzw.function.FunctionZWApplicationUpdate@4b1797af
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 6.7</a> at Dec 28, 2020, 6:05:44 PM</p>
+<a href="http://www.gradle.org">Gradle 6.7</a> at Dec 30, 2020, 10:45:14 PM</p>
 </div>
 </div>
 </body>

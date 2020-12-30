@@ -2,12 +2,14 @@
 
 package com.oxyggen.qzw.types
 
+import com.oxyggen.qzw.extensions.get
+import com.oxyggen.qzw.extensions.withBit
 import kotlin.experimental.and
 
 data class ReceiveStatus(
     val routedBusy: Boolean,         // A response route is locked by the application
     val lowPower: Boolean,           // Received at low output power level
-    val castType: CastType,         // Received frame cast
+    val castType: CastType,          // Received frame cast
     val explore: Boolean,            // Received an explore frame
     val foreignFrame: Boolean,       // The received frame is not addressed to this node (Only valid in promiscuous mode)
     val foreignHomeId: Boolean       // The received frame is received from a foreign HomeID. Only Controllers in Smart Start AddNode mode can receive this status.
@@ -19,27 +21,17 @@ data class ReceiveStatus(
     }
 
     val byteValue: Byte
-        get() = (
-                    if (routedBusy) 0x01 else 0x00 +
-                    if (lowPower) 0x02 else 0x00 +
-                    castType.byteValue +
-                    if (explore) 0x10 else 0x00 +
-                    if (foreignFrame) 0x40 else 0x00 +
-                    if (foreignHomeId) 0x80 else 0x00
-                ).toByte()
-
+        get() = castType.byteValue
+            .withBit(0, routedBusy)
+            .withBit(1, lowPower)
+                // bits 2, 3 are castType bits
+            .withBit(4, explore)
+            .withBit(6, foreignFrame)
+            .withBit(7, foreignHomeId)
 
     companion object {
         fun getByByteValue(byteValue: Byte): ReceiveStatus {
-            // A response route is locked by the application
-            // RECEIVE_STATUS_ROUTED_BUSY          xxxxxxx1
-            val routedBusy = byteValue.and(0x01) == 0x01.toByte()
-
-            // Received at low output power level
-            // RECEIVE_STATUS_LOW_POWER            xxxxxx1x
-            val lowPower = byteValue.and(0x02) == 0x02.toByte()
-
-            // Cast type
+            // Prepare Cast type
             val castType = when (byteValue.and(0x0C)) {
                 // Received a broadcast frame
                 // RECEIVE_STATUS_TYPE_BROAD           xxxx01xx
@@ -52,22 +44,28 @@ data class ReceiveStatus(
                 else -> CastType.SINGLE
             }
 
-            // Received an explore frame
-            // RECEIVE_STATUS_TYPE_EXPLORE         xx10xxxx
-            val explore = byteValue.and(0x10) == 0x10.toByte()
-
-            // The received frame is not addressed to this node
-            // (Only valid in promiscuous mode)
-            // RECEIVE_STATUS_FOREIGN_FRAME        x1xxxxxx
-            val foreignFrame = byteValue.and(0x40) == 0x40.toByte()
-
-            // The received frame is received from a foreign HomeID.
-            // Only Controllers in Smart Start AddNode mode
-            // can receive this status.
-            val foreignHomeId = byteValue.and(0x80.toByte()) == 0x80.toByte()
-
             // Finally create object
-            return ReceiveStatus(routedBusy, lowPower, castType, explore, foreignFrame, foreignHomeId)
+            return ReceiveStatus(
+                // A response route is locked by the application
+                // RECEIVE_STATUS_ROUTED_BUSY          xxxxxxx1
+                routedBusy = byteValue[0],
+                // Received at low output power level
+                // RECEIVE_STATUS_LOW_POWER            xxxxxx1x
+                lowPower = byteValue[1],
+                // Cast type
+                castType = castType,
+                // Received an explore frame
+                // RECEIVE_STATUS_TYPE_EXPLORE         xxx1xxxx
+                explore = byteValue[4],
+                // The received frame is not addressed to this node
+                // (Only valid in promiscuous mode)
+                // RECEIVE_STATUS_FOREIGN_FRAME        x1xxxxxx
+                foreignFrame = byteValue[6],
+                // The received frame is received from a foreign HomeID.
+                // Only Controllers in Smart Start AddNode mode
+                // can receive this status.
+                foreignHomeId = byteValue[7]
+            )
         }
     }
 }

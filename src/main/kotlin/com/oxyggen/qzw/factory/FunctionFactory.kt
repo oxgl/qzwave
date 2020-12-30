@@ -1,33 +1,33 @@
 package com.oxyggen.qzw.factory
 
 import com.oxyggen.qzw.extensions.getByte
-import com.oxyggen.qzw.frame.FrameSOF
 import com.oxyggen.qzw.function.*
 import com.oxyggen.qzw.function.Function
-import com.oxyggen.qzw.serialization.BinaryDeserializerFrameContext
-import com.oxyggen.qzw.serialization.BinaryDeserializerFunctionContext
 import com.oxyggen.qzw.serialization.BinaryDeserializerHandler
+import com.oxyggen.qzw.serialization.BinaryFrameDeserializerContext
+import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
+import com.oxyggen.qzw.types.FrameType
 import org.apache.logging.log4j.kotlin.Logging
 import java.io.InputStream
 
 class FunctionFactory {
     companion object : Logging {
         private val bdh by lazy {
-            BinaryDeserializerHandler<Function, BinaryDeserializerFunctionContext>(
+            BinaryDeserializerHandler<Function, BinaryFunctionDeserializerContext>(
                 objectDescription = "function",
-//               FunctionSerialApiGetInitData::class,
+                FunctionSerialApiGetInitData::class,
 //               FunctionSerialApiApplNodeInformation::class,
-                FunctionApplicationCommandHandler::class,
+//               FunctionApplicationCommandHandler::class,
 //               FunctionZWGetControllerCapabilities::class,
 //               FunctionSerialApiSetTimeouts::class,
-//               FunctionSerialApiGetCapabilities::class,
+               FunctionSerialApiGetCapabilities::class,
 //               FunctionSerialApiSoftReset::class,
 //               FunctionSerialApiSetup::class,
 //               FunctionZWSendNodeInformation::class,
 //               FunctionZWSendData::class,
-               FunctionZWGetVersion::class,
+                FunctionZWGetVersion::class,
 //               FunctionZWRFPowerLevelSet::class,
-//               FunctionZWGetRandom::class,
+               FunctionZWGetRandom::class,
 //               FunctionZWMemoryGetId::class,
 //               FunctionMemoryGetByte::class,
 //               FunctionZWReadMemory::class,
@@ -74,12 +74,13 @@ class FunctionFactory {
 
         fun deserializeFunction(
             inputStream: InputStream,
-            frameContext: BinaryDeserializerFrameContext,
-            frameType: FrameSOF.FrameType
+            frameContext: BinaryFrameDeserializerContext,
+            frameType: FrameType
         ): Function {
             val signatureByte = inputStream.getByte()
-            val context = BinaryDeserializerFunctionContext(signatureByte, frameContext, frameType)
+            val context = BinaryFunctionDeserializerContext(signatureByte, frameContext, frameType)
             return bdh.deserialize(inputStream, context)
         }
+
     }
 }

@@ -6,33 +6,54 @@ import java.io.InputStream
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObjectInstance
 
-class BinaryDeserializerHandler<T,C: BinaryDeserializerContext>(val objectDescription: String, vararg deserClasses: KClass<*>) : Logging {
-    private val deserializers: Map<Byte, BinaryDeserializer<T, C>>
+class BinaryDeserializerHandler<T, C : BinaryDeserializerContext>(
+    val objectDescription: String,
+    vararg deserClasses: KClass<*>
+) : Logging {
+
+    class DeserializerDefinition<T, C : BinaryDeserializerContext>(
+        val signatureByte: Byte,
+        val deserializerClass: KClass<*>,
+        val deserializerInstance: BinaryDeserializer<T, C>
+    ) {
+        override fun equals(other: Any?): Boolean = if (other is DeserializerDefinition<*, *>) {
+            other.signatureByte == this.signatureByte
+        } else {
+            false
+        }
+
+        override fun hashCode(): Int {
+            return this.signatureByte.hashCode()
+        }
+    }
+
+    private val deserializers: Set<DeserializerDefinition<T, C>>
 
     init {
-        val desers = mutableMapOf<Byte, BinaryDeserializer<T, C>>()
+        val desers = mutableSetOf<DeserializerDefinition<T, C>>()
         deserClasses.forEach { it ->
             analyze(it)?.forEach {
                 logger.debug(
                     "Handler for $objectDescription with signature byte 0x%02x %s".format(
-                        it.key,
-                        it.value::class.qualifiedName?.removeSuffix(".Companion")
+                        it.signatureByte,
+                        it.deserializerClass
                     )
                 )
-                desers[it.key] = it.value
+                desers.add(it)
             }
         }
         deserializers = desers
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun analyze(deserClass: KClass<*>): Map<Byte, BinaryDeserializer<T, C>>? {
+    private fun analyze(deserClass: KClass<*>): Set<DeserializerDefinition<T, C>>? {
         val coi = deserClass.companionObjectInstance
         return if (coi is BinaryDeserializer<*, *>) {
             val signatureBytes = coi.getHandledSignatureBytes()
-            val result = mutableMapOf<Byte, BinaryDeserializer<T, C>>()
+            val result = mutableSetOf<DeserializerDefinition<T, C>>()
             signatureBytes.forEach {
-                result[it] = coi as BinaryDeserializer<T, C>
+                val definition = DeserializerDefinition(it, deserClass, coi as BinaryDeserializer<T, C>)
+                result.add(definition)
             }
             result
         } else {
@@ -41,8 +62,11 @@ class BinaryDeserializerHandler<T,C: BinaryDeserializerContext>(val objectDescri
         }
     }
 
+    fun getClassBySignatureByte(signatureByte: Byte) =
+        deserializers.find { it.signatureByte == signatureByte }?.deserializerClass
+
     fun deserialize(inputStream: InputStream, context: C): T {
-        val deserializer = deserializers[context.signatureByte]
+        val deserializer = deserializers.find { it.signatureByte == context.signatureByte }?.deserializerInstance
             ?: throw IOException("Unknown $objectDescription signature byte 0x%02x!".format(context.signatureByte))
         return deserializer.deserialize(inputStream, context)
     }

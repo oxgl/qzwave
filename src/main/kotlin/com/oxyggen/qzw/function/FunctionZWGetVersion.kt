@@ -3,17 +3,19 @@ package com.oxyggen.qzw.function
 import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.extensions.putByte
 import com.oxyggen.qzw.frame.FrameSOF
-import com.oxyggen.qzw.serialization.BinaryDeserializer
-import com.oxyggen.qzw.serialization.BinaryDeserializerFunctionContext
+import com.oxyggen.qzw.serialization.BinaryFunctionDeserializer
+import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
+import com.oxyggen.qzw.types.FrameType
+import com.oxyggen.qzw.types.FunctionId
 import com.oxyggen.qzw.types.LibraryType
 import java.io.InputStream
 import java.io.OutputStream
 
-class FunctionZWGetVersion(val versionText: String? = null, val libraryType: LibraryType? = null) : Function() {
+abstract class FunctionZWGetVersion : Function() {
 
 
-    companion object : BinaryDeserializer<FunctionZWGetVersion, BinaryDeserializerFunctionContext> {
-        const val SIGNATURE = 0x15.toByte()
+    companion object : BinaryFunctionDeserializer {
+        private val SIGNATURE = FunctionId.ZW_GET_VERSION.byteValue
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(SIGNATURE)
 
@@ -22,28 +24,40 @@ class FunctionZWGetVersion(val versionText: String? = null, val libraryType: Lib
         @ExperimentalUnsignedTypes
         override fun deserialize(
             inputStream: InputStream,
-            context: BinaryDeserializerFunctionContext
-        ): FunctionZWGetVersion =
+            context: BinaryFunctionDeserializerContext
+        ): Function =
             when (context.frameType) {
-                FrameSOF.FrameType.REQUEST -> FunctionZWGetVersion()
-                FrameSOF.FrameType.RESPONSE -> {
+                FrameType.REQUEST -> Request()
+                FrameType.RESPONSE -> {
                     val versionText = inputStream.readNBytes(12).decodeToString()
                     val libraryType = LibraryType.getByByteValue(inputStream.getByte())
-                    FunctionZWGetVersion(versionText,libraryType)
+                    Response(versionText, libraryType ?: LibraryType.CONTROLLER_STATIC)
                 }
-                else -> FunctionZWGetVersion()
             }
     }
 
-    override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
-        outputStream.putByte(SIGNATURE)
-        if (frame.frameType == FrameSOF.FrameType.RESPONSE) {
-            outputStream.write(ByteArray(12))
-            outputStream.putByte(LibraryType.CONTROLLER_STATIC.byteValue)
+    class Request : FunctionRequest() {
+
+        override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
+            outputStream.putByte(SIGNATURE)
+        }
+
+        override fun toString(): String {
+            return "ZW_GET_VERSION()"
         }
     }
 
-    override fun toString(): String {
-        return "ZW_GET_VERSION($versionText, $libraryType)"
+    class Response(val versionText: String, val libraryType: LibraryType) : FunctionResponse() {
+
+        override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
+            outputStream.putByte(SIGNATURE)
+            outputStream.write(ByteArray(12))
+            outputStream.putByte(LibraryType.CONTROLLER_STATIC.byteValue)
+        }
+
+        override fun toString(): String {
+            return "ZW_GET_VERSION($versionText, $libraryType)"
+        }
     }
+
 }

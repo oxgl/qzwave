@@ -1,3 +1,5 @@
+@file:Suppress("unused", "unused", "unused", "unused", "unused", "unused", "unused")
+
 package com.oxyggen.qzw.types
 
 enum class UpdateState(val byteValue:Byte) {

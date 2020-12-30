@@ -2,7 +2,7 @@ package com.oxyggen.qzw.factory
 
 import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.frame.*
-import com.oxyggen.qzw.serialization.BinaryDeserializerFrameContext
+import com.oxyggen.qzw.serialization.BinaryFrameDeserializerContext
 import com.oxyggen.qzw.serialization.BinaryDeserializerHandler
 import org.apache.logging.log4j.kotlin.Logging
 import java.io.InputStream
@@ -10,7 +10,7 @@ import java.io.InputStream
 class FrameFactory {
     companion object : Logging {
         private val bdh by lazy {
-            BinaryDeserializerHandler<Frame, BinaryDeserializerFrameContext>(
+            BinaryDeserializerHandler<Frame, BinaryFrameDeserializerContext>(
                 objectDescription = "frame",
                 FrameACK::class,
                 FrameNAK::class,
@@ -21,7 +21,7 @@ class FrameFactory {
 
         fun deserializeFrame(inputStream: InputStream): Frame {
             val signatureByte = inputStream.getByte()
-            val context = BinaryDeserializerFrameContext(signatureByte)
+            val context = BinaryFrameDeserializerContext(signatureByte)
             return bdh.deserialize(inputStream, context)
         }
     }
