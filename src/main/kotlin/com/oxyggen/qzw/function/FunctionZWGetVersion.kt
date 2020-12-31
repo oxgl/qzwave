@@ -6,18 +6,16 @@ import com.oxyggen.qzw.frame.FrameSOF
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
 import com.oxyggen.qzw.types.FrameType
-import com.oxyggen.qzw.types.FunctionId
+import com.oxyggen.qzw.types.FunctionID
 import com.oxyggen.qzw.types.LibraryType
 import java.io.InputStream
 import java.io.OutputStream
 
-abstract class FunctionZWGetVersion : Function() {
-
+abstract class FunctionZWGetVersion {
 
     companion object : BinaryFunctionDeserializer {
-        private val SIGNATURE = FunctionId.ZW_GET_VERSION.byteValue
 
-        override fun getHandledSignatureBytes(): Set<Byte> = setOf(SIGNATURE)
+        override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.ZW_GET_VERSION.byteValue)
 
         // HOST->ZW: REQ | 0x15
         // ZW->HOST: RES | 0x15 | buffer (12 bytes) | library type
@@ -36,27 +34,19 @@ abstract class FunctionZWGetVersion : Function() {
             }
     }
 
-    class Request : FunctionRequest() {
+    class Request : FunctionRequest(FunctionID.ZW_GET_VERSION)
+
+    class Response(val versionText: String, val libraryType: LibraryType) :
+        FunctionResponse(FunctionID.ZW_GET_VERSION) {
 
         override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
-            outputStream.putByte(SIGNATURE)
-        }
-
-        override fun toString(): String {
-            return "ZW_GET_VERSION()"
-        }
-    }
-
-    class Response(val versionText: String, val libraryType: LibraryType) : FunctionResponse() {
-
-        override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
-            outputStream.putByte(SIGNATURE)
+            super.serialize(outputStream, frame)
             outputStream.write(ByteArray(12))
             outputStream.putByte(LibraryType.CONTROLLER_STATIC.byteValue)
         }
 
         override fun toString(): String {
-            return "ZW_GET_VERSION($versionText, $libraryType)"
+            return "$functionId(out '$versionText', out $libraryType)"
         }
     }
 

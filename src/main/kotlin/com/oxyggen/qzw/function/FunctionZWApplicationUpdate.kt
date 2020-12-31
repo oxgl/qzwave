@@ -1,6 +1,6 @@
 package com.oxyggen.qzw.function
 
-import com.oxyggen.qzw.cc.CommandClass
+import com.oxyggen.qzw.types.CommandClassID
 import com.oxyggen.qzw.device.DeviceBasicType
 import com.oxyggen.qzw.device.DeviceGenericType
 import com.oxyggen.qzw.device.DeviceSpecificType
@@ -9,15 +9,15 @@ import com.oxyggen.qzw.extensions.getUByte
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
 import com.oxyggen.qzw.types.FrameType
-import com.oxyggen.qzw.types.FunctionId
+import com.oxyggen.qzw.types.FunctionID
 import com.oxyggen.qzw.types.NodeID
 import com.oxyggen.qzw.types.UpdateState
 import java.io.IOException
 import java.io.InputStream
 
-abstract class FunctionZWApplicationUpdate : Function() {
+abstract class FunctionZWApplicationUpdate {
     companion object : BinaryFunctionDeserializer {
-        private val SIGNATURE = FunctionId.ZW_APPLICATION_UPDATE.byteValue
+        private val SIGNATURE = FunctionID.ZW_APPLICATION_UPDATE.byteValue
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(SIGNATURE)
 
@@ -42,10 +42,10 @@ abstract class FunctionZWApplicationUpdate : Function() {
 
                     val ccBytes = inputStream.readNBytes(cmdLength - 3)
 
-                    val commandClassList = mutableListOf<CommandClass>()
+                    val commandClassList = mutableListOf<CommandClassID>()
 
                     ccBytes.forEach {
-                        val cc = CommandClass.getByByteValue(it)
+                        val cc = CommandClassID.getByByteValue(it)
                         if (cc != null) commandClassList.add(cc)
                     }
 
@@ -58,7 +58,7 @@ abstract class FunctionZWApplicationUpdate : Function() {
                         commandClassList
                     )
                 }
-                FrameType.RESPONSE -> throw IOException("Invalid frame RES / ZW_APPLICATION_UPDATE")
+                FrameType.RESPONSE -> throw IOException("Invalid frame ${context.frameType} / ${context.functionId}")
             }
     }
 
@@ -68,8 +68,8 @@ abstract class FunctionZWApplicationUpdate : Function() {
         val deviceBasicType: DeviceBasicType,
         val deviceGenericType: DeviceGenericType,
         val deviceSpecificType: DeviceSpecificType,
-        val commandClassList: List<CommandClass>
-    ) : FunctionRequest() {
+        val commandClassList: List<CommandClassID>
+    ) : FunctionRequest(FunctionID.ZW_APPLICATION_UPDATE) {
 
 
         override fun toString(): String {
@@ -79,7 +79,7 @@ abstract class FunctionZWApplicationUpdate : Function() {
                 ccListDescr += it.toString()
             }
 
-            return "ZW_APPLICATION_UPDATE(state: $updateState, " +
+            return "$functionId(state: $updateState, " +
                     "source: ${nodeID}, " +
                     "device: $deviceBasicType / $deviceGenericType / $deviceSpecificType, " +
                     "CC: [$ccListDescr]"

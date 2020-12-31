@@ -1,13 +1,17 @@
 package com.oxyggen.qzw.function
 
+import com.oxyggen.qzw.extensions.putByte
 import com.oxyggen.qzw.frame.FrameSOF
+import com.oxyggen.qzw.types.FunctionID
 import org.apache.logging.log4j.kotlin.Logging
 import java.io.OutputStream
 
-abstract class Function : Logging {
+abstract class Function(val functionId: FunctionID) : Logging {
     open fun serialize(outputStream: OutputStream, frame: FrameSOF) {
-        TODO("Not yet implemented")
+        outputStream.putByte(functionId.byteValue)
     }
 
     open fun getFrame(): FrameSOF = FrameSOF(this)
+
+    override fun toString(): String = "${functionId}()"
 }

@@ -1,4 +1,5 @@
-@file:Suppress("MemberVisibilityCanBePrivate", "MemberVisibilityCanBePrivate", "MemberVisibilityCanBePrivate",
+@file:Suppress(
+    "MemberVisibilityCanBePrivate", "MemberVisibilityCanBePrivate", "MemberVisibilityCanBePrivate",
     "MemberVisibilityCanBePrivate", "MemberVisibilityCanBePrivate", "MemberVisibilityCanBePrivate",
     "MemberVisibilityCanBePrivate", "MemberVisibilityCanBePrivate", "MemberVisibilityCanBePrivate",
     "MemberVisibilityCanBePrivate", "MemberVisibilityCanBePrivate", "MemberVisibilityCanBePrivate",
@@ -12,22 +13,20 @@
 package com.oxyggen.qzw.function
 
 import com.oxyggen.qzw.extensions.getUByte
-import com.oxyggen.qzw.extensions.putByte
 import com.oxyggen.qzw.extensions.putUByte
 import com.oxyggen.qzw.frame.FrameSOF
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
 import com.oxyggen.qzw.types.FrameType
-import com.oxyggen.qzw.types.FunctionId
+import com.oxyggen.qzw.types.FunctionID
 import com.oxyggen.qzw.utils.BitmaskUtils
 import java.io.InputStream
 import java.io.OutputStream
 
-abstract class FunctionSerialApiGetCapabilities : Function() {
+abstract class FunctionSerialApiGetCapabilities {
     companion object : BinaryFunctionDeserializer {
-        private val SIGNATURE = FunctionId.SERIAL_API_GET_CAPABILITIES.byteValue
 
-        override fun getHandledSignatureBytes(): Set<Byte> = setOf(SIGNATURE)
+        override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.SERIAL_API_GET_CAPABILITIES.byteValue)
 
         @ExperimentalUnsignedTypes
         override fun deserialize(
@@ -46,9 +45,9 @@ abstract class FunctionSerialApiGetCapabilities : Function() {
                 val serialManufProdId2 = inputStream.getUByte()
                 val supportedFuncBitmask = inputStream.readAllBytes()
                 val supportedFuncBytes = BitmaskUtils.decompressBitmaskToByteSet(supportedFuncBitmask)
-                val supportedFunctionId = mutableSetOf<FunctionId>()
+                val supportedFunctionId = mutableSetOf<FunctionID>()
                 supportedFuncBytes.forEach {
-                    val functionId = FunctionId.getByByteValue(it)
+                    val functionId = FunctionID.getByByteValue(it)
                     if (functionId != null) supportedFunctionId.add(functionId)
                 }
 
@@ -69,11 +68,7 @@ abstract class FunctionSerialApiGetCapabilities : Function() {
 
     }
 
-    class Request : FunctionRequest() {
-        override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
-            outputStream.putByte(SIGNATURE)
-        }
-    }
+    class Request : FunctionRequest(FunctionID.SERIAL_API_GET_CAPABILITIES)
 
     class Response(
         val serialApplVersion: UByte,
@@ -84,11 +79,11 @@ abstract class FunctionSerialApiGetCapabilities : Function() {
         val serialManufProdType2: UByte,
         val serialManufProdId1: UByte,
         val serialManufProdId2: UByte,
-        val supportedFunctionId: Set<FunctionId>
-    ) : FunctionResponse() {
+        val supportedFunctionId: Set<FunctionID>
+    ) : FunctionResponse(FunctionID.SERIAL_API_GET_CAPABILITIES) {
 
         override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
-            outputStream.putByte(SIGNATURE)
+            super.serialize(outputStream, frame)
             outputStream.putUByte(serialApplVersion)
             outputStream.putUByte(serialApplRevision)
             outputStream.putUByte(serialManufId1)

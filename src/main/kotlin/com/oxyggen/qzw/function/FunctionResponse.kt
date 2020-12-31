@@ -1,3 +1,5 @@
 package com.oxyggen.qzw.function
 
-abstract class FunctionResponse : Function()
+import com.oxyggen.qzw.types.FunctionID
+
+abstract class FunctionResponse(functionId: FunctionID) : Function(functionId)

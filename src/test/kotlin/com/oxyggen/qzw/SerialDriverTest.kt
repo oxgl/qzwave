@@ -8,28 +8,27 @@ import com.oxyggen.qzw.function.FunctionSerialApiGetCapabilities
 import com.oxyggen.qzw.function.FunctionSerialApiGetInitData
 import com.oxyggen.qzw.function.FunctionZWGetRandom
 import com.oxyggen.qzw.function.FunctionZWGetVersion
+import com.oxyggen.qzw.types.CommandClassID
+import com.oxyggen.qzw.types.CommandID
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
 import java.io.ByteArrayOutputStream
 
 internal class SerialDriverTest {
 
-    var driver:Driver? = null
+    var driver: Driver? = null
 
     @BeforeEach
-    fun `Prepare test`()
-    {
+    fun `Prepare test`() {
         driver = SerialDriver("/dev/ttyACM0")
         driver!!.start()
     }
 
     @AfterEach
-    fun `Shutdown test`()
-    {
+    fun `Shutdown test`() {
         driver!!.stop()
         driver = null
     }
-
 
 
     @Test
@@ -119,6 +118,19 @@ internal class SerialDriverTest {
                 }
             }
         }
+    }
+
+    @Test
+    fun `Test commands`() {
+        println(CommandClassID.getByByteValue(113, 1))
+        println(CommandClassID.getByByteValue(113, 2))
+        println(CommandClassID.getByByteValue(113, 3))
+        println(CommandClassID.getByByteValue(113, 4))
+        println(CommandClassID.getByByteValue(113, 5))
+        println(CommandClassID.getByByteValue(113))
+        /*val cc = CommandClassID.getByByteValue(113)
+        val c = CommandID.getByByteValue(cc ?: CommandClassID.ASSOCIATION_COMMAND_CONFIGURATION, 0x01)
+        val x = c*/
     }
 
 }

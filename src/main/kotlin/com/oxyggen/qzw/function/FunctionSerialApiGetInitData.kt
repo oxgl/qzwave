@@ -8,17 +8,16 @@ import com.oxyggen.qzw.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
 import com.oxyggen.qzw.types.Capabilities
 import com.oxyggen.qzw.types.FrameType
-import com.oxyggen.qzw.types.FunctionId
+import com.oxyggen.qzw.types.FunctionID
 import com.oxyggen.qzw.types.NodeID
 import com.oxyggen.qzw.utils.BitmaskUtils
 import java.io.InputStream
 import java.io.OutputStream
 
-abstract class FunctionSerialApiGetInitData : Function() {
+abstract class FunctionSerialApiGetInitData {
     companion object : BinaryFunctionDeserializer {
-        private val SIGNATURE = FunctionId.SERIAL_API_GET_INIT_DATA.byteValue
 
-        override fun getHandledSignatureBytes(): Set<Byte> = setOf(SIGNATURE)
+        override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.SERIAL_API_GET_INIT_DATA.byteValue)
 
         @ExperimentalUnsignedTypes
         override fun deserialize(
@@ -46,26 +45,18 @@ abstract class FunctionSerialApiGetInitData : Function() {
             }
     }
 
-    class Request @ExperimentalUnsignedTypes constructor( ) : FunctionRequest() {
+    class Request : FunctionRequest(FunctionID.SERIAL_API_GET_INIT_DATA)
 
-        override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
-            outputStream.putByte(SIGNATURE)
-        }
-
-        override fun toString(): String =
-            "SERIAL_API_GET_INITIAL_DATA()"
-    }
-
-    class Response @ExperimentalUnsignedTypes constructor(
+    class Response(
         val serialApiVersion: Byte,
         val capabilities: Capabilities,
         val nodes: Set<NodeID>,
         val chipType: Byte,
         val chipVersion: Byte
-    ) : FunctionResponse() {
+    ) : FunctionResponse(FunctionID.SERIAL_API_GET_INIT_DATA) {
 
         override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
-            outputStream.putByte(SIGNATURE)
+            super.serialize(outputStream, frame)
             outputStream.putByte(serialApiVersion)
             outputStream.putByte(capabilities.byteValue)
             outputStream.putByte(if (!nodes.isNullOrEmpty()) 29 else 0)
@@ -78,7 +69,7 @@ abstract class FunctionSerialApiGetInitData : Function() {
         }
 
         override fun toString(): String =
-            "SERIAL_API_GET_INITIAL_DATA(" +
+            "${functionId}(" +
                     "ver: $serialApiVersion, " +
                     "capabilities: [$capabilities], " +
                     "chip type/version: $chipType/$chipVersion, " +

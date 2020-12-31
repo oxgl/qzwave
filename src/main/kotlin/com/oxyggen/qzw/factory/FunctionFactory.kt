@@ -7,7 +7,9 @@ import com.oxyggen.qzw.serialization.BinaryDeserializerHandler
 import com.oxyggen.qzw.serialization.BinaryFrameDeserializerContext
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
 import com.oxyggen.qzw.types.FrameType
+import com.oxyggen.qzw.types.FunctionID
 import org.apache.logging.log4j.kotlin.Logging
+import java.io.IOException
 import java.io.InputStream
 
 class FunctionFactory {
@@ -20,14 +22,14 @@ class FunctionFactory {
 //               FunctionApplicationCommandHandler::class,
 //               FunctionZWGetControllerCapabilities::class,
 //               FunctionSerialApiSetTimeouts::class,
-               FunctionSerialApiGetCapabilities::class,
+                FunctionSerialApiGetCapabilities::class,
 //               FunctionSerialApiSoftReset::class,
 //               FunctionSerialApiSetup::class,
 //               FunctionZWSendNodeInformation::class,
 //               FunctionZWSendData::class,
                 FunctionZWGetVersion::class,
 //               FunctionZWRFPowerLevelSet::class,
-               FunctionZWGetRandom::class,
+                FunctionZWGetRandom::class,
 //               FunctionZWMemoryGetId::class,
 //               FunctionMemoryGetByte::class,
 //               FunctionZWReadMemory::class,
@@ -78,7 +80,11 @@ class FunctionFactory {
             frameType: FrameType
         ): Function {
             val signatureByte = inputStream.getByte()
-            val context = BinaryFunctionDeserializerContext(signatureByte, frameContext, frameType)
+            val functionId = FunctionID.getByByteValue(signatureByte) ?: throw IOException(
+                "Unknown function signature byte 0x%02x!".format(signatureByte)
+            )
+
+            val context = BinaryFunctionDeserializerContext(frameContext.frameId, frameType, functionId)
             return bdh.deserialize(inputStream, context)
         }
 

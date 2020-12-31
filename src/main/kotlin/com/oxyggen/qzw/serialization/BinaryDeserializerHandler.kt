@@ -66,8 +66,13 @@ class BinaryDeserializerHandler<T, C : BinaryDeserializerContext>(
         deserializers.find { it.signatureByte == signatureByte }?.deserializerClass
 
     fun deserialize(inputStream: InputStream, context: C): T {
-        val deserializer = deserializers.find { it.signatureByte == context.signatureByte }?.deserializerInstance
-            ?: throw IOException("Unknown $objectDescription signature byte 0x%02x!".format(context.signatureByte))
+        val deserializer = deserializers.find { it.signatureByte == context.getSignatureByte() }?.deserializerInstance
+            ?: throw IOException(
+                "%s deserializer not found for signature byte 0x%02x!".format(
+                    objectDescription.capitalize(),
+                    context.getSignatureByte()
+                )
+            )
         return deserializer.deserialize(inputStream, context)
     }
 

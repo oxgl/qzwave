@@ -1,3 +1,9 @@
 package com.oxyggen.qzw.serialization
 
-class BinaryFrameDeserializerContext(signatureByte: Byte) : BinaryDeserializerContext(signatureByte)
+import com.oxyggen.qzw.types.FrameID
+
+open class BinaryFrameDeserializerContext(
+    val frameId: FrameID,
+) : BinaryDeserializerContext() {
+    override fun getSignatureByte(): Byte = frameId.byteValue
+}

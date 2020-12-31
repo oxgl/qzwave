@@ -1,6 +1,6 @@
 package com.oxyggen.qzw.types
 
-enum class FunctionId(val byteValue: Byte) {
+enum class FunctionID(val byteValue: Byte) {
     APPLICATION_COMMAND_HANDLER(0x04.toByte()),
     APPLICATION_COMMAND_HANDLER_BRIDGE(0xA8.toByte()),
     APPLICATION_SECURITY_EVENT(0x9D.toByte()),
@@ -183,7 +183,7 @@ enum class FunctionId(val byteValue: Byte) {
     ZW_WATCHDOG_STOP(0xD3.toByte());
 
     companion object {
-        fun getByByteValue(byteValue: Byte): FunctionId? =
+        fun getByByteValue(byteValue: Byte) =
             values().firstOrNull { it.byteValue == byteValue }
     }
 }

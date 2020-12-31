@@ -3,14 +3,14 @@ package com.oxyggen.qzw.function
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
 import com.oxyggen.qzw.types.FrameType
-import com.oxyggen.qzw.types.FunctionId
+import com.oxyggen.qzw.types.FunctionID
 import java.io.InputStream
 
-abstract class FunctionProprietaryAny : Function() {
+abstract class FunctionProprietaryAny {
     companion object : BinaryFunctionDeserializer {
         override fun getHandledSignatureBytes(): Set<Byte> {
             val result = mutableSetOf<Byte>()
-            (FunctionId.PROPRIETARY_0.byteValue..FunctionId.PROPRIETARY_E.byteValue).forEach {
+            (FunctionID.PROPRIETARY_0.byteValue..FunctionID.PROPRIETARY_E.byteValue).forEach {
                 result.add(it.toByte())
             }
             return result
@@ -22,12 +22,12 @@ abstract class FunctionProprietaryAny : Function() {
             context: BinaryFunctionDeserializerContext
         ): Function =
             when (context.frameType) {
-                FrameType.REQUEST -> Request()
-                FrameType.RESPONSE -> Response()
+                FrameType.REQUEST -> Request(context.functionId)
+                FrameType.RESPONSE -> Response(context.functionId)
             }
     }
 
-    open class Request:FunctionRequest()
-    open class Response:FunctionResponse()
+    open class Request(functionId: FunctionID) : FunctionRequest(functionId)
+    open class Response(functionId: FunctionID) : FunctionResponse(functionId)
 
 }            
