@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.oxyggen.qzw.frame
 
 import com.oxyggen.qzw.extensions.putByte

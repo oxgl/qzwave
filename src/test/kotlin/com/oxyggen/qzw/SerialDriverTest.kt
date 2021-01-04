@@ -1,5 +1,7 @@
 package com.oxyggen.qzw
 
+import com.oxyggen.qzw.command.CommandNotification
+import com.oxyggen.qzw.command.serial.serdef
 import com.oxyggen.qzw.driver.Driver
 import com.oxyggen.qzw.driver.SerialDriver
 import com.oxyggen.qzw.frame.FrameACK
@@ -8,8 +10,8 @@ import com.oxyggen.qzw.function.FunctionSerialApiGetCapabilities
 import com.oxyggen.qzw.function.FunctionSerialApiGetInitData
 import com.oxyggen.qzw.function.FunctionZWGetRandom
 import com.oxyggen.qzw.function.FunctionZWGetVersion
+import com.oxyggen.qzw.mapper.mapper
 import com.oxyggen.qzw.types.CommandClassID
-import com.oxyggen.qzw.types.CommandID
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
 import java.io.ByteArrayOutputStream
@@ -131,6 +133,27 @@ internal class SerialDriverTest {
         /*val cc = CommandClassID.getByByteValue(113)
         val c = CommandID.getByByteValue(cc ?: CommandClassID.ASSOCIATION_COMMAND_CONFIGURATION, 0x01)
         val x = c*/
+    }
+
+    @Test
+    fun `Test serdef`() {
+        val x = mapper {
+            byte("alarmType1")
+            byte("alarmLevel2")
+            byte("#reserved")
+            byte("notificationStatus")
+            byte("notificationType")
+            byte("notificationEvent")
+            bitMap {
+                bit("#sequenceEnabled", 7)
+                bitRange("#parametersLength", 0..4)
+            }
+        }
+
+        val y = x
+
+        y.deserialize(ByteArray(0), CommandNotification::class)
+
     }
 
 }
