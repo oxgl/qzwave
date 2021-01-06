@@ -1,19 +1,21 @@
 package com.oxyggen.qzw.mapper
 
-class BinaryPlan {
+import kotlin.reflect.jvm.internal.impl.resolve.constants.ByteValue
 
-    private val entries = mutableListOf<BinaryPlanEntry>()
+class BinaryPlan : ArrayList<BinaryPlanEntry>() {
+
+    //private val entries = mutableListOf<BinaryPlanEntry>()
 
     fun addSimple(
         name: String,
-        type: BinaryPlanEntry.Type,
+        type: BinaryPlanEntryNumber.Type,
         enabled: String
     ) =
-        entries.add(
-            BinaryPlanEntrySimple(
+        add(
+            BinaryPlanEntryNumber(
                 name = name,
                 type = type,
-                previous = entries.lastOrNull(),
+                previous = lastOrNull(),
                 enabled = enabled
             )
         )
@@ -22,10 +24,10 @@ class BinaryPlan {
         name: String,
         count: String
     ) =
-        entries.add(
+        add(
             BinaryPlanEntrySequence(
                 name = name,
-                previous = entries.lastOrNull(),
+                previous = lastOrNull(),
                 count = count
             )
         )
@@ -34,23 +36,23 @@ class BinaryPlan {
         name: String,
         enabled: String = "true",
         masks: Map<String, IntRange>
-    ) = entries.add(
+    ) = add(
         BinaryPlanEntryBitMask(
             name = name,
-            previous = entries.lastOrNull(),
+            previous = lastOrNull(),
             enabled = enabled,
             masks = masks
         )
     )
 
-    fun clone(): BinaryPlan {
-        val result = BinaryPlan()
-        entries.forEach {
-            result.entries.add(
-                it.clone(result.entries.lastOrNull())
-            )
-        }
-        return result
+    inline fun getValue(context: SerializationContext, expression: String): Any? {
+        val element = lastOrNull() ?: return null
+        return element.getOrEvaluateValue(context, expression)
+    }
+
+    inline fun setValue(context: SerializationContext, expression: String, value: Any):Boolean {
+        val element = lastOrNull() ?: return false
+        return element.setValue(context, expression, value)
     }
 
 }

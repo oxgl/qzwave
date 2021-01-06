@@ -1,7 +1,15 @@
 package com.oxyggen.qzw.mapper
 
+import java.io.InvalidClassException
+import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
+import kotlin.reflect.KParameter
+import kotlin.reflect.KProperty1
+import kotlin.reflect.KVisibility
+import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.javaGetter
 
 class BinaryMapper {
 
@@ -11,7 +19,7 @@ class BinaryMapper {
         plan.addSimple(
             name = name,
             enabled = enabled,
-            type = BinaryPlanEntry.Type.BYTE
+            type = BinaryPlanEntryNumber.Type.BYTE
         )
     }
 
@@ -19,7 +27,7 @@ class BinaryMapper {
         plan.addSimple(
             name = name,
             enabled = enabled,
-            type = BinaryPlanEntry.Type.INT16
+            type = BinaryPlanEntryNumber.Type.INT16
         )
     }
 
@@ -27,7 +35,7 @@ class BinaryMapper {
         plan.addSimple(
             name = name,
             enabled = enabled,
-            type = BinaryPlanEntry.Type.INT24
+            type = BinaryPlanEntryNumber.Type.INT24
         )
     }
 
@@ -35,7 +43,7 @@ class BinaryMapper {
         plan.addSimple(
             name = name,
             enabled = enabled,
-            type = BinaryPlanEntry.Type.INT32
+            type = BinaryPlanEntryNumber.Type.INT32
         )
     }
 
@@ -66,9 +74,42 @@ class BinaryMapper {
 
 
     fun deserialize(byteArray: ByteArray, resultClass: KClass<*>): Any? {
-        val mutablePlan = plan.clone()
+        val constructor = resultClass.primaryConstructor
+        val params = constructor?.parameters ?: throw InvalidClassException(resultClass.qualifiedName)
+        val paramValues = mutableMapOf<KParameter, Any?>()
 
-        return null
+        val context = SerializationContext(byteArray.toMutableList())
+        params.forEach {
+            if (it.name != null) {
+                val result = plan.getValue(context, "@${it.name}")
+                paramValues[it] = result
+            }
+        }
+
+        return constructor.callBy(paramValues)
+    }
+
+    private fun isFieldAccessible(property: KProperty1<*, *>): Boolean {
+        return property.javaGetter?.modifiers?.let { !Modifier.isPrivate(it) } ?: false
+    }
+
+    fun serialize(source: Any): ByteArray {
+        val constructor = source::class.primaryConstructor
+        val params = constructor?.parameters ?: throw InvalidClassException(source::class.qualifiedName)
+
+        val context = SerializationContext()
+
+        val properties = source::class.memberProperties.filter { it.visibility == KVisibility.PUBLIC }
+
+        params.forEach { param ->
+            val property = properties.find { it.name == param.name }
+            if (property != null) {
+                val value = property.getter.call(source)
+                if (value != null) plan.setValue(context, "@${property.name}", value)
+            }
+        }
+
+        return context.binary.toByteArray()
     }
 }
 

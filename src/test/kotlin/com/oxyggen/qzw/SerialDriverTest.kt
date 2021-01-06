@@ -1,16 +1,15 @@
 package com.oxyggen.qzw
 
 import com.oxyggen.qzw.command.CommandNotification
-import com.oxyggen.qzw.command.serial.serdef
 import com.oxyggen.qzw.driver.Driver
 import com.oxyggen.qzw.driver.SerialDriver
+import com.oxyggen.qzw.extensions.build
 import com.oxyggen.qzw.frame.FrameACK
 import com.oxyggen.qzw.frame.FrameSOF
 import com.oxyggen.qzw.function.FunctionSerialApiGetCapabilities
 import com.oxyggen.qzw.function.FunctionSerialApiGetInitData
 import com.oxyggen.qzw.function.FunctionZWGetRandom
 import com.oxyggen.qzw.function.FunctionZWGetVersion
-import com.oxyggen.qzw.mapper.mapper
 import com.oxyggen.qzw.types.CommandClassID
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
@@ -137,22 +136,27 @@ internal class SerialDriverTest {
 
     @Test
     fun `Test serdef`() {
-        val x = mapper {
-            byte("alarmType1")
-            byte("alarmLevel2")
-            byte("#reserved")
-            byte("notificationStatus")
-            byte("notificationType")
-            byte("notificationEvent")
-            bitMap {
-                bit("#sequenceEnabled", 7)
-                bitRange("#parametersLength", 0..4)
-            }
+
+        var data = ByteArray(0)
+        data += 0x01 // alarmType1
+        data += 0x02 // alarmTyp2
+        data += 0x00 // res
+        data += 0xff.toByte() // status
+        data += 0x07.toByte() // type
+        data += 0x08.toByte() // event
+        data += Byte.build(false, true, false, false, false, false, false, false) // event
+        data+=0xab.toByte()
+        data+=0xcd.toByte()
+        //data+=0xee.toByte()
+
+
+        val c = CommandNotification.Report.mapper.deserialize(data, CommandNotification.Report::class)
+
+        if (c!=null) {
+            val b = CommandNotification.Report.mapper.serialize(c)
+            val x = b
         }
-
-        val y = x
-
-        y.deserialize(ByteArray(0), CommandNotification::class)
+        //val d = c
 
     }
 

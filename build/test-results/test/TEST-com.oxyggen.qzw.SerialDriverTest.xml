@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.oxyggen.qzw.SerialDriverTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2021-01-04T23:52:20" hostname="install" time="92.939">
+<testsuite name="com.oxyggen.qzw.SerialDriverTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2021-01-06T00:30:25" hostname="install" time="17.756">
   <properties/>
-  <testcase name="Test serdef()" classname="com.oxyggen.qzw.SerialDriverTest" time="92.939"/>
+  <testcase name="Test serdef()" classname="com.oxyggen.qzw.SerialDriverTest" time="17.756"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

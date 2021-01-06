@@ -14,6 +14,23 @@ fun Byte.Companion.build(vararg bits: Boolean): Byte {       // Bits from bit 0 
     return result
 }
 
+fun Byte.getBitRange(range: IntRange): Byte {
+    var result = 0
+    for (index in range.reversed())
+        result = result * 2 + if (this[index]) 1 else 0
+    return result.toByte()
+}
+
+fun Byte.withBitRange(range: IntRange, value: Byte): Byte {
+    var result = this
+    var value1 = value.toInt()
+    for (index in range) {
+        result = result.withBit(index, value1.rem(2) > 0)
+        value1 = value1.div(2)
+    }
+    return result
+}
+
 fun Byte.withBit(index: Int, value: Boolean = true): Byte = if (this[index] != value) {
     if (value) this.or(1.shl(index).toByte()) else this.xor(1.shl(index).toByte())
 } else {
