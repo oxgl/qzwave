@@ -137,26 +137,24 @@ internal class SerialDriverTest {
     @Test
     fun `Test serdef`() {
 
-        var data = ByteArray(0)
-        data += 0x01 // alarmType1
-        data += 0x02 // alarmTyp2
-        data += 0x00 // res
-        data += 0xff.toByte() // status
-        data += 0x07.toByte() // type
-        data += 0x08.toByte() // event
-        data += Byte.build(false, true, false, false, false, false, false, false) // event
-        data+=0xab.toByte()
-        data+=0xcd.toByte()
-        //data+=0xee.toByte()
+        var data1 = ByteArray(0)
+        data1 += 0x01 // alarmType1
+        data1 += 0x02 // alarmTyp2
+        data1 += 0x00 // res
+        data1 += 0xff.toByte() // status
+        data1 += 0x07.toByte() // type
+        data1 += 0x08.toByte() // event
+        data1 += Byte.build(false, true, false, false, false, false, false, false) // event
+        data1 += 0xab.toByte()
+        data1 += 0xcd.toByte()
+        //data1 += 0xee.toByte()
 
 
-        val c = CommandNotification.Report.mapper.deserialize(data, CommandNotification.Report::class)
+        val c = CommandNotification.Report.mapper.deserialize(data1, CommandNotification.Report::class)
 
-        if (c!=null) {
-            val b = CommandNotification.Report.mapper.serialize(c)
-            val x = b
-        }
-        //val d = c
+        val data2 = if (c != null) CommandNotification.Report.mapper.serialize(c) else null
+
+        assert(data1.contentEquals(data2))
 
     }
 

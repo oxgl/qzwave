@@ -2,7 +2,7 @@ package com.oxyggen.qzw.mapper
 
 class BinaryPlanEntryNumber(
     name: String,
-    val type: BinaryPlanEntryNumber.Type,
+    val type: Type,
     version: IntRange = IntRange.EMPTY,
     previous: BinaryPlanEntry? = null,
     val enabled: String,
@@ -21,14 +21,16 @@ class BinaryPlanEntryNumber(
         INT32;
     }
 
+    override fun isEnabled(context: SerializationContext): Boolean = context.buffer.getOrPut("${name}.isEnabled") {
+        isSuitableForVersion(context) && getOrEvaluateBoolean(context, enabled) == true
+    } as Boolean
+
     override fun getByteLength(context: SerializationContext): Int = context.buffer.getOrPut("${name}.byteLength") {
-        if (isSuitableForVersion(context) && getOrEvaluateBoolean(context, enabled) == true) when (type) {
+        when (type) {
             Type.BYTE -> 1
             Type.INT16 -> 2
             Type.INT24 -> 3
             Type.INT32 -> 4
-        } else {
-            0
         }
     } as Int
 
@@ -37,12 +39,13 @@ class BinaryPlanEntryNumber(
             // Has prefix
             PREFIX_POINTER, PREFIX_VIRTUAL -> {
                 val name = nameWithoutPrefix(expression)
-                // 1st -> check it's in context
+
+                // Check whether it should be determined by current entry
                 if (name == pureName) {
+                    // Check it's in context, if not calculate and put it into context
                     context.values.getOrPut(name) {
-                        // 2nd -> check whether it should be determined by current entry
-                        if (getByteLength(context) > 0) {
-                            var result: Int = 0
+                        if (isEnabled(context)) {
+                            var result = 0
                             for (index in getByteIndexRange(context)) {
                                 result = result * 256 + context.binary[index]
                             }
@@ -50,7 +53,7 @@ class BinaryPlanEntryNumber(
                                 Type.BYTE -> result.toByte()
                                 else -> result
                             }
-                        } else return null
+                        } else 0
                     }
                 } else {
                     // 3rd -> try to determine using previous
@@ -63,19 +66,27 @@ class BinaryPlanEntryNumber(
 
     override fun setValue(context: SerializationContext, expression: String, value: Any): Boolean =
         if (nameWithoutPrefix(expression) == pureName) {
-            if (getByteLength(context) > 0) {
+            if (isSuitableForVersion(context)) {
                 context.values[pureName] = value
                 var intValue = toIntValue(value) ?: 0
 
+                // First set enabled field, it will be evaluated by getByteIndexRange
+                if (isPointer(enabled))
+                    previous?.setValue(context, enabled, true)
+
+                // Get the range
                 val indices = getByteIndexRange(context)
 
+                // Create enough space in buffer
                 while (context.binary.size < indices.last + 1) context.binary += 0
 
+                // Fill data
                 for (index in indices.reversed()) {
                     context.binary[index] = intValue.rem(256).toByte()
                     intValue = intValue.div(256)
                     if (intValue == 0) break
                 }
+
                 true
             } else {
                 true

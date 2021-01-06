@@ -12,21 +12,29 @@ class BinaryPlanEntrySequence(
         count = this.count
     )
 
+    override fun isEnabled(context: SerializationContext): Boolean = context.buffer.getOrPut("${name}.isEnabled") {
+        isSuitableForVersion(context)
+    } as Boolean
+
     override fun getByteLength(context: SerializationContext): Int = context.buffer.getOrPut("${name}.byteLength") {
-        return if (isSuitableForVersion(context)) getOrEvaluateNumber(context, count) ?: 0 else 0
+        getOrEvaluateNumber(context, count) ?: 0
     } as Int
 
     override fun getOrEvaluateValue(context: SerializationContext, expression: String): Any? = when (expression[0]) {
         // Has prefix
         PREFIX_POINTER, PREFIX_VIRTUAL -> {
             val name = nameWithoutPrefix(expression)
-            // 1st -> check it's in context
+            // Check whether it should be determined by current entry
             if (name == pureName) {
+                // Get buffered entry or create if does not exist
                 context.values.getOrPut(name) {
-                    // 2nd -> check whether it should be determined by current
-                    val range = getByteIndexRange(context)
-                    if (range == IntRange.EMPTY) return ByteArray(0)
-                    else context.binary.toByteArray().sliceArray(range)
+                    if (isEnabled(context)) {
+                        val range = getByteIndexRange(context)
+                        if (range == IntRange.EMPTY)
+                            ByteArray(0)
+                        else
+                            context.binary.toByteArray().sliceArray(range)
+                    } else ByteArray(0)
                 }
             } else {
                 // 3rd -> try to determine using previous
@@ -42,17 +50,21 @@ class BinaryPlanEntrySequence(
             if (isSuitableForVersion(context)) {
                 context.values[pureName] = value
 
-                var collection = toCollectionValue(value)
+                //
+                val collection = toCollectionValue(value)
                 val length = collection.size
 
-                // Set length field
-                previous?.setValue(context, "${count}", length)
+                // First set length field, it will be evaluated by getByteIndexRange
+                if (isPointer(count))
+                    previous?.setValue(context, count, length)
 
-                // Set bytes
+                // Get start index
                 var index = getByteIndexStart(context)
 
+                // Create enough space in buffer
                 while (context.binary.size < index + length) context.binary += 0
 
+                // Set bytes
                 collection.forEach {
                     context.binary[index] = toIntValue(it)?.toByte() ?: 0
                     index++

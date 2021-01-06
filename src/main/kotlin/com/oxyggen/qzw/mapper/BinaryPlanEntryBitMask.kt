@@ -17,8 +17,12 @@ class BinaryPlanEntryBitMask(
         masks = this.masks.toMap()  // Create copy
     )
 
+    override fun isEnabled(context: SerializationContext): Boolean = context.buffer.getOrPut("${name}.isEnabled") {
+        isSuitableForVersion(context) && getOrEvaluateBoolean(context, enabled) == true
+    } as Boolean
+
     override fun getByteLength(context: SerializationContext): Int = context.buffer.getOrPut("${name}.byteLength") {
-        if (isSuitableForVersion(context) && getOrEvaluateBoolean(context, enabled) == true) 1 else 0
+        1
     } as Int
 
     override fun getOrEvaluateValue(context: SerializationContext, expression: String): Any? {
@@ -55,20 +59,28 @@ class BinaryPlanEntryBitMask(
     override fun setValue(context: SerializationContext, expression: String, value: Any): Boolean {
 
         val name = nameWithoutPrefix(expression)
+
         // 1st -> check whether the name is handled by current entry
         val mask = masks.entries.find { nameWithoutPrefix(it.key) == name }
 
         if (mask != null) {
-            if (getByteLength(context) > 0) {
-                var index = getByteIndexStart(context)
+            return if (isSuitableForVersion(context)) {
+                val index = getByteIndexStart(context)
                 val intValue = toIntValue(value) ?: 0
 
+                // First set enabled field, it will be evaluated by getByteIndexRange
+                if (isPointer(enabled))
+                    previous?.setValue(context, enabled, true)
+
+                // Create enough space in buffer
                 while (context.binary.size < index + 1) context.binary += 0
 
+                // Fill data
                 context.binary[index] = context.binary[index].withBitRange(mask.value, intValue.toByte())
-                return true
+
+                true
             } else {
-                return true
+                true
             }
         }
 

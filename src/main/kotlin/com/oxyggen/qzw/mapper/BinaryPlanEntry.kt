@@ -12,6 +12,8 @@ abstract class BinaryPlanEntry(
 
         fun nameWithoutPrefix(name: String) =
             if (name.startsWith(PREFIX_VIRTUAL) || name.startsWith(PREFIX_POINTER)) name.drop(1) else name
+
+        fun isPointer(name: String) = name.startsWith(PREFIX_POINTER)
     }
 
     protected fun isSuitableForVersion(context: SerializationContext) =
@@ -24,6 +26,8 @@ abstract class BinaryPlanEntry(
         return enabledPrev
     }
 
+    abstract fun isEnabled(context: SerializationContext): Boolean
+
     abstract fun getByteLength(context: SerializationContext): Int
 
     open fun getByteIndexStart(context: SerializationContext): Int =
@@ -34,11 +38,15 @@ abstract class BinaryPlanEntry(
 
     open fun getByteIndexRange(context: SerializationContext): IntRange =
         context.buffer.getOrPut("${name}.byteIndexRange") {
-            val startIndex = getByteIndexStart(context)
+            if (isEnabled(context)) {
+                val startIndex = getByteIndexStart(context)
 
-            val length = getByteLength(context)
+                val length = getByteLength(context)
 
-            if (length == 0) IntRange.EMPTY else startIndex until (startIndex + length)
+                startIndex until (startIndex + length)
+            } else {
+                IntRange.EMPTY
+            }
         } as IntRange
 
     val pureName = nameWithoutPrefix(name)
@@ -66,6 +74,7 @@ abstract class BinaryPlanEntry(
         else -> value.toString()
     }
 
+    @Suppress("UNCHECKED_CAST")
     open fun toCollectionValue(value: Any?): Collection<Any> = if (value == null) listOf() else when (value) {
         is Collection<*> -> value as Collection<Any>
         is ByteArray -> value.toList()
