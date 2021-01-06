@@ -1995,7 +1995,6 @@ enum class CommandID(val commandClass: CommandClassID, val byteValue: Byte) {
         fun getByByteValue(commandClass: CommandClassID, byteValue: Byte) =
             getByCommandClass(commandClass)?.find { it.byteValue == byteValue }
 
-
     }
 
 }

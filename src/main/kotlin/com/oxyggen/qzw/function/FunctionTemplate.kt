@@ -12,8 +12,6 @@ abstract class FunctionTemplate {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.DEBUG_OUTPUT.byteValue)
 
-        // HOST->ZW: REQ | 0x15
-        // ZW->HOST: RES | 0x15 | buffer (12 bytes) | library type
         @ExperimentalUnsignedTypes
         override fun deserialize(
             inputStream: InputStream,

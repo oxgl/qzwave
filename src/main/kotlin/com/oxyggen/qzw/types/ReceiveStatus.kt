@@ -4,6 +4,7 @@ package com.oxyggen.qzw.types
 
 import com.oxyggen.qzw.extensions.get
 import com.oxyggen.qzw.extensions.withBit
+import com.oxyggen.qzw.function.ByteToEnum
 import kotlin.experimental.and
 
 data class ReceiveStatus(

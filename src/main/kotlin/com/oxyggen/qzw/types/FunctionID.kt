@@ -1,5 +1,7 @@
 package com.oxyggen.qzw.types
 
+import com.oxyggen.qzw.function.ByteToEnum
+
 enum class FunctionID(val byteValue: Byte) {
     APPLICATION_COMMAND_HANDLER(0x04.toByte()),
     APPLICATION_COMMAND_HANDLER_BRIDGE(0xA8.toByte()),
@@ -182,8 +184,8 @@ enum class FunctionID(val byteValue: Byte) {
     ZW_WATCHDOG_START(0xD2.toByte()),
     ZW_WATCHDOG_STOP(0xD3.toByte());
 
-    companion object {
-        fun getByByteValue(byteValue: Byte) =
+    companion object : ByteToEnum<FunctionID> {
+        override fun getByByteValue(byteValue: Byte) =
             values().firstOrNull { it.byteValue == byteValue }
     }
 }

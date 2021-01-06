@@ -1,5 +1,7 @@
 package com.oxyggen.qzw.device
 
+import com.oxyggen.qzw.function.ByteToEnum
+
 enum class DeviceGenericType(val byteValue: Byte) {
     APPLIANCE(0x06.toByte()),
     AV_CONTROL_POINT(0x03.toByte()),
@@ -28,8 +30,8 @@ enum class DeviceGenericType(val byteValue: Byte) {
     WINDOW_COVERING(0x09.toByte()),
     ZIP_NODE(0x15.toByte());
 
-    companion object {
-        fun getByByteValue(byteValue: Byte): DeviceGenericType? =
+    companion object : ByteToEnum<DeviceGenericType> {
+        override fun getByByteValue(byteValue: Byte): DeviceGenericType? =
             values().firstOrNull { it.byteValue == byteValue }
     }
 }

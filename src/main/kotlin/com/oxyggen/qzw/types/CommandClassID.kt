@@ -1,5 +1,7 @@
 package com.oxyggen.qzw.types
 
+import com.oxyggen.qzw.function.ByteToEnum
+
 enum class CommandClassID(val byteValue: Byte, val maxVersion: Int = 1, val category: Category) {
 
     // Alarm Command Class
@@ -373,7 +375,7 @@ enum class CommandClassID(val byteValue: Byte, val maxVersion: Int = 1, val cate
     }
 
 
-    companion object {
+    companion object : ByteToEnum<CommandClassID> {
         private val byteValueToCC: Map<Byte, List<CommandClassID>> by lazy {
             val result = mutableMapOf<Byte, List<CommandClassID>>()
             values().forEach {
@@ -387,11 +389,13 @@ enum class CommandClassID(val byteValue: Byte, val maxVersion: Int = 1, val cate
             result
         }
 
-        fun getByByteValue(byteValue: Byte, version: Int = -1): CommandClassID? =
+        fun getByByteValueVer(byteValue: Byte, version: Int = -1): CommandClassID? =
             if (version == -1)
                 byteValueToCC[byteValue]?.get(0)
             else
                 byteValueToCC[byteValue]?.findLast { it.maxVersion >= version }
+
+        override fun getByByteValue(byteValue: Byte): CommandClassID? = getByByteValueVer(byteValue)
     }
 
 }

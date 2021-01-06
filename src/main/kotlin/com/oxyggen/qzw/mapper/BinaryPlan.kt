@@ -45,12 +45,12 @@ class BinaryPlan : ArrayList<BinaryPlanEntry>() {
         )
     )
 
-    inline fun getValue(context: SerializationContext, expression: String): Any? {
+    fun getValue(context: SerializationContext, expression: String): Any? {
         val element = lastOrNull() ?: return null
         return element.getOrEvaluateValue(context, expression)
     }
 
-    inline fun setValue(context: SerializationContext, expression: String, value: Any):Boolean {
+    fun setValue(context: SerializationContext, expression: String, value: Any): Boolean {
         val element = lastOrNull() ?: return false
         return element.setValue(context, expression, value)
     }

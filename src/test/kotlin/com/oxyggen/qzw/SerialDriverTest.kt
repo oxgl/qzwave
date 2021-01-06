@@ -1,6 +1,6 @@
 package com.oxyggen.qzw
 
-import com.oxyggen.qzw.command.CommandNotification
+import com.oxyggen.qzw.command.CCNotification
 import com.oxyggen.qzw.driver.Driver
 import com.oxyggen.qzw.driver.SerialDriver
 import com.oxyggen.qzw.extensions.build
@@ -123,12 +123,12 @@ internal class SerialDriverTest {
 
     @Test
     fun `Test commands`() {
-        println(CommandClassID.getByByteValue(113, 1))
+/*        println(CommandClassID.getByByteValue(113, 1))
         println(CommandClassID.getByByteValue(113, 2))
         println(CommandClassID.getByByteValue(113, 3))
         println(CommandClassID.getByByteValue(113, 4))
         println(CommandClassID.getByByteValue(113, 5))
-        println(CommandClassID.getByByteValue(113))
+        println(CommandClassID.getByByteValue(113))*/
         /*val cc = CommandClassID.getByByteValue(113)
         val c = CommandID.getByByteValue(cc ?: CommandClassID.ASSOCIATION_COMMAND_CONFIGURATION, 0x01)
         val x = c*/
@@ -150,9 +150,9 @@ internal class SerialDriverTest {
         //data1 += 0xee.toByte()
 
 
-        val c = CommandNotification.Report.mapper.deserialize(data1, CommandNotification.Report::class)
+        val c = CCNotification.Report.deserialize(data1)
 
-        val data2 = if (c != null) CommandNotification.Report.mapper.serialize(c) else null
+        val data2 = if (c != null) CCNotification.Report.mapper.serialize(c) else null
 
         assert(data1.contentEquals(data2))
 

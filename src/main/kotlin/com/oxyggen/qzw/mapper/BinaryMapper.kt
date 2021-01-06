@@ -11,7 +11,7 @@ import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaGetter
 
-class BinaryMapper {
+class BinaryMapper<T> {
 
     val plan = BinaryPlan()
 
@@ -73,7 +73,8 @@ class BinaryMapper {
     }
 
 
-    fun deserialize(byteArray: ByteArray, resultClass: KClass<*>): Any? {
+    inline fun <reified T> deserialize(byteArray: ByteArray): T {
+        val resultClass = T::class as KClass<*>
         val constructor = resultClass.primaryConstructor
         val params = constructor?.parameters ?: throw InvalidClassException(resultClass.qualifiedName)
         val paramValues = mutableMapOf<KParameter, Any?>()
@@ -86,7 +87,7 @@ class BinaryMapper {
             }
         }
 
-        return constructor.callBy(paramValues)
+        return constructor.callBy(paramValues) as T
     }
 
     private fun isFieldAccessible(property: KProperty1<*, *>): Boolean {
@@ -114,8 +115,8 @@ class BinaryMapper {
 }
 
 
-fun mapper(init: BinaryMapper.() -> Unit): BinaryMapper {
-    val binaryMapper = BinaryMapper()
+fun <T> mapper(init: BinaryMapper<T>.() -> Unit): BinaryMapper<T> {
+    val binaryMapper = BinaryMapper<T>()
     binaryMapper.init()
     return binaryMapper
 }
