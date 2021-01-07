@@ -3,6 +3,7 @@ package com.oxyggen.qzw.function
 import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.extensions.putByte
 import com.oxyggen.qzw.frame.FrameSOF
+import com.oxyggen.qzw.mapper.mapper
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
 import com.oxyggen.qzw.types.FrameType
@@ -25,19 +26,29 @@ abstract class FunctionZWGetVersion {
             context: BinaryFunctionDeserializerContext
         ): Function =
             when (context.frameType) {
-                FrameType.REQUEST -> Request()
-                FrameType.RESPONSE -> {
-                    val versionText = inputStream.readNBytes(12).decodeToString()
-                    val libraryType = LibraryType.getByByteValue(inputStream.getByte())
-                    Response(versionText, libraryType ?: LibraryType.CONTROLLER_STATIC)
-                }
+                FrameType.REQUEST -> Request.deserialize(inputStream)
+                FrameType.RESPONSE -> Response.deserialize(inputStream)
             }
     }
 
-    class Request : FunctionRequest(FunctionID.ZW_GET_VERSION)
+    class Request : FunctionRequest(FunctionID.ZW_GET_VERSION) {
+        companion object {
+            fun deserialize(inputStream: InputStream): Request = Request()
+        }
+    }
 
-    class Response(val versionText: String, val libraryType: LibraryType) :
-        FunctionResponse(FunctionID.ZW_GET_VERSION) {
+    class Response(
+        val versionText: String,
+        val libraryType: LibraryType
+    ) : FunctionResponse(FunctionID.ZW_GET_VERSION) {
+
+        companion object {
+            fun deserialize(inputStream: InputStream): Response {
+                val versionText = inputStream.readNBytes(12).decodeToString()
+                val libraryType = LibraryType.getByByteValue(inputStream.getByte())
+                return Response(versionText, libraryType ?: LibraryType.CONTROLLER_STATIC)
+            }
+        }
 
         override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
             super.serialize(outputStream, frame)

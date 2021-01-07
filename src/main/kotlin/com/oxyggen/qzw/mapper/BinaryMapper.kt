@@ -1,14 +1,15 @@
 package com.oxyggen.qzw.mapper
 
+import com.oxyggen.qzw.utils.Conversion
 import java.io.InvalidClassException
 import java.lang.reflect.Modifier
+import javax.swing.text.Utilities
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
-import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaGetter
 
 class BinaryMapper<T> {
@@ -80,15 +81,28 @@ class BinaryMapper<T> {
         val paramValues = mutableMapOf<KParameter, Any?>()
 
         val context = SerializationContext(byteArray.toMutableList())
-        params.forEach {
-            if (it.name != null) {
-                val result = plan.getValue(context, "@${it.name}")
-                paramValues[it] = result
+        params.forEach { param ->
+            if (param.name != null) {
+                val result = plan.getValue(context, "@${param.name}")
+                // Try to do some conversion
+                if (result != null && param.type.classifier is KClass<*>) {
+                    when (param.type.classifier) {
+                        Byte::class -> paramValues[param] = Conversion.toByte(result)
+                        Int::class -> paramValues[param] = Conversion.toInt(result)
+                        String::class -> paramValues[param] = Conversion.toString(result)
+                        Boolean::class -> paramValues[param] = Conversion.toBoolean(result)
+                        else -> paramValues[param] = result
+                    }
+                } else {
+                    paramValues[param] = result
+                }
             }
         }
 
         return constructor.callBy(paramValues) as T
     }
+
+
 
     private fun isFieldAccessible(property: KProperty1<*, *>): Boolean {
         return property.javaGetter?.modifiers?.let { !Modifier.isPrivate(it) } ?: false

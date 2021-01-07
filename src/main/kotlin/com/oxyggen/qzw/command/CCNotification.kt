@@ -1,12 +1,15 @@
 package com.oxyggen.qzw.command
 
 import com.oxyggen.qzw.extensions.getByte
+import com.oxyggen.qzw.function.Function
 import com.oxyggen.qzw.types.CommandClassID
 import com.oxyggen.qzw.types.CommandID
 import com.oxyggen.qzw.mapper.mapper
 import com.oxyggen.qzw.serialization.BinaryCommandDeserializer
 import com.oxyggen.qzw.serialization.BinaryCommandDeserializerContext
+import java.io.IOException
 import java.io.InputStream
+import java.io.OutputStream
 
 class CCNotification {
 
@@ -21,7 +24,7 @@ class CCNotification {
                 CommandID.NOTIFICATION_GET -> Get.deserialize(commandData)
                 CommandID.NOTIFICATION_SET -> Set.deserialize(commandData)
                 CommandID.NOTIFICATION_REPORT -> Report.deserialize(commandData)
-                else -> throw TODO("Not implemented command!")
+                else -> throw IOException("${context.commandClassID}: Not implemented command ${commandID}!")
             }
         }
     }
@@ -43,6 +46,12 @@ class CCNotification {
 
             fun deserialize(data: ByteArray): Get = mapper.deserialize(data)
         }
+
+        override fun serialize(outputStream: OutputStream, function: Function) {
+            super.serialize(outputStream, function)
+            outputStream.write(mapper.serialize(this))
+        }
+
     }
 
     class Set(
@@ -58,6 +67,11 @@ class CCNotification {
             }
 
             fun deserialize(data: ByteArray): Set = mapper.deserialize(data)
+        }
+
+        override fun serialize(outputStream: OutputStream, function: Function) {
+            super.serialize(outputStream, function)
+            outputStream.write(Get.mapper.serialize(this))
         }
     }
 
@@ -90,5 +104,17 @@ class CCNotification {
 
             fun deserialize(data: ByteArray): Report = mapper.deserialize(data)
         }
+
+        override fun serialize(outputStream: OutputStream, function: Function) {
+            super.serialize(outputStream, function)
+            outputStream.write(Get.mapper.serialize(this))
+        }
+
+        override fun toString(): String = "CC ${commandClassId} - Command ${commandId}(" +
+                "type $v1alarmType, " +
+                "level $v1alarmLevel, " +
+                "nStatus $notificationStatus, " +
+                "nType $notificationType, " +
+                "nEvent: $notificationEvent)"
     }
 }

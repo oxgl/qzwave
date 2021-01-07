@@ -2,6 +2,7 @@ package com.oxyggen.qzw.mapper
 
 import com.oxyggen.qzw.extensions.getBitRange
 import com.oxyggen.qzw.extensions.withBitRange
+import com.oxyggen.qzw.utils.Conversion
 
 class BinaryPlanEntryBitMask(
     name: String,
@@ -66,7 +67,7 @@ class BinaryPlanEntryBitMask(
         if (mask != null) {
             return if (isSuitableForVersion(context)) {
                 val index = getByteIndexStart(context)
-                val intValue = toIntValue(value) ?: 0
+                val intValue = Conversion.toInt(value)
 
                 // First set enabled field, it will be evaluated by getByteIndexRange
                 if (isPointer(enabled))

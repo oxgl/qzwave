@@ -1,9 +1,11 @@
 package com.oxyggen.qzw
 
 import com.oxyggen.qzw.command.CCNotification
+import com.oxyggen.qzw.command.CCVersion
 import com.oxyggen.qzw.driver.Driver
 import com.oxyggen.qzw.driver.SerialDriver
 import com.oxyggen.qzw.extensions.build
+import com.oxyggen.qzw.factory.FrameFactory
 import com.oxyggen.qzw.frame.FrameACK
 import com.oxyggen.qzw.frame.FrameSOF
 import com.oxyggen.qzw.function.FunctionSerialApiGetCapabilities
@@ -11,6 +13,7 @@ import com.oxyggen.qzw.function.FunctionSerialApiGetInitData
 import com.oxyggen.qzw.function.FunctionZWGetRandom
 import com.oxyggen.qzw.function.FunctionZWGetVersion
 import com.oxyggen.qzw.types.CommandClassID
+import com.oxyggen.qzw.types.TransmitOptions
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
 import java.io.ByteArrayOutputStream
@@ -102,6 +105,30 @@ internal class SerialDriverTest {
         runBlocking {
             val requestFun = FunctionSerialApiGetCapabilities.Request()
             driver!!.putFunction(requestFun)
+
+            while (true) {
+                val responseFrame = driver!!.getFrame()
+                if (responseFrame is FrameSOF) {
+                    println(responseFrame.toString())
+                    driver!!.putFrame(FrameACK())
+                    if (responseFrame.function is FunctionSerialApiGetCapabilities.Response) {
+                        val b = ByteArrayOutputStream()
+                        responseFrame.serialize(b)
+                        val ba2 = b.toByteArray()
+                        val ba1 = ba2
+
+                        break
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Test get version for node 2`() {
+        runBlocking {
+            val f = CCVersion.Get().getSendDataFrame(2u)
+            driver!!.putFrame(f)
 
             while (true) {
                 val responseFrame = driver!!.getFrame()

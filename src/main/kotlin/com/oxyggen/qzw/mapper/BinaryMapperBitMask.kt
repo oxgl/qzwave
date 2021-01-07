@@ -1,7 +1,7 @@
 package com.oxyggen.qzw.mapper
 
 class BinaryMapperBitMask {
-    val masks: MutableMap<String, IntRange> = mutableMapOf<String, IntRange>()
+    val masks: MutableMap<String, IntRange> = mutableMapOf()
 
     fun bitRange(name: String, range: IntRange) {
         masks[name] = range

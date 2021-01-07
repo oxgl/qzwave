@@ -7,10 +7,10 @@ import com.oxyggen.qzw.types.FunctionID
 
 class BinaryCommandDeserializerContext(
     frameId: FrameID,
-    val frameType: FrameType,
-    val functionId: FunctionID,
+    frameType: FrameType,
+    functionId: FunctionID,
     val commandClassID: CommandClassID,
     val version: Int = 1
-) : BinaryFrameDeserializerContext(frameId) {
+) : BinaryFunctionDeserializerContext(frameId, frameType, functionId) {
     override fun getSignatureByte(): Byte = commandClassID.byteValue
 }

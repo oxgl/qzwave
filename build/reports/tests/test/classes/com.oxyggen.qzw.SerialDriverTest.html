@@ -29,7 +29,7 @@
 </td>
 <td>
 <div class="infoBox" id="failures">
-<div class="counter">0</div>
+<div class="counter">1</div>
 <p>failures</p>
 </div>
 </td>
@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.385s</div>
+<div class="counter">3.973s</div>
 <p>duration</p>
 </div>
 </td>
@@ -50,8 +50,8 @@
 </div>
 </td>
 <td>
-<div class="infoBox success" id="successRate">
-<div class="percent">100%</div>
+<div class="infoBox failures" id="successRate">
+<div class="percent">0%</div>
 <p>successful</p>
 </div>
 </td>
@@ -61,10 +61,124 @@
 <div id="tabs">
 <ul class="tabLinks">
 <li>
-<a href="#tab0">Tests</a>
+<a href="#tab0">Failed tests</a>
+</li>
+<li>
+<a href="#tab1">Tests</a>
+</li>
+<li>
+<a href="#tab2">Standard output</a>
 </li>
 </ul>
 <div id="tab0" class="tab">
+<h2>Failed tests</h2>
+<div class="test">
+<a name="Text command serialization()"></a>
+<h3 class="failures">Text command serialization()</h3>
+<span class="code">
+<pre>kotlin.NotImplementedError: An operation is not implemented: xx
+	at com.oxyggen.qzw.function.FunctionZWSendData$Companion.deserialize(FunctionZWSendData.kt:33)
+	at com.oxyggen.qzw.function.FunctionZWSendData$Companion.deserialize(FunctionZWSendData.kt:20)
+	at com.oxyggen.qzw.serialization.BinaryDeserializerHandler.deserialize(BinaryDeserializerHandler.kt:76)
+	at com.oxyggen.qzw.factory.FunctionFactory$Companion.deserializeFunction(FunctionFactory.kt:88)
+	at com.oxyggen.qzw.frame.FrameSOF$Companion.deserialize(FrameSOF.kt:68)
+	at com.oxyggen.qzw.frame.FrameSOF$Companion.deserialize(FrameSOF.kt:22)
+	at com.oxyggen.qzw.serialization.BinaryDeserializerHandler.deserialize(BinaryDeserializerHandler.kt:76)
+	at com.oxyggen.qzw.factory.FrameFactory$Companion.deserializeFrame(FrameFactory.kt:32)
+	at com.oxyggen.qzw.SerialDriverTest.Text command serialization(SerialDriverTest.kt:136)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:686)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:140)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:84)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$6(TestMethodTestDescriptor.java:205)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:201)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:137)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:71)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:135)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:125)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:135)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:123)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:122)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:80)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:125)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:135)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:123)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:122)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:80)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1541)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:125)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:135)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:123)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:122)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:80)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:32)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:51)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:248)
+	at org.junit.platform.launcher.core.DefaultLauncher.lambda$execute$5(DefaultLauncher.java:211)
+	at org.junit.platform.launcher.core.DefaultLauncher.withInterceptedStreams(DefaultLauncher.java:226)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:199)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:132)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.processAllTestClasses(JUnitPlatformTestClassProcessor.java:99)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.access$000(JUnitPlatformTestClassProcessor.java:79)
+	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.stop(JUnitPlatformTestClassProcessor.java:75)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.stop(SuiteTestClassProcessor.java:61)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:94)
+	at com.sun.proxy.$Proxy2.stop(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.stop(TestWorker.java:133)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:182)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:164)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:414)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:48)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:56)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+</pre>
+</span>
+</div>
+</div>
+<div id="tab1" class="tab">
 <h2>Tests</h2>
 <table>
 <thead>
@@ -75,11 +189,42 @@
 </tr>
 </thead>
 <tr>
-<td class="success">Test serdef()</td>
-<td class="success">0.385s</td>
-<td class="success">passed</td>
+<td class="failures">Text command serialization()</td>
+<td class="failures">3.973s</td>
+<td class="failures">failed</td>
 </tr>
 </table>
+</div>
+<div id="tab2" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>21:40:24.668 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for frame with signature byte 0x06 class com.oxyggen.qzw.frame.FrameACK
+21:40:24.674 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for frame with signature byte 0x15 class com.oxyggen.qzw.frame.FrameNAK
+21:40:24.676 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for frame with signature byte 0x18 class com.oxyggen.qzw.frame.FrameCAN
+21:40:24.678 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for frame with signature byte 0x01 class com.oxyggen.qzw.frame.FrameSOF
+21:40:24.682 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0x02 class com.oxyggen.qzw.function.FunctionSerialApiGetInitData
+21:40:24.685 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0x07 class com.oxyggen.qzw.function.FunctionSerialApiGetCapabilities
+21:40:24.686 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0x13 class com.oxyggen.qzw.function.FunctionZWSendData
+21:40:24.688 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0x15 class com.oxyggen.qzw.function.FunctionZWGetVersion
+21:40:24.690 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0x1c class com.oxyggen.qzw.function.FunctionZWGetRandom
+21:40:24.692 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0x49 class com.oxyggen.qzw.function.FunctionZWApplicationUpdate
+21:40:24.694 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf0 class com.oxyggen.qzw.function.FunctionProprietaryAny
+21:40:24.694 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf1 class com.oxyggen.qzw.function.FunctionProprietaryAny
+21:40:24.694 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf2 class com.oxyggen.qzw.function.FunctionProprietaryAny
+21:40:24.694 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf3 class com.oxyggen.qzw.function.FunctionProprietaryAny
+21:40:24.694 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf4 class com.oxyggen.qzw.function.FunctionProprietaryAny
+21:40:24.694 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf5 class com.oxyggen.qzw.function.FunctionProprietaryAny
+21:40:24.694 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf6 class com.oxyggen.qzw.function.FunctionProprietaryAny
+21:40:24.694 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf7 class com.oxyggen.qzw.function.FunctionProprietaryAny
+21:40:24.694 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf8 class com.oxyggen.qzw.function.FunctionProprietaryAny
+21:40:24.694 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xf9 class com.oxyggen.qzw.function.FunctionProprietaryAny
+21:40:24.695 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xfa class com.oxyggen.qzw.function.FunctionProprietaryAny
+21:40:24.695 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xfb class com.oxyggen.qzw.function.FunctionProprietaryAny
+21:40:24.695 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xfc class com.oxyggen.qzw.function.FunctionProprietaryAny
+21:40:24.695 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xfd class com.oxyggen.qzw.function.FunctionProprietaryAny
+21:40:24.695 DEBUG com.oxyggen.qzw.serialization.BinaryDeserializerHandler - Handler for function with signature byte 0xfe class com.oxyggen.qzw.function.FunctionProprietaryAny
+</pre>
+</span>
 </div>
 </div>
 <div id="footer">
@@ -89,7 +234,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 6.7</a> at Jan 6, 2021, 10:57:14 AM</p>
+<a href="http://www.gradle.org">Gradle 6.7</a> at Jan 7, 2021, 9:40:24 PM</p>
 </div>
 </div>
 </body>

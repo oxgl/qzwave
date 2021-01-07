@@ -14,38 +14,27 @@ import com.oxyggen.qzw.utils.BitmaskUtils
 import java.io.InputStream
 import java.io.OutputStream
 
+@ExperimentalUnsignedTypes
 abstract class FunctionSerialApiGetInitData {
     companion object : BinaryFunctionDeserializer {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.SERIAL_API_GET_INIT_DATA.byteValue)
 
-        @ExperimentalUnsignedTypes
         override fun deserialize(
             inputStream: InputStream,
             context: BinaryFunctionDeserializerContext
         ): Function =
             when (context.frameType) {
-                FrameType.REQUEST -> Request()
-                FrameType.RESPONSE -> {
-                    val serialApiVersion = inputStream.getByte()
-                    val capabilities = Capabilities.getByByteValue(inputStream.getByte())
-                    val nodeCount = inputStream.getUByte().toInt()
-                    val nodeBitmap = if (nodeCount > 0) inputStream.readNBytes(nodeCount) else ByteArray(0)
-                    val nodes = BitmaskUtils.decompressBitmaskToUByteSet(nodeBitmap)
-                    val chipType = inputStream.getByte()
-                    val chipVersion = inputStream.getByte()
-                    Response(
-                        serialApiVersion,
-                        capabilities,
-                        nodes,
-                        chipType,
-                        chipVersion
-                    )
-                }
+                FrameType.REQUEST -> Request.deserialize(inputStream)
+                FrameType.RESPONSE -> Response.deserialize(inputStream)
             }
     }
 
-    class Request : FunctionRequest(FunctionID.SERIAL_API_GET_INIT_DATA)
+    class Request : FunctionRequest(FunctionID.SERIAL_API_GET_INIT_DATA) {
+        companion object {
+            fun deserialize(inputStream: InputStream) = Request()
+        }
+    }
 
     class Response(
         val serialApiVersion: Byte,
@@ -54,6 +43,26 @@ abstract class FunctionSerialApiGetInitData {
         val chipType: Byte,
         val chipVersion: Byte
     ) : FunctionResponse(FunctionID.SERIAL_API_GET_INIT_DATA) {
+
+        companion object {
+            fun deserialize(inputStream: InputStream): Response {
+                val serialApiVersion = inputStream.getByte()
+                val capabilities = Capabilities.getByByteValue(inputStream.getByte())
+                val nodeCount = inputStream.getUByte().toInt()
+                val nodeBitmap = if (nodeCount > 0) inputStream.readNBytes(nodeCount) else ByteArray(0)
+                val nodes = BitmaskUtils.decompressBitmaskToUByteSet(nodeBitmap)
+                val chipType = inputStream.getByte()
+                val chipVersion = inputStream.getByte()
+                return Response(
+                    serialApiVersion,
+                    capabilities,
+                    nodes,
+                    chipType,
+                    chipVersion
+                )
+            }
+        }
+
 
         override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
             super.serialize(outputStream, frame)
@@ -74,7 +83,5 @@ abstract class FunctionSerialApiGetInitData {
                     "capabilities: [$capabilities], " +
                     "chip type/version: $chipType/$chipVersion, " +
                     "nodes: $nodes)"
-
     }
-
 }

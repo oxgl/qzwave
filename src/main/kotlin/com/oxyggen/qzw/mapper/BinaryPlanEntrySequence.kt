@@ -1,5 +1,7 @@
 package com.oxyggen.qzw.mapper
 
+import com.oxyggen.qzw.utils.Conversion
+
 class BinaryPlanEntrySequence(
     name: String,
     version: IntRange = IntRange.EMPTY,
@@ -51,7 +53,7 @@ class BinaryPlanEntrySequence(
                 context.values[pureName] = value
 
                 //
-                val collection = toCollectionValue(value)
+                val collection = Conversion.toCollection(value)
                 val length = collection.size
 
                 // First set length field, it will be evaluated by getByteIndexRange
@@ -66,7 +68,7 @@ class BinaryPlanEntrySequence(
 
                 // Set bytes
                 collection.forEach {
-                    context.binary[index] = toIntValue(it)?.toByte() ?: 0
+                    context.binary[index] = Conversion.toInt(it).toByte()
                     index++
                 }
 

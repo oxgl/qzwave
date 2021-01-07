@@ -1,5 +1,7 @@
 package com.oxyggen.qzw.mapper
 
+import com.oxyggen.qzw.utils.Conversion
+
 class BinaryPlanEntryNumber(
     name: String,
     val type: Type,
@@ -68,7 +70,7 @@ class BinaryPlanEntryNumber(
         if (nameWithoutPrefix(expression) == pureName) {
             if (isSuitableForVersion(context)) {
                 context.values[pureName] = value
-                var intValue = toIntValue(value) ?: 0
+                var intValue = Conversion.toInt(value)
 
                 // First set enabled field, it will be evaluated by getByteIndexRange
                 if (isPointer(enabled))

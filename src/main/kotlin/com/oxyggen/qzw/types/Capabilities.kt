@@ -5,33 +5,28 @@ import com.oxyggen.qzw.extensions.get
 
 data class Capabilities(
     val slaveApi: Boolean,               // Controller API / Slave API
-    val timerSupported: Boolean,        // Timer functions not supported / Timer functions supported.
+    val timerSupported: Boolean,         // Timer functions not supported / Timer functions supported.
     val secondaryController: Boolean,    // Primary Controller / Secondary Controller
     val sisController: Boolean           // Not SIS / Controller is SIS
 ) {
 
     val byteValue: Byte
-        get() = Byte.build(slaveApi, timerSupported, secondaryController, sisController)
+        get() = Byte.build(sisController, secondaryController, timerSupported, slaveApi)
 
-    companion object {
-        fun getByByteValue(byteValue: Byte): Capabilities {
-            val slaveApi = byteValue[0]
-
-            val timerSupported = byteValue[1]
-
-            val secondaryController = byteValue[2]
-
-            val sisController = byteValue[3]
-
-            return Capabilities(slaveApi, timerSupported, secondaryController, sisController)
-        }
-
+    companion object : ByteToClass<Capabilities> {
+        override fun getByByteValue(byteValue: Byte): Capabilities =
+            Capabilities(
+                slaveApi = byteValue[0],
+                timerSupported = byteValue[1],
+                secondaryController = byteValue[2],
+                sisController = byteValue[3]
+            )
     }
 
     override fun toString(): String =
         if (slaveApi) "Slave API, " else "Controller API, " +
-        if (timerSupported) "Timer supported, " else "Timer not supported, " +
-        if (secondaryController) "Secondary controller, " else "Primary controller, " +
-        if (sisController) "SIS controller" else "Not SIS controller"
+                if (timerSupported) "Timer supported, " else "Timer not supported, " +
+                        if (secondaryController) "Secondary controller, " else "Primary controller, " +
+                                if (sisController) "SIS controller" else "Not SIS controller"
 
 }

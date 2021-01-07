@@ -23,18 +23,41 @@ import com.oxyggen.qzw.utils.BitmaskUtils
 import java.io.InputStream
 import java.io.OutputStream
 
+@ExperimentalUnsignedTypes
 abstract class FunctionSerialApiGetCapabilities {
     companion object : BinaryFunctionDeserializer {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.SERIAL_API_GET_CAPABILITIES.byteValue)
 
-        @ExperimentalUnsignedTypes
         override fun deserialize(
             inputStream: InputStream,
             context: BinaryFunctionDeserializerContext
         ): Function = when (context.frameType) {
-            FrameType.REQUEST -> Request()
-            FrameType.RESPONSE -> {
+            FrameType.REQUEST -> Request.deserialize(inputStream)
+            FrameType.RESPONSE -> Response.deserialize(inputStream)
+        }
+    }
+
+    class Request : FunctionRequest(FunctionID.SERIAL_API_GET_CAPABILITIES) {
+        companion object {
+            fun deserialize(inputStream: InputStream) = Request()
+        }
+    }
+
+    class Response(
+        val serialApplVersion: UByte,
+        val serialApplRevision: UByte,
+        val serialManufId1: UByte,
+        val serialManufId2: UByte,
+        val serialManufProdType1: UByte,
+        val serialManufProdType2: UByte,
+        val serialManufProdId1: UByte,
+        val serialManufProdId2: UByte,
+        val supportedFunctionId: Set<FunctionID>
+    ) : FunctionResponse(FunctionID.SERIAL_API_GET_CAPABILITIES) {
+
+        companion object {
+            fun deserialize(inputStream: InputStream): Response {
                 val serialApplVersion = inputStream.getUByte()
                 val serialApplRevision = inputStream.getUByte()
                 val serialManufId1 = inputStream.getUByte()
@@ -51,7 +74,7 @@ abstract class FunctionSerialApiGetCapabilities {
                     if (functionId != null) supportedFunctionId.add(functionId)
                 }
 
-                Response(
+                return Response(
                     serialApplVersion,
                     serialApplRevision,
                     serialManufId1,
@@ -64,23 +87,6 @@ abstract class FunctionSerialApiGetCapabilities {
                 )
             }
         }
-
-
-    }
-
-    class Request : FunctionRequest(FunctionID.SERIAL_API_GET_CAPABILITIES)
-
-    class Response(
-        val serialApplVersion: UByte,
-        val serialApplRevision: UByte,
-        val serialManufId1: UByte,
-        val serialManufId2: UByte,
-        val serialManufProdType1: UByte,
-        val serialManufProdType2: UByte,
-        val serialManufProdId1: UByte,
-        val serialManufProdId2: UByte,
-        val supportedFunctionId: Set<FunctionID>
-    ) : FunctionResponse(FunctionID.SERIAL_API_GET_CAPABILITIES) {
 
         override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
             super.serialize(outputStream, frame)

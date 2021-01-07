@@ -27,37 +27,7 @@ abstract class FunctionZWApplicationUpdate {
             context: BinaryFunctionDeserializerContext
         ): Function =
             when (context.frameType) {
-                FrameType.REQUEST -> {
-                    val updateState =
-                        UpdateState.getByByteValue(inputStream.getByte()) ?: throw IOException("Invalid update state!")
-                    val nodeId = inputStream.getUByte()
-                    val cmdLength = inputStream.getUByte().toInt()
-                    val deviceBasicType =
-                        DeviceBasicType.getByByteValue(inputStream.getByte())
-                            ?: throw IOException("Invalid basic device type!")
-                    val deviceGenericType = DeviceGenericType.getByByteValue(inputStream.getByte())
-                        ?: throw IOException("Invalid generic device type!")
-                    val deviceSpecificType = DeviceSpecificType.getByByteValue(deviceGenericType, inputStream.getByte())
-                        ?: DeviceSpecificType.NOT_USED
-
-                    val ccBytes = inputStream.readNBytes(cmdLength - 3)
-
-                    val commandClassList = mutableListOf<CommandClassID>()
-
-                    ccBytes.forEach {
-                        val cc = CommandClassID.getByByteValue(it)
-                        if (cc != null) commandClassList.add(cc)
-                    }
-
-                    Request(
-                        updateState,
-                        nodeId,
-                        deviceBasicType,
-                        deviceGenericType,
-                        deviceSpecificType,
-                        commandClassList
-                    )
-                }
+                FrameType.REQUEST -> Request.deserialize(inputStream)
                 FrameType.RESPONSE -> throw IOException("Invalid frame ${context.frameType} / ${context.functionId}")
             }
     }
@@ -71,6 +41,39 @@ abstract class FunctionZWApplicationUpdate {
         val commandClassList: List<CommandClassID>
     ) : FunctionRequest(FunctionID.ZW_APPLICATION_UPDATE) {
 
+        companion object {
+            fun deserialize(inputStream: InputStream): Request {
+                val updateState =
+                    UpdateState.getByByteValue(inputStream.getByte()) ?: throw IOException("Invalid update state!")
+                val nodeId = inputStream.getUByte()
+                val cmdLength = inputStream.getUByte().toInt()
+                val deviceBasicType =
+                    DeviceBasicType.getByByteValue(inputStream.getByte())
+                        ?: throw IOException("Invalid basic device type!")
+                val deviceGenericType = DeviceGenericType.getByByteValue(inputStream.getByte())
+                    ?: throw IOException("Invalid generic device type!")
+                val deviceSpecificType = DeviceSpecificType.getByByteValue(deviceGenericType, inputStream.getByte())
+                    ?: DeviceSpecificType.NOT_USED
+
+                val ccBytes = inputStream.readNBytes(cmdLength - 3)
+
+                val commandClassList = mutableListOf<CommandClassID>()
+
+                ccBytes.forEach {
+                    val cc = CommandClassID.getByByteValue(it)
+                    if (cc != null) commandClassList.add(cc)
+                }
+
+                return Request(
+                    updateState,
+                    nodeId,
+                    deviceBasicType,
+                    deviceGenericType,
+                    deviceSpecificType,
+                    commandClassList
+                )
+            }
+        }
 
         override fun toString(): String {
             var ccListDescr = ""

@@ -4,7 +4,6 @@ package com.oxyggen.qzw.types
 
 import com.oxyggen.qzw.extensions.get
 import com.oxyggen.qzw.extensions.withBit
-import com.oxyggen.qzw.function.ByteToEnum
 import kotlin.experimental.and
 
 data class ReceiveStatus(
@@ -30,8 +29,8 @@ data class ReceiveStatus(
             .withBit(6, foreignFrame)
             .withBit(7, foreignHomeId)
 
-    companion object {
-        fun getByByteValue(byteValue: Byte): ReceiveStatus {
+    companion object : ByteToClass<ReceiveStatus>{
+        override fun getByByteValue(byteValue: Byte): ReceiveStatus {
             // Prepare Cast type
             val castType = when (byteValue.and(0x0C)) {
                 // Received a broadcast frame

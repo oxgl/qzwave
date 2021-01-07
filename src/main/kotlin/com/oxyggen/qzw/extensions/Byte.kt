@@ -6,9 +6,9 @@ import kotlin.experimental.xor
 
 operator fun Byte.get(index: Int): Boolean = this.and(1.shl(index).toByte()) == 1.shl(index).toByte()
 
-fun Byte.Companion.build(vararg bits: Boolean): Byte {       // Bits from bit 0 -> bit n
+fun Byte.Companion.build(vararg bits: Boolean): Byte {       // Bits from bit n -> bit 0 (last is the bit 0)
     var result = 0x00.toByte()
-    for ((index, b) in bits.withIndex()) {
+    for ((index, b) in bits.reversed().withIndex()) {
         result = result.withBit(index, b)
     }
     return result

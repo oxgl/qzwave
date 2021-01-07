@@ -1,7 +1,5 @@
 package com.oxyggen.qzw.mapper
 
-import kotlin.reflect.jvm.internal.impl.resolve.constants.ByteValue
-
 class BinaryPlan : ArrayList<BinaryPlanEntry>() {
 
     //private val entries = mutableListOf<BinaryPlanEntry>()
