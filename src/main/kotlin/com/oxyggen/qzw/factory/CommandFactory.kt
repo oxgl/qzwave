@@ -13,6 +13,7 @@ import org.apache.logging.log4j.kotlin.Logging
 import java.io.IOException
 import java.io.InputStream
 
+@OptIn(ExperimentalUnsignedTypes::class)
 class CommandFactory {
     companion object : Logging {
         private val bdh by lazy {

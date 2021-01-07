@@ -11,6 +11,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
+@OptIn(ExperimentalUnsignedTypes::class)
 class CCNotification {
 
     companion object : BinaryCommandDeserializer {

@@ -3,7 +3,7 @@ package com.oxyggen.qzw.utils
 import com.oxyggen.qzw.extensions.get
 import com.oxyggen.qzw.extensions.withBit
 
-@ExperimentalUnsignedTypes
+@OptIn(ExperimentalUnsignedTypes::class)
 class BitmaskUtils {
     companion object {
         fun decompressBitmask(byteArray: ByteArray): List<Boolean> {

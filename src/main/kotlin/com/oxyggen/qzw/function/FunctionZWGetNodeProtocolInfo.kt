@@ -15,6 +15,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
+@OptIn(ExperimentalUnsignedTypes::class)
 abstract class FunctionZWGetNodeProtocolInfo {
 
     // HOST->ZW: REQ | 0x41 | bNodeID
@@ -24,7 +25,6 @@ abstract class FunctionZWGetNodeProtocolInfo {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.ZW_GET_NODE_PROTOCOL_INFO.byteValue)
 
-        @ExperimentalUnsignedTypes
         override fun deserialize(
             inputStream: InputStream,
             context: BinaryFunctionDeserializerContext

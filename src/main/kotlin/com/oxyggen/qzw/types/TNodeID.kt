@@ -1,4 +1,4 @@
 package com.oxyggen.qzw.types
 
-@ExperimentalUnsignedTypes
+@OptIn(ExperimentalUnsignedTypes::class)
 typealias NodeID = UByte
