@@ -22,9 +22,9 @@ class CCNotification {
             val commandData = inputStream.readAllBytes()
 
             return when (commandID) {
-                CommandID.NOTIFICATION_GET -> Get.deserialize(commandData)
-                CommandID.NOTIFICATION_SET -> Set.deserialize(commandData)
-                CommandID.NOTIFICATION_REPORT -> Report.deserialize(commandData)
+                CommandID.NOTIFICATION_GET -> Get.deserialize(commandData, context.version)
+                CommandID.NOTIFICATION_SET -> Set.deserialize(commandData, context.version)
+                CommandID.NOTIFICATION_REPORT -> Report.deserialize(commandData, context.version)
                 else -> throw IOException("${context.commandClassID}: Not implemented command ${commandID}!")
             }
         }
@@ -45,12 +45,12 @@ class CCNotification {
                 }
             }
 
-            fun deserialize(data: ByteArray): Get = mapper.deserialize(data)
+            fun deserialize(data: ByteArray, version: Int): Get = mapper.deserialize(data, version)
         }
 
-        override fun serialize(outputStream: OutputStream, function: Function) {
-            super.serialize(outputStream, function)
-            outputStream.write(mapper.serialize(this))
+        override fun serialize(outputStream: OutputStream, function: Function, version: Int) {
+            super.serialize(outputStream, function, version)
+            outputStream.write(mapper.serialize(this, version))
         }
 
     }
@@ -67,12 +67,12 @@ class CCNotification {
                 }
             }
 
-            fun deserialize(data: ByteArray): Set = mapper.deserialize(data)
+            fun deserialize(data: ByteArray, version: Int): Set = mapper.deserialize(data, version)
         }
 
-        override fun serialize(outputStream: OutputStream, function: Function) {
-            super.serialize(outputStream, function)
-            outputStream.write(Get.mapper.serialize(this))
+        override fun serialize(outputStream: OutputStream, function: Function, version: Int) {
+            super.serialize(outputStream, function, version)
+            outputStream.write(mapper.serialize(this, version))
         }
     }
 
@@ -103,15 +103,15 @@ class CCNotification {
                 }
             }
 
-            fun deserialize(data: ByteArray): Report = mapper.deserialize(data)
+            fun deserialize(data: ByteArray, version: Int): Report = mapper.deserialize(data, version)
         }
 
-        override fun serialize(outputStream: OutputStream, function: Function) {
-            super.serialize(outputStream, function)
-            outputStream.write(Get.mapper.serialize(this))
+        override fun serialize(outputStream: OutputStream, function: Function, version: Int) {
+            super.serialize(outputStream, function, version)
+            outputStream.write(Get.mapper.serialize(this, version))
         }
 
-        override fun toString(): String = "CC ${commandClassId} - Command ${commandId}(" +
+        override fun toString(): String = "CC ${commandClassID} - Command ${commandId}(" +
                 "type $v1alarmType, " +
                 "level $v1alarmLevel, " +
                 "nStatus $notificationStatus, " +

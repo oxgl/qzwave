@@ -70,8 +70,8 @@ abstract class FunctionSerialApiGetCapabilities {
                 val supportedFuncBytes = BitmaskUtils.decompressBitmaskToByteSet(supportedFuncBitmask)
                 val supportedFunctionId = mutableSetOf<FunctionID>()
                 supportedFuncBytes.forEach {
-                    val functionId = FunctionID.getByByteValue(it)
-                    if (functionId != null) supportedFunctionId.add(functionId)
+                    val functionID = FunctionID.getByByteValue(it)
+                    if (functionID != null) supportedFunctionId.add(functionID)
                 }
 
                 return Response(

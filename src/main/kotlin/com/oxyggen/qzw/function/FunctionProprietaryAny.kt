@@ -22,12 +22,12 @@ abstract class FunctionProprietaryAny {
             context: BinaryFunctionDeserializerContext
         ): Function =
             when (context.frameType) {
-                FrameType.REQUEST -> Request(context.functionId)
-                FrameType.RESPONSE -> Response(context.functionId)
+                FrameType.REQUEST -> Request(context.functionID)
+                FrameType.RESPONSE -> Response(context.functionID)
             }
     }
 
-    open class Request(functionId: FunctionID) : FunctionRequest(functionId)
-    open class Response(functionId: FunctionID) : FunctionResponse(functionId)
+    open class Request(functionID: FunctionID) : FunctionRequest(functionID)
+    open class Response(functionID: FunctionID) : FunctionResponse(functionID)
 
 }            

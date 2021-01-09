@@ -1,6 +1,6 @@
 package com.oxyggen.qzw.types
 
-enum class LibraryType(val byteValue: Byte) {
+enum class LibraryType(override val byteValue: Byte) : TypeToByte {
     CONTROLLER_STATIC(0x01),
     CONTROLLER(0x02),
     SLAVE_ENHANCED(0x03),
@@ -12,7 +12,7 @@ enum class LibraryType(val byteValue: Byte) {
     AVREMOTE(0x0A),
     AVDEVICE(0x0B);
 
-    companion object : ByteToClass<LibraryType> {
+    companion object : ByteToType<LibraryType> {
         override fun getByByteValue(byteValue: Byte): LibraryType? =
             values().firstOrNull { it.byteValue == byteValue }
     }

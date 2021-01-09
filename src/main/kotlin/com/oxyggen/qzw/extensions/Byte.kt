@@ -25,8 +25,8 @@ fun Byte.withBitRange(range: IntRange, value: Byte): Byte {
     var result = this
     var value1 = value.toInt()
     for (index in range) {
-        result = result.withBit(index, value1.rem(2) > 0)
-        value1 = value1.div(2)
+        result = result.withBit(index, value1.and(0x01) > 0)
+        value1 = value1.shr(1)
     }
     return result
 }

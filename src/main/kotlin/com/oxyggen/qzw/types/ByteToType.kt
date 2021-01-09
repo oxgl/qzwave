@@ -1,5 +1,5 @@
 package com.oxyggen.qzw.types
 
-interface ByteToClass<E> {
+interface ByteToType<E> {
     fun getByByteValue(byteValue: Byte): E?
 }

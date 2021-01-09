@@ -1,6 +1,6 @@
 package com.oxyggen.qzw.device
 
-import com.oxyggen.qzw.types.ByteToClass
+import com.oxyggen.qzw.types.ByteToType
 
 enum class DeviceBasicType(val byteValue: Byte) {
     CONTROLLER(0x01.toByte()),
@@ -8,7 +8,7 @@ enum class DeviceBasicType(val byteValue: Byte) {
     SLAVE(0x03.toByte()),
     ROUTING_SLAVE(0x04.toByte());
 
-    companion object : ByteToClass<DeviceBasicType> {
+    companion object : ByteToType<DeviceBasicType> {
         override fun getByByteValue(byteValue: Byte): DeviceBasicType? =
             values().firstOrNull { it.byteValue == byteValue }
     }

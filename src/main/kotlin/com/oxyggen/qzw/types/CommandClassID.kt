@@ -1,6 +1,8 @@
 package com.oxyggen.qzw.types
 
-enum class CommandClassID(val byteValue: Byte, val maxVersion: Int = 1, val category: Category) {
+import java.lang.reflect.Type
+
+enum class CommandClassID(override val byteValue: Byte, val maxVersion: Int = 1, val category: Category) : TypeToByte {
 
     // Alarm Command Class
     ALARM(0x71.toByte(), 2, Category.APPLICATION),
@@ -363,7 +365,10 @@ enum class CommandClassID(val byteValue: Byte, val maxVersion: Int = 1, val cate
     ZIP_PORTAL(0x61.toByte(), 1, Category.NETWORK_PROTOCOL),
 
     // Z-Wave Plus Info Command Class
-    ZWAVEPLUS_INFO(0x5E.toByte(), 2, Category.MANAGEMENT);
+    ZWAVEPLUS_INFO(0x5E.toByte(), 2, Category.MANAGEMENT),
+
+    // Extended (2 byte) command class
+    EXTENDED(0xF1.toByte(), 1, Category.APPLICATION);
 
     enum class Category {
         APPLICATION,
@@ -373,7 +378,7 @@ enum class CommandClassID(val byteValue: Byte, val maxVersion: Int = 1, val cate
     }
 
 
-    companion object : ByteToClass<CommandClassID> {
+    companion object : ByteToType<CommandClassID> {
         private val byteValueToCC: Map<Byte, List<CommandClassID>> by lazy {
             val result = mutableMapOf<Byte, List<CommandClassID>>()
             values().forEach {

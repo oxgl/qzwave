@@ -28,7 +28,7 @@ abstract class FunctionZWApplicationUpdate {
         ): Function =
             when (context.frameType) {
                 FrameType.REQUEST -> Request.deserialize(inputStream)
-                FrameType.RESPONSE -> throw IOException("Invalid frame ${context.frameType} / ${context.functionId}")
+                FrameType.RESPONSE -> throw IOException("Invalid frame ${context.frameType} / ${context.functionID}")
             }
     }
 
@@ -82,7 +82,7 @@ abstract class FunctionZWApplicationUpdate {
                 ccListDescr += it.toString()
             }
 
-            return "$functionId(state: $updateState, " +
+            return "$functionID(state: $updateState, " +
                     "source: ${nodeID}, " +
                     "device: $deviceBasicType / $deviceGenericType / $deviceSpecificType, " +
                     "CC: [$ccListDescr]"

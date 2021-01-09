@@ -2,7 +2,7 @@
 
 package com.oxyggen.qzw.types
 
-enum class UpdateState(val byteValue: Byte) {
+enum class UpdateState(override val byteValue: Byte) : TypeToByte {
     NODE_INFO_RECEIVED(0x84.toByte()),
     NODE_INFO_REQ_DONE(0x82.toByte()),
     NODE_INFO_REQ_FAILED(0x81.toByte()),
@@ -11,7 +11,7 @@ enum class UpdateState(val byteValue: Byte) {
     DELETE_DONE(0x20),
     SUC_ID(0x10);
 
-    companion object : ByteToClass<UpdateState> {
+    companion object : ByteToType<UpdateState> {
         override fun getByByteValue(byteValue: Byte): UpdateState? =
             values().firstOrNull { it.byteValue == byteValue }
     }

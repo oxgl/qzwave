@@ -52,9 +52,9 @@ class BinaryPlanEntrySequence(
             if (isSuitableForVersion(context)) {
                 context.values[pureName] = value
 
-                //
+                // Convert to collection
                 val collection = Conversion.toCollection(value)
-                val length = collection.size
+                val length = if (!isPointer(count)) Conversion.toInt(count) else collection.size
 
                 // First set length field, it will be evaluated by getByteIndexRange
                 if (isPointer(count))
@@ -68,7 +68,11 @@ class BinaryPlanEntrySequence(
 
                 // Set bytes
                 collection.forEach {
-                    context.binary[index] = Conversion.toInt(it).toByte()
+                    if (it is Char) {
+                        context.binary[index] = it.toByte()
+                    } else {
+                        context.binary[index] = Conversion.toInt(it).toByte()
+                    }
                     index++
                 }
 

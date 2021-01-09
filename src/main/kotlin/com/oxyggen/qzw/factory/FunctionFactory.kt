@@ -81,11 +81,11 @@ class FunctionFactory {
             frameType: FrameType
         ): Function {
             val signatureByte = inputStream.getByte()
-            val functionId = FunctionID.getByByteValue(signatureByte) ?: throw IOException(
+            val functionID = FunctionID.getByByteValue(signatureByte) ?: throw IOException(
                 "Unknown function signature byte 0x%02x!".format(signatureByte)
             )
 
-            val context = BinaryFunctionDeserializerContext(frameContext.frameId, frameType, functionId)
+            val context = BinaryFunctionDeserializerContext(frameContext.frameID, frameType, functionID)
             return bdh.deserialize(inputStream, context)
         }
 

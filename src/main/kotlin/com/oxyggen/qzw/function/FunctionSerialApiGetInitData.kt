@@ -78,7 +78,7 @@ abstract class FunctionSerialApiGetInitData {
         }
 
         override fun toString(): String =
-            "${functionId}(" +
+            "${functionID}(" +
                     "ver: $serialApiVersion, " +
                     "capabilities: [$capabilities], " +
                     "chip type/version: $chipType/$chipVersion, " +

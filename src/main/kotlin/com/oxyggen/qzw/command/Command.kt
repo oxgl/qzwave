@@ -11,7 +11,7 @@ import com.oxyggen.qzw.types.TransmitOptions
 import java.io.OutputStream
 
 @ExperimentalUnsignedTypes
-abstract class Command(val commandClassId: CommandClassID, val commandId: CommandID) {
+abstract class Command(val commandClassID: CommandClassID, val commandId: CommandID) {
 
     open fun getSendDataFunctionRequest(
         nodeId: NodeID,
@@ -37,11 +37,11 @@ abstract class Command(val commandClassId: CommandClassID, val commandId: Comman
         )
     )
 
-    open fun serialize(outputStream: OutputStream, function: Function) {
-        outputStream.putByte(commandClassId.byteValue)
+    open fun serialize(outputStream: OutputStream, function: Function, version:Int) {
+        outputStream.putByte(commandClassID.byteValue)
         outputStream.putByte(commandId.byteValue)
     }
 
-    override fun toString(): String = "CC ${commandClassId} - Command ${commandId}()"
+    override fun toString(): String = "CC ${commandClassID} - Command ${commandId}()"
 
 }

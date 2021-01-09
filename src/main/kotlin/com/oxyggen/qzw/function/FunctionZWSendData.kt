@@ -55,13 +55,13 @@ abstract class FunctionZWSendData {
             outputStream.putUByte(nodeID)
 
             val commandOS = ByteArrayOutputStream()
-            command.serialize(commandOS, this)
+            command.serialize(commandOS, this, 1) // TODO FIX VERSION NUMBER!
 
             val commandBytes = commandOS.toByteArray()
             outputStream.write(commandBytes)
         }
 
-        override fun toString(): String = "${functionId}($command)"
+        override fun toString(): String = "${functionID}($command)"
 
     }
 
@@ -79,7 +79,7 @@ abstract class FunctionZWSendData {
             outputStream.write(mapper.serialize(this))
         }
 
-        override fun toString(): String = "${functionId}(out result = $success)"
+        override fun toString(): String = "${functionID}(out result = $success)"
     }
 
 }

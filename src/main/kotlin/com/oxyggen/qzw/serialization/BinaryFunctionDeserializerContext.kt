@@ -5,9 +5,9 @@ import com.oxyggen.qzw.types.FrameType
 import com.oxyggen.qzw.types.FunctionID
 
 open class BinaryFunctionDeserializerContext(
-    frameId: FrameID,
+    frameID: FrameID,
     val frameType: FrameType,
-    val functionId: FunctionID,
-) : BinaryFrameDeserializerContext(frameId) {
-    override fun getSignatureByte(): Byte = functionId.byteValue
+    val functionID: FunctionID,
+) : BinaryFrameDeserializerContext(frameID) {
+    override fun getSignatureByte(): Byte = functionID.byteValue
 }

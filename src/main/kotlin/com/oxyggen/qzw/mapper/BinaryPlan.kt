@@ -7,39 +7,45 @@ class BinaryPlan : ArrayList<BinaryPlanEntry>() {
     fun addSimple(
         name: String,
         type: BinaryPlanEntryNumber.Type,
-        enabled: String
+        enabled: String,
+        version: IntRange
     ) =
         add(
             BinaryPlanEntryNumber(
                 name = name,
                 type = type,
                 previous = lastOrNull(),
-                enabled = enabled
+                enabled = enabled,
+                version = version
             )
         )
 
     fun addSequence(
         name: String,
-        count: String
+        count: String,
+        version: IntRange
     ) =
         add(
             BinaryPlanEntrySequence(
                 name = name,
                 previous = lastOrNull(),
-                count = count
+                count = count,
+                version = version
             )
         )
 
     fun addBitMask(
         name: String,
         enabled: String = "true",
-        masks: Map<String, IntRange>
+        masks: Map<String, BinaryBitMaskDefinition>,
+        version: IntRange
     ) = add(
         BinaryPlanEntryBitMask(
             name = name,
             previous = lastOrNull(),
             enabled = enabled,
-            masks = masks
+            masks = masks,
+            version = version
         )
     )
 

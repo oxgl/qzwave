@@ -46,7 +46,7 @@ abstract class FunctionZWGetRandom {
             outputStream.write(mapper.serialize(this))
         }
 
-        override fun toString(): String = "$functionId($noRandomBytes)"
+        override fun toString(): String = "$functionID($noRandomBytes)"
     }
 
     class Response(val success: Boolean, val randomBytes: ByteArray) : FunctionResponse(FunctionID.ZW_GET_RANDOM) {
@@ -68,7 +68,7 @@ abstract class FunctionZWGetRandom {
             outputStream.write(mapper.serialize(this))
         }
 
-        override fun toString(): String = "$functionId(out ${randomBytes.size}, out ${randomBytes.toList()})"
+        override fun toString(): String = "$functionID(out ${randomBytes.size}, out ${randomBytes.toList()})"
     }
 
 }            

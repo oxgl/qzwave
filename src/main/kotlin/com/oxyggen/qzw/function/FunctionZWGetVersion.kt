@@ -43,21 +43,30 @@ abstract class FunctionZWGetVersion {
     ) : FunctionResponse(FunctionID.ZW_GET_VERSION) {
 
         companion object {
-            fun deserialize(inputStream: InputStream): Response {
-                val versionText = inputStream.readNBytes(12).decodeToString()
+            private val mapper by lazy {
+                mapper<Response> {
+                    string("versionText", "12")
+                    byte("libraryType")
+                }
+            }
+
+
+            fun deserialize(inputStream: InputStream): Response = mapper.deserialize(inputStream.readAllBytes())
+/*                val versionText = inputStream.readNBytes(12).decodeToString()
                 val libraryType = LibraryType.getByByteValue(inputStream.getByte())
                 return Response(versionText, libraryType ?: LibraryType.CONTROLLER_STATIC)
-            }
+            }*/
         }
 
         override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
             super.serialize(outputStream, frame)
-            outputStream.write(ByteArray(12))
-            outputStream.putByte(LibraryType.CONTROLLER_STATIC.byteValue)
+            outputStream.write(mapper.serialize(this))
+/*            outputStream.write(ByteArray(12))
+            outputStream.putByte(LibraryType.CONTROLLER_STATIC.byteValue)*/
         }
 
         override fun toString(): String {
-            return "$functionId(out '$versionText', out $libraryType)"
+            return "$functionID(out '$versionText', out $libraryType)"
         }
     }
 

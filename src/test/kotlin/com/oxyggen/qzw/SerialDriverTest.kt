@@ -1,19 +1,21 @@
 package com.oxyggen.qzw
 
+import com.oxyggen.qzw.command.CCBattery
 import com.oxyggen.qzw.command.CCNotification
+import com.oxyggen.qzw.command.CCSensorMultilevel
 import com.oxyggen.qzw.command.CCVersion
 import com.oxyggen.qzw.driver.Driver
 import com.oxyggen.qzw.driver.SerialDriver
 import com.oxyggen.qzw.extensions.build
 import com.oxyggen.qzw.factory.FrameFactory
+import com.oxyggen.qzw.factory.FunctionFactory
 import com.oxyggen.qzw.frame.FrameACK
 import com.oxyggen.qzw.frame.FrameSOF
 import com.oxyggen.qzw.function.FunctionSerialApiGetCapabilities
 import com.oxyggen.qzw.function.FunctionSerialApiGetInitData
 import com.oxyggen.qzw.function.FunctionZWGetRandom
 import com.oxyggen.qzw.function.FunctionZWGetVersion
-import com.oxyggen.qzw.types.CommandClassID
-import com.oxyggen.qzw.types.TransmitOptions
+import com.oxyggen.qzw.types.*
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
 import java.io.ByteArrayOutputStream
@@ -177,11 +179,53 @@ internal class SerialDriverTest {
         //data1 += 0xee.toByte()
 
 
-        val c = CCNotification.Report.deserialize(data1)
+        val c = CCNotification.Report.deserialize(data1, 1)
 
         val data2 = if (c != null) CCNotification.Report.mapper.serialize(c) else null
 
         assert(data1.contentEquals(data2))
+
+    }
+
+    @Test
+    fun `Test CCBattery`() {
+        val r = CCBattery.Report(
+            batteryLevel = 30,
+            batteryChargingStatus = BatteryChargingStatus.DISCHARGING,
+            rechargeable = true,
+            backupBattery = false,
+            overHeating = false,
+            lowFluid = false,
+            batteryReplaceStatus = BatteryReplaceStatus.REPLACE_SOON,
+            disconnected = true,
+            lowTemperature = true
+        )
+
+        val baos1 = ByteArrayOutputStream()
+        r.serialize(baos1, FunctionZWGetRandom.Request(), 1)
+        val b1 = baos1.toByteArray()
+
+        val baos2 = ByteArrayOutputStream()
+        r.serialize(baos2, FunctionZWGetRandom.Request(), 2)
+        val b2 = baos2.toByteArray()
+
+        val baos3 = ByteArrayOutputStream()
+        r.serialize(baos3, FunctionZWGetRandom.Request(), 3)
+        val b3 = baos3.toByteArray()
+
+
+    }
+
+    @Test
+    fun `Test CCSensorMultilevel`() {
+        val r = CCSensorMultilevel.Report(1, 2, 1, 4, listOf(4.3f, 45364f, -454.73f))
+
+        val baos1 = ByteArrayOutputStream()
+        r.serialize(baos1, FunctionZWGetRandom.Request(), 1)
+        val b1 = baos1.toByteArray().drop(2).toByteArray()
+
+        val r1 = CCSensorMultilevel.Report.deserialize(b1,1)
+        val r2 = r1
 
     }
 

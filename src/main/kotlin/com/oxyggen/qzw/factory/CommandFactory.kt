@@ -1,9 +1,6 @@
 package com.oxyggen.qzw.factory
 
-import com.oxyggen.qzw.command.CCNotification
-import com.oxyggen.qzw.command.CCVersion
-import com.oxyggen.qzw.command.CCWakeUp
-import com.oxyggen.qzw.command.Command
+import com.oxyggen.qzw.command.*
 import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.serialization.BinaryCommandDeserializerContext
 import com.oxyggen.qzw.serialization.BinaryDeserializerHandler
@@ -19,9 +16,13 @@ class CommandFactory {
         private val bdh by lazy {
             BinaryDeserializerHandler<Command, BinaryCommandDeserializerContext>(
                 objectDescription = "command class",
+                CCHail::class,
+                CCBattery::class,
                 CCNotification::class,
                 CCVersion::class,
-                CCWakeUp::class
+                CCWakeUp::class,
+                CCSensorMultilevel::class,
+                CCExtended::class
             )
         }
 
@@ -34,9 +35,9 @@ class CommandFactory {
             val commandClassID = CommandClassID.getByByteValueVer(ccByte)
                 ?: throw IOException("Unknown command class signature byte 0x%02x!".format(ccByte))
             val context = BinaryCommandDeserializerContext(
-                frameId = functionContext.frameId,
+                frameID = functionContext.frameID,
                 frameType = functionContext.frameType,
-                functionId = functionContext.functionId,
+                functionID = functionContext.functionID,
                 commandClassID = commandClassID,
                 version = version
             )

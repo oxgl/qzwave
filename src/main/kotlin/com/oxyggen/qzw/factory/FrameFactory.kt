@@ -23,11 +23,11 @@ class FrameFactory {
 
         fun deserializeFrame(inputStream: InputStream): Frame {
             val signatureByte = inputStream.getByte()
-            val frameId = FrameID.getByByteValue(signatureByte) ?: throw IOException(
+            val frameID = FrameID.getByByteValue(signatureByte) ?: throw IOException(
                 "Unknown frame signature byte 0x%02x!".format(signatureByte)
             )
 
-            val context = BinaryFrameDeserializerContext(frameId)
+            val context = BinaryFrameDeserializerContext(frameID)
 
             return bdh.deserialize(inputStream, context)
         }

@@ -24,8 +24,8 @@ class CCVersion {
             val commandData = inputStream.readAllBytes()
 
             return when (commandID) {
-                CommandID.VERSION_GET -> Get.deserialize(commandData)
-                CommandID.VERSION_REPORT -> Report.deserialize(commandData)
+                CommandID.VERSION_GET -> Get.deserialize(commandData, context.version)
+                CommandID.VERSION_REPORT -> Report.deserialize(commandData, context.version)
                 else -> throw IOException("${context.commandClassID}: Not implemented command ${commandID}!")
             }
         }
@@ -34,7 +34,7 @@ class CCVersion {
 
     class Get : Command(CommandClassID.VERSION, CommandID.VERSION_GET) {
         companion object {
-            fun deserialize(data: ByteArray) = Get()
+            fun deserialize(data: ByteArray, version: Int) = Get()
         }
     }
 
@@ -46,24 +46,26 @@ class CCVersion {
         val applicationSubVersion: Byte
     ) : Command(CommandClassID.VERSION, CommandID.VERSION_REPORT) {
         companion object {
-            fun deserialize(data: ByteArray): Report {
-                val libraryType =
-                    LibraryType.getByByteValue(data[0]) ?: throw IOException("CCVersion: Invalid library type!")
-                return Report(libraryType, data[1], data[2], data[3], data[4])
+            private val mapper by lazy {
+                mapper<Report> {
+                    byte("libraryType")
+                    byte("protocolVersion")
+                    byte("protocolSubVersion")
+                    byte("applicationVersion")
+                    byte("applicationSubVersion")
+                }
             }
+
+            fun deserialize(data: ByteArray, version: Int): Report = mapper.deserialize(data, version)
         }
 
-        override fun serialize(outputStream: OutputStream, function: Function) {
-            super.serialize(outputStream, function)
-            outputStream.putByte(libraryType.byteValue)
-            outputStream.putByte(protocolVersion)
-            outputStream.putByte(protocolSubVersion)
-            outputStream.putByte(applicationVersion)
-            outputStream.putByte(applicationSubVersion)
+        override fun serialize(outputStream: OutputStream, function: Function, version: Int) {
+            super.serialize(outputStream, function, version)
+            outputStream.write(mapper.serialize(this,version))
         }
 
         override fun toString(): String =
-            "CC ${commandClassId} - Command ${commandId}(" +
+            "CC ${commandClassID} - Command ${commandId}(" +
                     "out library type ${libraryType}, " +
                     "out prot vers ${protocolVersion}.${protocolSubVersion}, " +
                     "out appl vers ${applicationVersion}.${applicationSubVersion})"

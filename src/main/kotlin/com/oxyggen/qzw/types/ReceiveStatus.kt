@@ -13,23 +13,23 @@ data class ReceiveStatus(
     val explore: Boolean,            // Received an explore frame
     val foreignFrame: Boolean,       // The received frame is not addressed to this node (Only valid in promiscuous mode)
     val foreignHomeId: Boolean       // The received frame is received from a foreign HomeID. Only Controllers in Smart Start AddNode mode can receive this status.
-) {
+) : TypeToByte {
     enum class CastType(val byteValue: Byte) {
         SINGLE(0x00),
         BROAD(0x04),
         MULTI(0x08)
     }
 
-    val byteValue: Byte
+    override val byteValue: Byte
         get() = castType.byteValue
             .withBit(0, routedBusy)
             .withBit(1, lowPower)
-                // bits 2, 3 are castType bits
+            // bits 2, 3 are castType bits
             .withBit(4, explore)
             .withBit(6, foreignFrame)
             .withBit(7, foreignHomeId)
 
-    companion object : ByteToClass<ReceiveStatus>{
+    companion object : ByteToType<ReceiveStatus> {
         override fun getByByteValue(byteValue: Byte): ReceiveStatus {
             // Prepare Cast type
             val castType = when (byteValue.and(0x0C)) {

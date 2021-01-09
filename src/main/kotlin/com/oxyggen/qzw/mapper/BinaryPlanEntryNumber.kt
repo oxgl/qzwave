@@ -84,8 +84,8 @@ class BinaryPlanEntryNumber(
 
                 // Fill data
                 for (index in indices.reversed()) {
-                    context.binary[index] = intValue.rem(256).toByte()
-                    intValue = intValue.div(256)
+                    context.binary[index] = intValue.and(0xFF).toByte()
+                    intValue = intValue.shr(8)
                     if (intValue == 0) break
                 }
 

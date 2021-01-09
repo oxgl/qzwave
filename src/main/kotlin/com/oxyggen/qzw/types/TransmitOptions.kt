@@ -9,8 +9,8 @@ class TransmitOptions(
     val autoRoute: Boolean = true,
     val noRoute: Boolean = false,
     val explore: Boolean = false
-) {
-    companion object : ByteToClass<TransmitOptions> {
+) : TypeToByte {
+    companion object : ByteToType<TransmitOptions> {
         override fun getByByteValue(byteValue: Byte): TransmitOptions =
             TransmitOptions(
                 requestAcknowledge = byteValue[0],
@@ -21,7 +21,7 @@ class TransmitOptions(
             )
     }
 
-    val byteValue: Byte
+    override val byteValue: Byte
         get() = Byte.build(explore, noRoute, false, autoRoute, lowPower, requestAcknowledge)
 
 }

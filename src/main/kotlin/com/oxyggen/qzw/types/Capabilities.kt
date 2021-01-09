@@ -8,12 +8,12 @@ data class Capabilities(
     val timerSupported: Boolean,         // Timer functions not supported / Timer functions supported.
     val secondaryController: Boolean,    // Primary Controller / Secondary Controller
     val sisController: Boolean           // Not SIS / Controller is SIS
-) {
+) : TypeToByte {
 
-    val byteValue: Byte
+    override val byteValue: Byte
         get() = Byte.build(sisController, secondaryController, timerSupported, slaveApi)
 
-    companion object : ByteToClass<Capabilities> {
+    companion object : ByteToType<Capabilities> {
         override fun getByByteValue(byteValue: Byte): Capabilities =
             Capabilities(
                 slaveApi = byteValue[0],

@@ -9,8 +9,9 @@ class BinaryPlanEntryBitMask(
     version: IntRange = IntRange.EMPTY,
     previous: BinaryPlanEntry? = null,
     val enabled: String = "true",
-    val masks: Map<String, IntRange>
+    val masks: Map<String, BinaryBitMaskDefinition>,
 ) : BinaryPlanEntry(name, version, previous) {
+
     override fun clone(previous: BinaryPlanEntry?): BinaryPlanEntry = BinaryPlanEntryBitMask(
         name = this.name,
         previous = previous,
@@ -42,7 +43,7 @@ class BinaryPlanEntryBitMask(
 
                     masks.forEach {
                         val key = nameWithoutPrefix(it.key)
-                        val value = byte.getBitRange(it.value)
+                        val value = byte.getBitRange(it.value.range)
                         context.values[key] = value
                     }
 
@@ -76,8 +77,9 @@ class BinaryPlanEntryBitMask(
                 // Create enough space in buffer
                 while (context.binary.size < index + 1) context.binary += 0
 
-                // Fill data
-                context.binary[index] = context.binary[index].withBitRange(mask.value, intValue.toByte())
+                // Fill data (if suitable for current version)
+                if (mask.value.version == IntRange.EMPTY || mask.value.version.contains(context.version))
+                    context.binary[index] = context.binary[index].withBitRange(mask.value.range, intValue.toByte())
 
                 true
             } else {

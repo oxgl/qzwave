@@ -52,7 +52,7 @@ abstract class FunctionApplicationCommandHandler {
         }
 
         override fun toString(): String =
-            "${functionId}(status $receiveStatus, source: $sourceNodeID, command: $command)"
+            "${functionID}(status $receiveStatus, source: $sourceNodeID, command: $command)"
 
     }
 
