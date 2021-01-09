@@ -26,8 +26,8 @@ class CCBattery {
             val commandData = inputStream.readAllBytes()
 
             return when (commandID) {
-                CommandID.BATTERY_GET -> Get.deserialize(commandData, context.version)
-                CommandID.BATTERY_REPORT -> Report.deserialize(commandData, context.version)
+                CommandID.BATTERY_GET -> Get.deserialize(commandData, context)
+                CommandID.BATTERY_REPORT -> Report.deserialize(commandData, context)
                 else -> throw IOException("${context.commandClassID}: Not implemented command ${commandID}!")
             }
         }
@@ -36,7 +36,7 @@ class CCBattery {
 
     class Get : Command(CommandClassID.BATTERY, CommandID.BATTERY_GET) {
         companion object {
-            fun deserialize(data: ByteArray, version: Int) = Get()
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) = Get()
         }
     }
 
@@ -70,7 +70,7 @@ class CCBattery {
                 }
             }
 
-            fun deserialize(data: ByteArray, version: Int) = mapper.deserialize<Report>(data, version)
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) = mapper.deserialize<Report>(data, context.version)
         }
 
         override fun serialize(outputStream: OutputStream, function: Function, version: Int) {

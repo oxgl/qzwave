@@ -22,9 +22,9 @@ class CCNotification {
             val commandData = inputStream.readAllBytes()
 
             return when (commandID) {
-                CommandID.NOTIFICATION_GET -> Get.deserialize(commandData, context.version)
-                CommandID.NOTIFICATION_SET -> Set.deserialize(commandData, context.version)
-                CommandID.NOTIFICATION_REPORT -> Report.deserialize(commandData, context.version)
+                CommandID.NOTIFICATION_GET -> Get.deserialize(commandData, context)
+                CommandID.NOTIFICATION_SET -> Set.deserialize(commandData, context)
+                CommandID.NOTIFICATION_REPORT -> Report.deserialize(commandData, context)
                 else -> throw IOException("${context.commandClassID}: Not implemented command ${commandID}!")
             }
         }
@@ -45,7 +45,8 @@ class CCNotification {
                 }
             }
 
-            fun deserialize(data: ByteArray, version: Int): Get = mapper.deserialize(data, version)
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext): Get =
+                mapper.deserialize(data, context.version)
         }
 
         override fun serialize(outputStream: OutputStream, function: Function, version: Int) {
@@ -67,7 +68,8 @@ class CCNotification {
                 }
             }
 
-            fun deserialize(data: ByteArray, version: Int): Set = mapper.deserialize(data, version)
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext): Set =
+                mapper.deserialize(data, context.version)
         }
 
         override fun serialize(outputStream: OutputStream, function: Function, version: Int) {
@@ -103,7 +105,8 @@ class CCNotification {
                 }
             }
 
-            fun deserialize(data: ByteArray, version: Int): Report = mapper.deserialize(data, version)
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext): Report =
+                mapper.deserialize(data, context.version)
         }
 
         override fun serialize(outputStream: OutputStream, function: Function, version: Int) {

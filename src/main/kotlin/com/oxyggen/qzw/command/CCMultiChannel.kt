@@ -73,7 +73,8 @@ class CCMultiChannel {
                 }
             }
 
-            fun deserialize(data: ByteArray, version: Int): Report = mapper.deserialize(data, version)
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext): Report =
+                mapper.deserialize(data, context.version)
         }
 
         override fun serialize(outputStream: OutputStream, function: Function, version: Int) {

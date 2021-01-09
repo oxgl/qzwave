@@ -367,14 +367,20 @@ enum class CommandClassID(override val byteValue: Byte, val maxVersion: Int = 1,
     // Z-Wave Plus Info Command Class
     ZWAVEPLUS_INFO(0x5E.toByte(), 2, Category.MANAGEMENT),
 
+    // Support mark
+    CONTROL_MARK(0xEF.toByte(), -1, Category.OTHER),
+
     // Extended (2 byte) command class
-    EXTENDED(0xF1.toByte(), 1, Category.APPLICATION);
+    EXTENDED_F1(0xF1.toByte(), 1, Category.APPLICATION),
+    EXTENDED_FF(0xFF.toByte(), 1, Category.APPLICATION);
+
 
     enum class Category {
         APPLICATION,
         MANAGEMENT,
         TRANSPORT_ENCAPSULATION,
-        NETWORK_PROTOCOL
+        NETWORK_PROTOCOL,
+        OTHER
     }
 
 

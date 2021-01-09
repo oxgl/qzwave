@@ -77,7 +77,7 @@ enum class FunctionID(override val byteValue: Byte) : TypeToByte {
     UNKNOWN(0xFF.toByte()),
     ZW_ADD_NODE_TO_NETWORK(0x4A.toByte()),
     ZW_AES_ECB(0x67.toByte()),
-    ZW_APPLICATION_CONTROLLER_UPDATE(0x49.toByte()),
+    //ZW_APPLICATION_CONTROLLER_UPDATE(0x49.toByte()),
     ZW_APPLICATION_UPDATE(0x49.toByte()),
     ZW_ARE_NODES_NEIGHBOURS(0xBC.toByte()),
     ZW_ASSIGN_PRIORITY_RETURN_ROUTE(0x4F.toByte()),

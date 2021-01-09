@@ -8,6 +8,7 @@ import com.oxyggen.qzw.types.CommandID
 import com.oxyggen.qzw.mapper.mapper
 import com.oxyggen.qzw.serialization.BinaryCommandDeserializer
 import com.oxyggen.qzw.serialization.BinaryCommandDeserializerContext
+import com.oxyggen.qzw.types.FunctionID
 import com.oxyggen.qzw.types.LibraryType
 import java.io.IOException
 import java.io.InputStream
@@ -17,7 +18,13 @@ import java.io.OutputStream
 class CCExtended {
 
     companion object : BinaryCommandDeserializer {
-        override fun getHandledSignatureBytes() = setOf(CommandClassID.EXTENDED.byteValue)
+        override fun getHandledSignatureBytes(): Set<Byte> {
+            val result = mutableSetOf<Byte>()
+            (CommandClassID.EXTENDED_F1.byteValue..CommandClassID.EXTENDED_FF.byteValue).forEach {
+                result.add(it.toByte())
+            }
+            return result
+        }
 
         override fun deserialize(inputStream: InputStream, context: BinaryCommandDeserializerContext): Command {
             val ccSecondByte = inputStream.getByte()

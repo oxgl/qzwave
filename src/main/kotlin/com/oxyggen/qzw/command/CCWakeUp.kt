@@ -23,18 +23,15 @@ class CCWakeUp {
             val commandData = inputStream.readAllBytes()
 
             return when (commandID) {
-                CommandID.WAKE_UP_INTERVAL_GET -> IntervalGet.deserialize(commandData, context.version)
-                CommandID.WAKE_UP_INTERVAL_SET -> IntervalSet.deserialize(commandData, context.version)
-                CommandID.WAKE_UP_INTERVAL_REPORT -> IntervalReport.deserialize(commandData, context.version)
-                CommandID.WAKE_UP_NOTIFICATION -> Notification.deserialize(commandData, context.version)
-                CommandID.WAKE_UP_NO_MORE_INFORMATION -> NoMoreInformation.deserialize(commandData, context.version)
-                CommandID.WAKE_UP_INTERVAL_CAPABILITIES_GET -> IntervalCapabilitiesGet.deserialize(
-                    commandData,
-                    context.version
-                )
+                CommandID.WAKE_UP_INTERVAL_GET -> IntervalGet.deserialize(commandData, context)
+                CommandID.WAKE_UP_INTERVAL_SET -> IntervalSet.deserialize(commandData, context)
+                CommandID.WAKE_UP_INTERVAL_REPORT -> IntervalReport.deserialize(commandData, context)
+                CommandID.WAKE_UP_NOTIFICATION -> Notification.deserialize(commandData, context)
+                CommandID.WAKE_UP_NO_MORE_INFORMATION -> NoMoreInformation.deserialize(commandData, context)
+                CommandID.WAKE_UP_INTERVAL_CAPABILITIES_GET -> IntervalCapabilitiesGet.deserialize(commandData, context)
                 CommandID.WAKE_UP_INTERVAL_CAPABILITIES_REPORT -> IntervalCapabilitiesReport.deserialize(
                     commandData,
-                    context.version
+                    context
                 )
                 else -> throw IOException("${context.commandClassID}: Not implemented command ${commandID}!")
             }
@@ -43,7 +40,7 @@ class CCWakeUp {
 
     class IntervalGet : Command(CommandClassID.WAKE_UP, CommandID.WAKE_UP_INTERVAL_GET) {
         companion object {
-            fun deserialize(data: ByteArray, version: Int) = Notification()
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) = Notification()
         }
     }
 
@@ -57,7 +54,8 @@ class CCWakeUp {
                 }
             }
 
-            fun deserialize(data: ByteArray, version: Int) = mapper.deserialize<IntervalSet>(data, version)
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) =
+                mapper.deserialize<IntervalSet>(data, context.version)
         }
 
         override fun serialize(outputStream: OutputStream, function: Function, version: Int) {
@@ -77,7 +75,8 @@ class CCWakeUp {
                 }
             }
 
-            fun deserialize(data: ByteArray, version: Int) = mapper.deserialize<IntervalReport>(data, version)
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) =
+                mapper.deserialize<IntervalReport>(data, context.version)
         }
 
         override fun serialize(outputStream: OutputStream, function: Function, version: Int) {
@@ -88,19 +87,19 @@ class CCWakeUp {
 
     class Notification : Command(CommandClassID.WAKE_UP, CommandID.WAKE_UP_NOTIFICATION) {
         companion object {
-            fun deserialize(data: ByteArray, version: Int) = Notification()
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) = Notification()
         }
     }
 
     class NoMoreInformation : Command(CommandClassID.WAKE_UP, CommandID.WAKE_UP_NO_MORE_INFORMATION) {
         companion object {
-            fun deserialize(data: ByteArray, version: Int) = NoMoreInformation()
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) = NoMoreInformation()
         }
     }
 
     class IntervalCapabilitiesGet : Command(CommandClassID.WAKE_UP, CommandID.WAKE_UP_INTERVAL_CAPABILITIES_GET) {
         companion object {
-            fun deserialize(data: ByteArray, version: Int) = IntervalCapabilitiesGet()
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) = IntervalCapabilitiesGet()
         }
     }
 
@@ -120,8 +119,8 @@ class CCWakeUp {
                 }
             }
 
-            fun deserialize(data: ByteArray, version: Int) =
-                mapper.deserialize<IntervalCapabilitiesReport>(data, version)
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) =
+                mapper.deserialize<IntervalCapabilitiesReport>(data, context.version)
         }
 
         override fun serialize(outputStream: OutputStream, function: Function, version: Int) {

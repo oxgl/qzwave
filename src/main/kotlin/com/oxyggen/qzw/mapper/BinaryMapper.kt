@@ -6,6 +6,7 @@ import com.oxyggen.qzw.utils.Conversion
 import com.sun.jdi.ByteType
 import java.io.InvalidClassException
 import java.lang.reflect.Modifier
+import java.nio.charset.Charset
 import javax.swing.text.Utilities
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
@@ -78,11 +79,12 @@ class BinaryMapper<T> {
         )
     }
 
-    fun string(name: String, length: String, version: IntRange = IntRange.EMPTY) {
+    fun string(name: String, length: String, version: IntRange = IntRange.EMPTY, charset: Charset = Charsets.UTF_8) {
         plan.addSequence(
             name = name,
             count = length,
-            version = version
+            version = version,
+            charset = charset
         )
     }
 

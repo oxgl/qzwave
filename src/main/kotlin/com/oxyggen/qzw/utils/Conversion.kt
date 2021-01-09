@@ -25,17 +25,17 @@ class Conversion {
             else -> false
         }
 
-        fun toString(value: Any): String = when (value) {
+        fun toString(value: Any, charset: Charset = Charsets.UTF_8): String = when (value) {
             is String -> value
-            is ByteArray -> value.toString(StandardCharsets.US_ASCII)
+            is ByteArray -> value.toString(charset)
             else -> value.toString()
         }
 
         @Suppress("UNCHECKED_CAST")
-        fun toCollection(value: Any): Collection<Any> = when (value) {
+        fun toCollection(value: Any, charset: Charset = Charsets.UTF_8): Collection<Any> = when (value) {
             is Collection<*> -> value as Collection<Any>
             is ByteArray -> value.toList()
-            is String -> value.toByteArray(StandardCharsets.US_ASCII).toList()
+            is String -> value.toByteArray(charset).toList()
             else -> listOf(value)
         }
 

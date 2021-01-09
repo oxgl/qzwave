@@ -24,7 +24,6 @@ abstract class Command(val commandClassID: CommandClassID, val commandId: Comman
         callbackFunction = callbackFunction
     )
 
-
     open fun getSendDataFrame(
         nodeId: NodeID,
         txOptions: TransmitOptions = TransmitOptions(),

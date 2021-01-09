@@ -24,7 +24,7 @@ class CCHail {
             val commandData = inputStream.readAllBytes()
 
             return when (commandID) {
-                CommandID.HAIL -> Hail.deserialize(commandData, context.version)
+                CommandID.HAIL -> Hail.deserialize(commandData, context)
                 else -> throw IOException("${context.commandClassID}: Not implemented command ${commandID}!")
             }
         }
@@ -33,7 +33,7 @@ class CCHail {
 
     class Hail : Command(CommandClassID.HAIL, CommandID.HAIL) {
         companion object {
-            fun deserialize(data: ByteArray, version: Int) = Hail()
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) = Hail()
         }
     }
 }

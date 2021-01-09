@@ -1,5 +1,7 @@
 package com.oxyggen.qzw.mapper
 
+import java.nio.charset.Charset
+
 class BinaryPlan : ArrayList<BinaryPlanEntry>() {
 
     //private val entries = mutableListOf<BinaryPlanEntry>()
@@ -23,14 +25,16 @@ class BinaryPlan : ArrayList<BinaryPlanEntry>() {
     fun addSequence(
         name: String,
         count: String,
-        version: IntRange
+        version: IntRange,
+        charset: Charset = Charsets.UTF_8
     ) =
         add(
             BinaryPlanEntrySequence(
                 name = name,
                 previous = lastOrNull(),
                 count = count,
-                version = version
+                version = version,
+                charset = charset
             )
         )
 

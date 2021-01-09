@@ -24,8 +24,8 @@ class CCTemplate {
             val commandData = inputStream.readAllBytes()
 
             return when (commandID) {
-                CommandID.VERSION_GET -> Get.deserialize(commandData, context.version)
-                CommandID.VERSION_REPORT -> Report.deserialize(commandData, context.version)
+                CommandID.VERSION_GET -> Get.deserialize(commandData, context)
+                CommandID.VERSION_REPORT -> Report.deserialize(commandData, context)
                 else -> throw IOException("${context.commandClassID}: Not implemented command ${commandID}!")
             }
         }
@@ -34,7 +34,7 @@ class CCTemplate {
 
     class Get : Command(CommandClassID.VERSION, CommandID.VERSION_GET) {
         companion object {
-            fun deserialize(data: ByteArray, version: Int) = Get()
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) = Get()
         }
     }
 
@@ -56,7 +56,8 @@ class CCTemplate {
                 }
             }
 
-            fun deserialize(data: ByteArray, version: Int): Report = mapper.deserialize(data, version)
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext): Report =
+                mapper.deserialize(data, context.version)
         }
 
         override fun serialize(outputStream: OutputStream, function: Function, version: Int) {

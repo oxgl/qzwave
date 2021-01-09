@@ -1,17 +1,20 @@
 package com.oxyggen.qzw.mapper
 
 import com.oxyggen.qzw.utils.Conversion
+import java.nio.charset.Charset
 
 class BinaryPlanEntrySequence(
     name: String,
     version: IntRange = IntRange.EMPTY,
     previous: BinaryPlanEntry? = null,
     val count: String,
+    val charset: Charset,
 ) : BinaryPlanEntry(name, version, previous) {
     override fun clone(previous: BinaryPlanEntry?): BinaryPlanEntry = BinaryPlanEntrySequence(
         name = this.name,
         previous = previous,
-        count = this.count
+        count = this.count,
+        charset = this.charset
     )
 
     override fun isEnabled(context: SerializationContext): Boolean = context.buffer.getOrPut("${name}.isEnabled") {

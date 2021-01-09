@@ -29,8 +29,8 @@ class CCSensorMultilevel {
             val commandData = inputStream.readAllBytes()
 
             return when (commandID) {
-                CommandID.SENSOR_MULTILEVEL_GET -> Get.deserialize(commandData, context.version)
-                CommandID.SENSOR_MULTILEVEL_REPORT -> Report.deserialize(commandData, context.version)
+                CommandID.SENSOR_MULTILEVEL_GET -> Get.deserialize(commandData, context)
+                CommandID.SENSOR_MULTILEVEL_REPORT -> Report.deserialize(commandData, context)
                 else -> throw IOException("${context.commandClassID}: Not implemented command ${commandID}!")
             }
         }
@@ -39,7 +39,7 @@ class CCSensorMultilevel {
 
     class Get : Command(CommandClassID.SENSOR_MULTILEVEL, CommandID.SENSOR_MULTILEVEL_GET) {
         companion object {
-            fun deserialize(data: ByteArray, version: Int) = Get()
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) = Get()
         }
     }
 
@@ -52,7 +52,7 @@ class CCSensorMultilevel {
     ) : Command(CommandClassID.SENSOR_MULTILEVEL, CommandID.SENSOR_MULTILEVEL_REPORT) {
         companion object {
 
-            fun deserialize(data: ByteArray, version: Int): Report {
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext): Report {
                 val sensorType = data[0]
                 val precision = data[1].getBitRange(5..7)
                 val scale = data[1].getBitRange(3..4)

@@ -24,8 +24,10 @@ class CCVersion {
             val commandData = inputStream.readAllBytes()
 
             return when (commandID) {
-                CommandID.VERSION_GET -> Get.deserialize(commandData, context.version)
-                CommandID.VERSION_REPORT -> Report.deserialize(commandData, context.version)
+                CommandID.VERSION_GET -> Get.deserialize(commandData, context)
+                CommandID.VERSION_REPORT -> Report.deserialize(commandData, context)
+                CommandID.VERSION_COMMAND_CLASS_GET -> CommandClassGet.deserialize(commandData, context)
+                CommandID.VERSION_COMMAND_CLASS_REPORT -> CommandClassReport.deserialize(commandData, context)
                 else -> throw IOException("${context.commandClassID}: Not implemented command ${commandID}!")
             }
         }
@@ -34,7 +36,7 @@ class CCVersion {
 
     class Get : Command(CommandClassID.VERSION, CommandID.VERSION_GET) {
         companion object {
-            fun deserialize(data: ByteArray, version: Int) = Get()
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) = Get()
         }
     }
 
@@ -56,12 +58,13 @@ class CCVersion {
                 }
             }
 
-            fun deserialize(data: ByteArray, version: Int): Report = mapper.deserialize(data, version)
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext): Report =
+                mapper.deserialize(data, context.version)
         }
 
         override fun serialize(outputStream: OutputStream, function: Function, version: Int) {
             super.serialize(outputStream, function, version)
-            outputStream.write(mapper.serialize(this,version))
+            outputStream.write(mapper.serialize(this, version))
         }
 
         override fun toString(): String =
@@ -69,5 +72,44 @@ class CCVersion {
                     "out library type ${libraryType}, " +
                     "out prot vers ${protocolVersion}.${protocolSubVersion}, " +
                     "out appl vers ${applicationVersion}.${applicationSubVersion})"
+    }
+
+    class CommandClassGet(val ccID: CommandClassID) :
+        Command(CommandClassID.VERSION, CommandID.VERSION_COMMAND_CLASS_GET) {
+        companion object {
+            val mapper by lazy {
+                mapper<CommandClassGet> {
+                    byte("ccID")
+                }
+            }
+
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) =
+                mapper.deserialize<CommandClassGet>(data, context.version)
+        }
+
+        override fun serialize(outputStream: OutputStream, function: Function, version: Int) {
+            super.serialize(outputStream, function, version)
+            outputStream.write(mapper.serialize(this))
+        }
+    }
+
+    class CommandClassReport(val ccID: CommandClassID, val ccVersion: Byte) :
+        Command(CommandClassID.VERSION, CommandID.VERSION_COMMAND_CLASS_REPORT) {
+        companion object {
+            val mapper by lazy {
+                mapper<CommandClassGet> {
+                    byte("ccID")
+                    byte("ccVersion")
+                }
+            }
+
+            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) =
+                mapper.deserialize<CommandClassReport>(data, context.version)
+        }
+
+        override fun serialize(outputStream: OutputStream, function: Function, version: Int) {
+            super.serialize(outputStream, function, version)
+            outputStream.write(mapper.serialize(this))
+        }
     }
 }
