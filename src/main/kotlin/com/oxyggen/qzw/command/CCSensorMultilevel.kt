@@ -1,36 +1,29 @@
 package com.oxyggen.qzw.command
 
-import com.oxyggen.qzw.extensions.getBitRange
-import com.oxyggen.qzw.extensions.getByte
-import com.oxyggen.qzw.extensions.putByte
-import com.oxyggen.qzw.extensions.withBitRange
+import com.oxyggen.qzw.extensions.*
 import com.oxyggen.qzw.function.Function
 import com.oxyggen.qzw.types.CommandClassID
 import com.oxyggen.qzw.types.CommandID
-import com.oxyggen.qzw.mapper.mapper
-import com.oxyggen.qzw.serialization.BinaryCommandDeserializer
-import com.oxyggen.qzw.serialization.BinaryCommandDeserializerContext
-import com.oxyggen.qzw.types.LibraryType
+import com.oxyggen.qzw.serialization.CommandDeserializer
+import com.oxyggen.qzw.serialization.DeserializableCommandContext
+import com.oxyggen.qzw.serialization.SerializableCommandContext
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import java.nio.ByteBuffer
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class CCSensorMultilevel {
 
-    companion object : BinaryCommandDeserializer {
+    companion object : CommandDeserializer {
         override fun getHandledSignatureBytes() = setOf(CommandClassID.SENSOR_MULTILEVEL.byteValue)
 
-        override fun deserialize(inputStream: InputStream, context: BinaryCommandDeserializerContext): Command {
-            val commandID = CommandID.getByByteValue(context.commandClassID, inputStream.getByte())
-            val commandData = inputStream.readAllBytes()
+        override fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Command {
 
-            return when (commandID) {
-                CommandID.SENSOR_MULTILEVEL_GET -> Get.deserialize(commandData, context)
-                CommandID.SENSOR_MULTILEVEL_REPORT -> Report.deserialize(commandData, context)
+            return when (val commandID = CommandID.getByByteValue(context.commandClassID, inputStream.getByte())) {
+                CommandID.SENSOR_MULTILEVEL_GET -> Get.deserialize(inputStream, context)
+                CommandID.SENSOR_MULTILEVEL_REPORT -> Report.deserialize(inputStream, context)
                 else -> throw IOException("${context.commandClassID}: Not implemented command ${commandID}!")
             }
         }
@@ -39,7 +32,7 @@ class CCSensorMultilevel {
 
     class Get : Command(CommandClassID.SENSOR_MULTILEVEL, CommandID.SENSOR_MULTILEVEL_GET) {
         companion object {
-            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) = Get()
+            fun deserialize(inputStream: InputStream, context: DeserializableCommandContext) = Get()
         }
     }
 
@@ -52,17 +45,19 @@ class CCSensorMultilevel {
     ) : Command(CommandClassID.SENSOR_MULTILEVEL, CommandID.SENSOR_MULTILEVEL_REPORT) {
         companion object {
 
-            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext): Report {
-                val sensorType = data[0]
-                val precision = data[1].getBitRange(5..7)
-                val scale = data[1].getBitRange(3..4)
-                val size = data[1].getBitRange(0..2)
+            fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Report {
+                val sensorType = inputStream.getByte()
+                val dataTypeInfo = inputStream.getByte()
+                val precision = dataTypeInfo.getBitRange(5..7)
+                val scale = dataTypeInfo.getBitRange(3..4)
+                val size = dataTypeInfo.getBitRange(0..2)
                 val sensorValues = mutableListOf<Float>()
                 var remaining = size.toInt()
                 var value = 0
                 val divider = 10.toFloat().pow(precision.toInt())
-                for (index in 2 until data.size) {
-                    value = value.shl(8).or(data[index].toUByte().toInt())
+                while (inputStream.available() > 0) {
+                    val dataUByte = inputStream.getUByte()
+                    value = value.shl(8).or(dataUByte.toInt())
                     remaining--
                     if (remaining == 0) {
                         sensorValues.add(value.toFloat() / divider)
@@ -74,8 +69,8 @@ class CCSensorMultilevel {
             }
         }
 
-        override fun serialize(outputStream: OutputStream, function: Function, version: Int) {
-            super.serialize(outputStream, function, version)
+        override fun serialize(outputStream: OutputStream, context: SerializableCommandContext) {
+            super.serialize(outputStream, context)
             outputStream.putByte(sensorType)
             outputStream.putByte(
                 0x00.toByte().withBitRange(0..2, size).withBitRange(3..4, scale).withBitRange(5..7, precision)

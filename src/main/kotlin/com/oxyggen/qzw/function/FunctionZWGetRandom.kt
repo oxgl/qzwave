@@ -1,26 +1,24 @@
 package com.oxyggen.qzw.function
 
-import com.oxyggen.qzw.extensions.getByte
-import com.oxyggen.qzw.extensions.getUByte
-import com.oxyggen.qzw.extensions.putByte
 import com.oxyggen.qzw.frame.FrameSOF
 import com.oxyggen.qzw.mapper.mapper
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializer
-import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
+import com.oxyggen.qzw.serialization.DeserializableFunctionContext
+import com.oxyggen.qzw.serialization.SerializableFunctionContext
 import com.oxyggen.qzw.types.FrameType
 import com.oxyggen.qzw.types.FunctionID
 import java.io.InputStream
 import java.io.OutputStream
 
+@OptIn(ExperimentalUnsignedTypes::class)
 abstract class FunctionZWGetRandom {
     companion object : BinaryFunctionDeserializer {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.ZW_GET_RANDOM.byteValue)
 
-        @ExperimentalUnsignedTypes
         override fun deserialize(
             inputStream: InputStream,
-            context: BinaryFunctionDeserializerContext
+            context: DeserializableFunctionContext
         ): Function = when (context.frameType) {
             FrameType.REQUEST -> Request.deserialize(inputStream)
             FrameType.RESPONSE -> Response.deserialize(inputStream)
@@ -41,8 +39,8 @@ abstract class FunctionZWGetRandom {
                 mapper.deserialize<Request>(inputStream.readAllBytes())
         }
 
-        override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
-            super.serialize(outputStream, frame)
+        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+            super.serialize(outputStream, context)
             outputStream.write(mapper.serialize(this))
         }
 
@@ -63,8 +61,8 @@ abstract class FunctionZWGetRandom {
                 mapper.deserialize<Response>(inputStream.readAllBytes())
         }
 
-        override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
-            super.serialize(outputStream, frame)
+        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+            super.serialize(outputStream, context)
             outputStream.write(mapper.serialize(this))
         }
 

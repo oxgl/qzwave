@@ -2,12 +2,13 @@ package com.oxyggen.qzw.function
 
 import com.oxyggen.qzw.extensions.putByte
 import com.oxyggen.qzw.frame.FrameSOF
+import com.oxyggen.qzw.serialization.SerializableFunctionContext
 import com.oxyggen.qzw.types.FunctionID
 import org.apache.logging.log4j.kotlin.Logging
 import java.io.OutputStream
 
 abstract class Function(val functionID: FunctionID) : Logging {
-    open fun serialize(outputStream: OutputStream, frame: FrameSOF) {
+    open fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
         outputStream.putByte(functionID.byteValue)
     }
 

@@ -1,14 +1,14 @@
 package com.oxyggen.qzw.command
 
 import com.oxyggen.qzw.extensions.from
-import com.oxyggen.qzw.extensions.ge
 import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.function.Function
 import com.oxyggen.qzw.mapper.mapper
 import com.oxyggen.qzw.types.CommandClassID
 import com.oxyggen.qzw.types.CommandID
-import com.oxyggen.qzw.serialization.BinaryCommandDeserializer
-import com.oxyggen.qzw.serialization.BinaryCommandDeserializerContext
+import com.oxyggen.qzw.serialization.CommandDeserializer
+import com.oxyggen.qzw.serialization.DeserializableCommandContext
+import com.oxyggen.qzw.serialization.SerializableCommandContext
 import com.oxyggen.qzw.types.BatteryChargingStatus
 import com.oxyggen.qzw.types.BatteryReplaceStatus
 import java.io.IOException
@@ -18,16 +18,14 @@ import java.io.OutputStream
 @OptIn(ExperimentalUnsignedTypes::class)
 class CCBattery {
 
-    companion object : BinaryCommandDeserializer {
+    companion object : CommandDeserializer {
         override fun getHandledSignatureBytes() = setOf(CommandClassID.BATTERY.byteValue)
 
-        override fun deserialize(inputStream: InputStream, context: BinaryCommandDeserializerContext): Command {
-            val commandID = CommandID.getByByteValue(context.commandClassID, inputStream.getByte())
-            val commandData = inputStream.readAllBytes()
+        override fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Command {
 
-            return when (commandID) {
-                CommandID.BATTERY_GET -> Get.deserialize(commandData, context)
-                CommandID.BATTERY_REPORT -> Report.deserialize(commandData, context)
+            return when (val commandID = CommandID.getByByteValue(context.commandClassID, inputStream.getByte())) {
+                CommandID.BATTERY_GET -> Get.deserialize(inputStream, context)
+                CommandID.BATTERY_REPORT -> Report.deserialize(inputStream, context)
                 else -> throw IOException("${context.commandClassID}: Not implemented command ${commandID}!")
             }
         }
@@ -36,7 +34,7 @@ class CCBattery {
 
     class Get : Command(CommandClassID.BATTERY, CommandID.BATTERY_GET) {
         companion object {
-            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) = Get()
+            fun deserialize(inputStream: InputStream, context: DeserializableCommandContext) = Get()
         }
     }
 
@@ -70,12 +68,16 @@ class CCBattery {
                 }
             }
 
-            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext) = mapper.deserialize<Report>(data, context.version)
+            fun deserialize(inputStream: InputStream, context: DeserializableCommandContext) =
+                mapper.deserialize<Report>(
+                    inputStream.readAllBytes(),
+                    context.commandClassVersion
+                )
         }
 
-        override fun serialize(outputStream: OutputStream, function: Function, version: Int) {
-            super.serialize(outputStream, function, version)
-            outputStream.write(mapper.serialize(this, version))
+        override fun serialize(outputStream: OutputStream, context: SerializableCommandContext) {
+            super.serialize(outputStream, context)
+            outputStream.write(mapper.serialize(this, context.commandClassVersion))
         }
     }
 }

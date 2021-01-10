@@ -8,8 +8,11 @@ import com.oxyggen.qzw.factory.FunctionFactory
 import com.oxyggen.qzw.function.Function
 import com.oxyggen.qzw.function.FunctionRequest
 import com.oxyggen.qzw.function.FunctionResponse
+import com.oxyggen.qzw.node.NetworkInfoGetter
 import com.oxyggen.qzw.serialization.BinaryFrameDeserializer
-import com.oxyggen.qzw.serialization.BinaryFrameDeserializerContext
+import com.oxyggen.qzw.serialization.DeserializableFrameContext
+import com.oxyggen.qzw.serialization.SerializableFrameContext
+import com.oxyggen.qzw.serialization.SerializableFunctionContext
 import com.oxyggen.qzw.types.FrameType
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -33,7 +36,7 @@ open class FrameSOF(val function: Function) : Frame() {
         }
 
         @ExperimentalUnsignedTypes
-        override fun deserialize(inputStream: InputStream, context: BinaryFrameDeserializerContext): FrameSOF {
+        override fun deserialize(inputStream: InputStream, context: DeserializableFrameContext): FrameSOF {
             // First is always the length byte
             val lengthByte = inputStream.getByte()
             val length = lengthByte.toUByte().toInt()
@@ -79,13 +82,13 @@ open class FrameSOF(val function: Function) : Frame() {
     }
 
     @ExperimentalUnsignedTypes
-    override fun serialize(outputStream: OutputStream) {
+    override fun serialize(outputStream: OutputStream, context: SerializableFrameContext) {
         outputStream.putByte(SIGNATURE)
 
         var resultData = ByteArray(0)
 
         val functionOS = ByteArrayOutputStream()
-        function.serialize(functionOS, this)
+        function.serialize(functionOS, SerializableFunctionContext(context, this))
 
         val functionData = functionOS.toByteArray()
 

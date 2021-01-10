@@ -5,8 +5,9 @@ import com.oxyggen.qzw.function.Function
 import com.oxyggen.qzw.types.CommandClassID
 import com.oxyggen.qzw.types.CommandID
 import com.oxyggen.qzw.mapper.mapper
-import com.oxyggen.qzw.serialization.BinaryCommandDeserializer
-import com.oxyggen.qzw.serialization.BinaryCommandDeserializerContext
+import com.oxyggen.qzw.serialization.CommandDeserializer
+import com.oxyggen.qzw.serialization.DeserializableCommandContext
+import com.oxyggen.qzw.serialization.SerializableCommandContext
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -14,17 +15,15 @@ import java.io.OutputStream
 @OptIn(ExperimentalUnsignedTypes::class)
 class CCNotification {
 
-    companion object : BinaryCommandDeserializer {
+    companion object : CommandDeserializer {
         override fun getHandledSignatureBytes() = setOf(CommandClassID.NOTIFICATION.byteValue)
 
-        override fun deserialize(inputStream: InputStream, context: BinaryCommandDeserializerContext): Command {
-            val commandID = CommandID.getByByteValue(context.commandClassID, inputStream.getByte())
-            val commandData = inputStream.readAllBytes()
+        override fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Command {
 
-            return when (commandID) {
-                CommandID.NOTIFICATION_GET -> Get.deserialize(commandData, context)
-                CommandID.NOTIFICATION_SET -> Set.deserialize(commandData, context)
-                CommandID.NOTIFICATION_REPORT -> Report.deserialize(commandData, context)
+            return when (val commandID = CommandID.getByByteValue(context.commandClassID, inputStream.getByte())) {
+                CommandID.NOTIFICATION_GET -> Get.deserialize(inputStream, context)
+                CommandID.NOTIFICATION_SET -> Set.deserialize(inputStream, context)
+                CommandID.NOTIFICATION_REPORT -> Report.deserialize(inputStream, context)
                 else -> throw IOException("${context.commandClassID}: Not implemented command ${commandID}!")
             }
         }
@@ -45,13 +44,16 @@ class CCNotification {
                 }
             }
 
-            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext): Get =
-                mapper.deserialize(data, context.version)
+            fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Get =
+                mapper.deserialize(
+                    inputStream.readAllBytes(),
+                    context.commandClassVersion
+                )
         }
 
-        override fun serialize(outputStream: OutputStream, function: Function, version: Int) {
-            super.serialize(outputStream, function, version)
-            outputStream.write(mapper.serialize(this, version))
+        override fun serialize(outputStream: OutputStream, context: SerializableCommandContext) {
+            super.serialize(outputStream, context)
+            outputStream.write(mapper.serialize(this, context.commandClassVersion))
         }
 
     }
@@ -68,13 +70,16 @@ class CCNotification {
                 }
             }
 
-            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext): Set =
-                mapper.deserialize(data, context.version)
+            fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Set =
+                mapper.deserialize(
+                    inputStream.readAllBytes(),
+                    context.commandClassVersion
+                )
         }
 
-        override fun serialize(outputStream: OutputStream, function: Function, version: Int) {
-            super.serialize(outputStream, function, version)
-            outputStream.write(mapper.serialize(this, version))
+        override fun serialize(outputStream: OutputStream, context: SerializableCommandContext) {
+            super.serialize(outputStream, context)
+            outputStream.write(mapper.serialize(this, context.commandClassVersion))
         }
     }
 
@@ -105,13 +110,16 @@ class CCNotification {
                 }
             }
 
-            fun deserialize(data: ByteArray, context: BinaryCommandDeserializerContext): Report =
-                mapper.deserialize(data, context.version)
+            fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Report =
+                mapper.deserialize(
+                    inputStream.readAllBytes(),
+                    context.commandClassVersion
+                )
         }
 
-        override fun serialize(outputStream: OutputStream, function: Function, version: Int) {
-            super.serialize(outputStream, function, version)
-            outputStream.write(Get.mapper.serialize(this, version))
+        override fun serialize(outputStream: OutputStream, context: SerializableCommandContext) {
+            super.serialize(outputStream, context)
+            outputStream.write(Get.mapper.serialize(this, context.commandClassVersion))
         }
 
         override fun toString(): String = "CC ${commandClassID} - Command ${commandId}(" +

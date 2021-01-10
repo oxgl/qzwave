@@ -6,15 +6,15 @@ import java.io.InputStream
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObjectInstance
 
-class BinaryDeserializerHandler<T, C : BinaryDeserializerContext>(
+class DeserializableHandler<T, C : DeserializableObjectContext>(
     val objectDescription: String,
     vararg deserClasses: KClass<*>
 ) : Logging {
 
-    class DeserializerDefinition<T, C : BinaryDeserializerContext>(
+    class DeserializerDefinition<T, C : DeserializableObjectContext>(
         val signatureByte: Byte,
         val deserializerClass: KClass<*>,
-        val deserializerInstance: BinaryDeserializer<T, C>
+        val deserializableInstance: DeserializableObject<T, C>
     ) {
         override fun equals(other: Any?): Boolean = if (other is DeserializerDefinition<*, *>) {
             other.signatureByte == this.signatureByte
@@ -48,11 +48,11 @@ class BinaryDeserializerHandler<T, C : BinaryDeserializerContext>(
     @Suppress("UNCHECKED_CAST")
     private fun analyze(deserClass: KClass<*>): Set<DeserializerDefinition<T, C>>? {
         val coi = deserClass.companionObjectInstance
-        return if (coi is BinaryDeserializer<*, *>) {
+        return if (coi is DeserializableObject<*, *>) {
             val signatureBytes = coi.getHandledSignatureBytes()
             val result = mutableSetOf<DeserializerDefinition<T, C>>()
             signatureBytes.forEach {
-                val definition = DeserializerDefinition(it, deserClass, coi as BinaryDeserializer<T, C>)
+                val definition = DeserializerDefinition(it, deserClass, coi as DeserializableObject<T, C>)
                 result.add(definition)
             }
             result
@@ -66,7 +66,7 @@ class BinaryDeserializerHandler<T, C : BinaryDeserializerContext>(
         deserializers.find { it.signatureByte == signatureByte }?.deserializerClass
 
     fun deserialize(inputStream: InputStream, context: C): T {
-        val deserializer = deserializers.find { it.signatureByte == context.getSignatureByte() }?.deserializerInstance
+        val deserializer = deserializers.find { it.signatureByte == context.getSignatureByte() }?.deserializableInstance
             ?: throw IOException(
                 "%s deserializer not found for signature byte 0x%02x!".format(
                     objectDescription.capitalize(),

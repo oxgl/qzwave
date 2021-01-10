@@ -3,9 +3,9 @@ package com.oxyggen.qzw.factory
 import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.function.*
 import com.oxyggen.qzw.function.Function
-import com.oxyggen.qzw.serialization.BinaryDeserializerHandler
-import com.oxyggen.qzw.serialization.BinaryFrameDeserializerContext
-import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
+import com.oxyggen.qzw.serialization.DeserializableHandler
+import com.oxyggen.qzw.serialization.DeserializableFrameContext
+import com.oxyggen.qzw.serialization.DeserializableFunctionContext
 import com.oxyggen.qzw.types.FrameType
 import com.oxyggen.qzw.types.FunctionID
 import org.apache.logging.log4j.kotlin.Logging
@@ -16,7 +16,7 @@ import java.io.InputStream
 class FunctionFactory {
     companion object : Logging {
         private val bdh by lazy {
-            BinaryDeserializerHandler<Function, BinaryFunctionDeserializerContext>(
+            DeserializableHandler<Function, DeserializableFunctionContext>(
                 objectDescription = "function",
                 FunctionSerialApiGetInitData::class,
 //               FunctionSerialApiApplNodeInformation::class,
@@ -77,7 +77,7 @@ class FunctionFactory {
 
         fun deserializeFunction(
             inputStream: InputStream,
-            frameContext: BinaryFrameDeserializerContext,
+            frameContext: DeserializableFrameContext,
             frameType: FrameType
         ): Function {
             val signatureByte = inputStream.getByte()
@@ -85,7 +85,7 @@ class FunctionFactory {
                 "Unknown function signature byte 0x%02x!".format(signatureByte)
             )
 
-            val context = BinaryFunctionDeserializerContext(frameContext.frameID, frameType, functionID)
+            val context = DeserializableFunctionContext(frameContext, frameType, functionID)
             return bdh.deserialize(inputStream, context)
         }
 

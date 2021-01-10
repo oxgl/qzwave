@@ -3,7 +3,8 @@ package com.oxyggen.qzw.driver
 import com.fazecast.jSerialComm.SerialPort
 import com.oxyggen.qzw.factory.FrameFactory
 import com.oxyggen.qzw.frame.Frame
-import com.oxyggen.qzw.function.Function
+import com.oxyggen.qzw.node.NetworkInfoGetter
+import com.oxyggen.qzw.serialization.SerializableFrameContext
 import kotlinx.coroutines.delay
 import org.apache.logging.log4j.kotlin.Logging
 
@@ -40,28 +41,24 @@ open class SerialDriver(private val device: String) : Driver, Logging {
         return buffer[0]
     }
 
-    override suspend fun getFrame(): Frame? {
+    override suspend fun getFrame(networkInfo: NetworkInfoGetter): Frame? {
         if (!started) return null
         return try {
-            FrameFactory.deserializeFrame(port.inputStream)
+            FrameFactory.deserializeFrame(port.inputStream, networkInfo)
         } catch (e: Throwable) {
             logger.debug(e)
             null
         }
     }
 
-    override fun putFrame(frame: Frame) {
+    override fun putFrame(frame: Frame, networkInfo: NetworkInfoGetter) {
         if (started) {
             try {
-                frame.serialize(port.outputStream)
+                frame.serialize(port.outputStream, SerializableFrameContext(networkInfo))
             } catch (e: Throwable) {
                 logger.debug(e)
             }
         }
-    }
-
-    override fun putFunction(function: Function) {
-        putFrame(function.getFrame())
     }
 
     override fun toString(): String {

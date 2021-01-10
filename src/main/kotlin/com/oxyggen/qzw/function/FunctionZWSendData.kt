@@ -1,12 +1,14 @@
 package com.oxyggen.qzw.function
 
 import com.oxyggen.qzw.command.Command
-import com.oxyggen.qzw.extensions.putByte
 import com.oxyggen.qzw.extensions.putUByte
 import com.oxyggen.qzw.frame.FrameSOF
 import com.oxyggen.qzw.mapper.mapper
+import com.oxyggen.qzw.node.NodeInfo
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializer
-import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
+import com.oxyggen.qzw.serialization.DeserializableFunctionContext
+import com.oxyggen.qzw.serialization.SerializableCommandContext
+import com.oxyggen.qzw.serialization.SerializableFunctionContext
 import com.oxyggen.qzw.types.FrameType
 import com.oxyggen.qzw.types.FunctionID
 import com.oxyggen.qzw.types.NodeID
@@ -16,7 +18,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
-@ExperimentalUnsignedTypes
+@OptIn(ExperimentalUnsignedTypes::class)
 abstract class FunctionZWSendData {
 
     companion object : BinaryFunctionDeserializer {
@@ -33,7 +35,7 @@ abstract class FunctionZWSendData {
 
         override fun deserialize(
             inputStream: InputStream,
-            context: BinaryFunctionDeserializerContext
+            context: DeserializableFunctionContext
         ): Function =
             when (context.frameType) {
                 FrameType.REQUEST -> throw IOException("FunctionZWSendData: Receiving data for IMA enabled targets not implemented the transmission")
@@ -50,12 +52,14 @@ abstract class FunctionZWSendData {
         companion object {
         }
 
-        override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
-            super.serialize(outputStream, frame)
+        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+            super.serialize(outputStream, context)
             outputStream.putUByte(nodeID)
 
+            val currentNode = context.networkInfo.node[nodeID] ?: NodeInfo.getInitial(nodeID)
+
             val commandOS = ByteArrayOutputStream()
-            command.serialize(commandOS, this, 1) // TODO FIX VERSION NUMBER!
+            command.serialize(commandOS, SerializableCommandContext(context, this, currentNode, command.commandClassID))
 
             val commandBytes = commandOS.toByteArray()
             outputStream.write(commandBytes)
@@ -74,8 +78,8 @@ abstract class FunctionZWSendData {
             fun deserialize(inputStream: InputStream): Response = mapper.deserialize(inputStream.readAllBytes())
         }
 
-        override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
-            super.serialize(outputStream, frame)
+        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+            super.serialize(outputStream, context)
             outputStream.write(mapper.serialize(this))
         }
 

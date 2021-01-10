@@ -16,14 +16,15 @@ import com.oxyggen.qzw.extensions.getUByte
 import com.oxyggen.qzw.extensions.putUByte
 import com.oxyggen.qzw.frame.FrameSOF
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializer
-import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
+import com.oxyggen.qzw.serialization.DeserializableFunctionContext
+import com.oxyggen.qzw.serialization.SerializableFunctionContext
 import com.oxyggen.qzw.types.FrameType
 import com.oxyggen.qzw.types.FunctionID
 import com.oxyggen.qzw.utils.BitmaskUtils
 import java.io.InputStream
 import java.io.OutputStream
 
-@ExperimentalUnsignedTypes
+@OptIn(ExperimentalUnsignedTypes::class)
 abstract class FunctionSerialApiGetCapabilities {
     companion object : BinaryFunctionDeserializer {
 
@@ -31,7 +32,7 @@ abstract class FunctionSerialApiGetCapabilities {
 
         override fun deserialize(
             inputStream: InputStream,
-            context: BinaryFunctionDeserializerContext
+            context: DeserializableFunctionContext
         ): Function = when (context.frameType) {
             FrameType.REQUEST -> Request.deserialize(inputStream)
             FrameType.RESPONSE -> Response.deserialize(inputStream)
@@ -88,8 +89,8 @@ abstract class FunctionSerialApiGetCapabilities {
             }
         }
 
-        override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
-            super.serialize(outputStream, frame)
+        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+            super.serialize(outputStream, context)
             outputStream.putUByte(serialApplVersion)
             outputStream.putUByte(serialApplRevision)
             outputStream.putUByte(serialManufId1)

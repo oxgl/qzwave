@@ -2,7 +2,7 @@ package com.oxyggen.qzw.serialization
 
 import java.io.InputStream
 
-interface BinaryDeserializer<T, C : BinaryDeserializerContext> {
+interface DeserializableObject<T, C : DeserializableObjectContext> {
 
     fun getHandledSignatureBytes(): Set<Byte>
 

@@ -2,10 +2,12 @@ package com.oxyggen.qzw.factory
 
 import com.oxyggen.qzw.command.*
 import com.oxyggen.qzw.extensions.getByte
-import com.oxyggen.qzw.serialization.BinaryCommandDeserializerContext
-import com.oxyggen.qzw.serialization.BinaryDeserializerHandler
-import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
+import com.oxyggen.qzw.node.NodeInfo
+import com.oxyggen.qzw.serialization.DeserializableCommandContext
+import com.oxyggen.qzw.serialization.DeserializableHandler
+import com.oxyggen.qzw.serialization.DeserializableFunctionContext
 import com.oxyggen.qzw.types.CommandClassID
+import com.oxyggen.qzw.types.NodeID
 import org.apache.logging.log4j.kotlin.Logging
 import java.io.IOException
 import java.io.InputStream
@@ -14,7 +16,7 @@ import java.io.InputStream
 class CommandFactory {
     companion object : Logging {
         private val bdh by lazy {
-            BinaryDeserializerHandler<Command, BinaryCommandDeserializerContext>(
+            DeserializableHandler<Command, DeserializableCommandContext>(
                 objectDescription = "command class",
                 CCHail::class,
                 CCBattery::class,
@@ -28,18 +30,16 @@ class CommandFactory {
 
         fun deserializeCommand(
             inputStream: InputStream,
-            functionContext: BinaryFunctionDeserializerContext,
+            functionContext: DeserializableFunctionContext,
+            currentNode: NodeInfo
         ): Command {
-            val version = 1
             val ccByte = inputStream.getByte()
             val commandClassID = CommandClassID.getByByteValueVer(ccByte)
                 ?: throw IOException("Unknown command class signature byte 0x%02x!".format(ccByte))
-            val context = BinaryCommandDeserializerContext(
-                frameID = functionContext.frameID,
-                frameType = functionContext.frameType,
-                functionID = functionContext.functionID,
+            val context = DeserializableCommandContext(
+                functionContext = functionContext,
                 commandClassID = commandClassID,
-                version = version
+                currentNode = currentNode
             )
 
             return bdh.deserialize(inputStream, context)

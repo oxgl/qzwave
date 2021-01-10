@@ -3,13 +3,15 @@ package com.oxyggen.qzw.function
 import com.oxyggen.qzw.frame.FrameSOF
 import com.oxyggen.qzw.mapper.mapper
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializer
-import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
+import com.oxyggen.qzw.serialization.DeserializableFunctionContext
+import com.oxyggen.qzw.serialization.SerializableFunctionContext
 import com.oxyggen.qzw.types.FrameType
 import com.oxyggen.qzw.types.FunctionID
 import com.oxyggen.qzw.types.NodeID
 import java.io.InputStream
 import java.io.OutputStream
 
+@OptIn(ExperimentalUnsignedTypes::class)
 abstract class FunctionRequestNodeInfo {
     // This function is used to request the Node Information Frame from
     // a controller based node in the network. The Node info is retrieved
@@ -22,10 +24,9 @@ abstract class FunctionRequestNodeInfo {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.ZW_REQUEST_NODE_INFO.byteValue)
 
-        @ExperimentalUnsignedTypes
         override fun deserialize(
             inputStream: InputStream,
-            context: BinaryFunctionDeserializerContext
+            context: DeserializableFunctionContext
         ): Function =
             when (context.frameType) {
                 FrameType.REQUEST -> Request.deserialize(inputStream)
@@ -44,8 +45,8 @@ abstract class FunctionRequestNodeInfo {
             fun deserialize(inputStream: InputStream) = mapper.deserialize<Request>(inputStream.readAllBytes())
         }
 
-        override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
-            super.serialize(outputStream, frame)
+        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+            super.serialize(outputStream, context)
             outputStream.write(mapper.serialize(this))
         }
 
@@ -62,8 +63,8 @@ abstract class FunctionRequestNodeInfo {
             fun deserialize(inputStream: InputStream) = mapper.deserialize<Response>(inputStream.readAllBytes())
         }
 
-        override fun serialize(outputStream: OutputStream, frame: FrameSOF) {
-            super.serialize(outputStream, frame)
+        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+            super.serialize(outputStream, context)
             outputStream.write(mapper.serialize(this))
         }
     }

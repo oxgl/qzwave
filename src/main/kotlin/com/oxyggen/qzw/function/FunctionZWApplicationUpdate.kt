@@ -7,7 +7,7 @@ import com.oxyggen.qzw.device.DeviceSpecificType
 import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.extensions.getUByte
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializer
-import com.oxyggen.qzw.serialization.BinaryFunctionDeserializerContext
+import com.oxyggen.qzw.serialization.DeserializableFunctionContext
 import com.oxyggen.qzw.types.FrameType
 import com.oxyggen.qzw.types.FunctionID
 import com.oxyggen.qzw.types.NodeID
@@ -15,6 +15,7 @@ import com.oxyggen.qzw.types.UpdateState
 import java.io.IOException
 import java.io.InputStream
 
+@OptIn(ExperimentalUnsignedTypes::class)
 abstract class FunctionZWApplicationUpdate {
     companion object : BinaryFunctionDeserializer {
         private val SIGNATURE = FunctionID.ZW_APPLICATION_UPDATE.byteValue
@@ -24,7 +25,7 @@ abstract class FunctionZWApplicationUpdate {
         @ExperimentalUnsignedTypes
         override fun deserialize(
             inputStream: InputStream,
-            context: BinaryFunctionDeserializerContext
+            context: DeserializableFunctionContext
         ): Function =
             when (context.frameType) {
                 FrameType.REQUEST -> Request.deserialize(inputStream)
