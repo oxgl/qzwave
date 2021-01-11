@@ -18,13 +18,15 @@ class CommandFactory {
         private val bdh by lazy {
             DeserializableHandler<Command, DeserializableCommandContext>(
                 objectDescription = "command class",
-                CCHail::class,
                 CCBattery::class,
+                CCExtended::class,
+                CCHail::class,
+                CCManufacturerSpecific::class,
+                CCMultiChannel::class,
                 CCNotification::class,
+                CCSensorMultilevel::class,
                 CCVersion::class,
                 CCWakeUp::class,
-                CCSensorMultilevel::class,
-                CCExtended::class
             )
         }
 
