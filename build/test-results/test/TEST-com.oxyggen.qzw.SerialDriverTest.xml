@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.oxyggen.qzw.SerialDriverTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2021-01-08T23:02:07" hostname="install" time="48.376">
+<testsuite name="com.oxyggen.qzw.SerialDriverTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2021-01-12T10:55:54" hostname="install" time="22.622">
   <properties/>
-  <testcase name="Test CCSensorMultilevel()" classname="com.oxyggen.qzw.SerialDriverTest" time="48.376"/>
-  <system-out><![CDATA[]]></system-out>
+  <testcase name="Device open &amp; close test()" classname="com.oxyggen.qzw.SerialDriverTest" time="22.622"/>
+  <system-out><![CDATA[11:55:57.540 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Execution loop started
+]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
