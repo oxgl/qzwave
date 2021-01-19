@@ -1,8 +1,9 @@
 package com.oxyggen.qzw.engine
 
-data class EngineEvent(val type: Type) {
+data class EngineEvent(val type: Type, val data: Any? = null) {
     enum class Type {
-        ABORT
+        ABORT,
+        SEND_FRAME
     }
 
     companion object {

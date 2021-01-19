@@ -10,7 +10,7 @@ import com.oxyggen.qzw.types.NodeID
 import com.oxyggen.qzw.types.TransmitOptions
 import java.io.OutputStream
 
-@ExperimentalUnsignedTypes
+@OptIn(ExperimentalUnsignedTypes::class)
 abstract class Command(val commandClassID: CommandClassID, val commandId: CommandID) {
 
     open fun getSendDataFunctionRequest(

@@ -1,67 +1,152 @@
 package com.oxyggen.qzw.engine
 
+import com.oxyggen.qzw.command.CCSecurity
+import com.oxyggen.qzw.frame.Frame
+import com.oxyggen.qzw.frame.FrameACK
+import com.oxyggen.qzw.frame.FrameSOF
+import com.oxyggen.qzw.function.FunctionApplicationCommandHandler
+import com.oxyggen.qzw.node.NetworkInfo
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.apache.logging.log4j.kotlin.Logging
+import kotlin.random.Random
 
-open class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope = GlobalScope) : Logging {
+@OptIn(ExperimentalCoroutinesApi::class)
+class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope = GlobalScope) : Logging {
 
-    protected val engineChannel = Channel<EngineEvent>(Channel.UNLIMITED)
+    private val lowPrioSendChannel = Channel<EngineEvent>(Channel.UNLIMITED)
+    private val highPrioSendChannel = Channel<EngineEvent>(Channel.UNLIMITED)
+    private val receiveChannel = Channel<EngineEvent>(Channel.UNLIMITED)
 
-    protected enum class Status {
+    private enum class Status {
         STARTED, STOPPED, STOPPING
     }
 
-    protected var loopResult: Deferred<Unit>? = null
-    protected val loopResultMutex = Mutex()
+    private var executionJob: Job? = null
+    private val loopResultMutex = Mutex()
+    private val networkInfo = NetworkInfo()
 
     fun start() = coroutineScope.launch { startWithLock() }
 
     fun stop(gently: Boolean = true) = coroutineScope.launch { stopWithLock(gently) }
 
-    val started: Boolean = loopResult?.isActive ?: false
+    fun sendFrame(frame: Frame) =
+        coroutineScope.launch {
+            if (started) lowPrioSendChannel.send(EngineEvent(EngineEvent.Type.SEND_FRAME, frame))
+        }
 
-    protected suspend fun startWithLock() {
+    suspend fun stopAndWait(gently: Boolean = true) {
+        stopWithLock(gently)
+        executionJob?.join()
+    }
+
+    val started: Boolean
+        get() = executionJob?.isActive ?: false
+
+    private suspend fun startWithLock() {
         loopResultMutex.withLock {
             if (!started)
-                loopResult = coroutineScope.async {
-                    executionLoop()
-                }
+                executionJob = coroutineScope.launch { executeJobs() }
         }
     }
 
-    protected suspend fun stopWithLock(gently: Boolean = true) {
+    private suspend fun stopWithLock(gently: Boolean = true) {
         loopResultMutex.withLock {
             if (started)
-                if (gently)
-                    engineChannel.send(EngineEvent.EVENT_ABORT)
-                else {
-                    loopResult!!.cancel()
+                if (gently) {
+                    lowPrioSendChannel.send(EngineEvent.EVENT_ABORT)
+                    receiveChannel.send(EngineEvent.EVENT_ABORT)
+                } else {
+                    executionJob!!.cancel()
                     engineConfig.driver.stop()
                 }
         }
     }
 
-    protected suspend fun executionLoop(): Boolean {
-        logger.debug { "Engine: Execution loop started" }
-        if (engineConfig.driver.start()) {
+    private suspend fun executeJobs() {
+        if (!engineConfig.driver.start()) {
             logger.error { "Engine: Unable to start driver!" }
-            return false
+            return
+        } else {
+            logger.debug { "Engine: Driver started" }
         }
+        val senderJob = coroutineScope.launch { sendJob() }
+        val receiverJob = coroutineScope.launch { receiveJob() }
 
+        senderJob.join()
+        receiverJob.join()
+
+        engineConfig.driver.stop()
+        logger.debug { "Engine: Driver stopped" }
+    }
+
+    private suspend fun sendJob() {
+        logger.debug { "Engine: Send job started" }
 
         var isActive = true
         while (isActive) {
-            val event = engineChannel.receive()
-            logger.debug { "Engine: Event received: $event" }
+            val event = select<EngineEvent> {
+                highPrioSendChannel.onReceive { it }
+                lowPrioSendChannel.onReceive { it }
+            }
+            logger.debug { "Engine: Send job received event: $event" }
             when (event.type) {
                 EngineEvent.Type.ABORT -> isActive = false
+                EngineEvent.Type.SEND_FRAME -> when (event.data) {
+                    is Frame -> {
+                        engineConfig.driver.putFrame(event.data, networkInfo)
+                    }
+                }
             }
+            delay(10)
         }
-        engineConfig.driver.stop()
-        logger.debug { "Engine: Execution loop stopped" }
-        return true
+        logger.debug { "Engine: Send job stopped" }
     }
+
+
+    private suspend fun receiveJob() {
+        logger.debug { "Engine: Receive job started" }
+
+        var isActive = true
+        while (isActive) {
+            if (engineConfig.driver.dataAvailable() > 0) {
+                val frame = engineConfig.driver.getFrame(networkInfo)
+                logger.debug("Engine: Frame received ${frame}")
+
+                if (frame != null) {
+                    highPrioSendChannel.send(EngineEvent(EngineEvent.Type.SEND_FRAME, FrameACK()))
+
+                    /*    if (frame is FrameSOF) {
+                            if (frame.function is FunctionApplicationCommandHandler.Request) {
+                                if (frame.function.command is CCSecurity.NonceGet) {
+                                    val nonceBytes = ByteArray(8)
+                                    Random(12).nextBytes(nonceBytes)
+                                    sendFrame(
+                                        CCSecurity.NonceReport(nonceBytes).getSendDataFrame(frame.function.sourceNodeID)
+                                    )
+                                }
+                            }
+                        }*/
+
+                }
+            }
+
+            if (!receiveChannel.isEmpty) {
+                val event = receiveChannel.receive()
+                logger.debug { "Engine: Receive job received event: $event" }
+                when (event.type) {
+                    EngineEvent.Type.ABORT -> isActive = false
+                    else -> {
+                    }
+                }
+            }
+            delay(50)
+        }
+
+        logger.debug { "Engine: Receive job stopped" }
+    }
+
 }

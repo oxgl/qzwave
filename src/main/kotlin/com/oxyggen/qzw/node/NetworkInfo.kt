@@ -6,5 +6,4 @@ class NetworkInfo() : NetworkInfoGetter {
     var nodeMap: Map<NodeID, NodeInfo> = mutableMapOf()
 
     override val node: Map<NodeID, NodeInfo> get() = nodeMap
-
 }

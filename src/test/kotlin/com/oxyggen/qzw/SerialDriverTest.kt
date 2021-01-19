@@ -21,10 +21,11 @@ import com.oxyggen.qzw.serialization.SerializableFrameContext
 import com.oxyggen.qzw.types.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.apache.logging.log4j.kotlin.Logging
 import org.junit.jupiter.api.*
 import java.io.ByteArrayOutputStream
 
-internal class SerialDriverTest {
+internal class SerialDriverTest:Logging {
 
     var driver: Driver? = null
 
@@ -44,13 +45,14 @@ internal class SerialDriverTest {
     @Test
     fun `Device open & close test`() {
         runBlocking {
-            val e = Engine(EngineConfig(SerialDriver("/dev/ttyAMC0")))
+            val e = Engine(EngineConfig(SerialDriver("/dev/ttyACM0")))
 
             e.start()
-            delay(10_000)
-            e.stop()
-            delay(10000)
-
+            logger.debug { "Test: Engine started" }
+            delay(60_000)
+            logger.debug { "Test: Stopping engine" }
+            e.stopAndWait()
+            logger.debug { "Test: Engine stopped" }
         }
     }
 }

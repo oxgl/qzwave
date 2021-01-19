@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">22.622s</div>
+<div class="counter">1m0.31s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,7 +79,7 @@
 </thead>
 <tr>
 <td class="success">Device open &amp; close test()</td>
-<td class="success">22.622s</td>
+<td class="success">1m0.31s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -87,7 +87,110 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>11:55:57.540 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Execution loop started
+<pre>00:09:22.272 DEBUG com.oxyggen.qzw.SerialDriverTest - Test: Engine started
+00:09:23.302 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Driver started
+00:09:23.304 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job started
+00:09:23.305 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Receive job started
+00:09:23.472 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for frame with signature byte 0x06 class com.oxyggen.qzw.frame.FrameACK
+00:09:23.473 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for frame with signature byte 0x15 class com.oxyggen.qzw.frame.FrameNAK
+00:09:23.475 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for frame with signature byte 0x18 class com.oxyggen.qzw.frame.FrameCAN
+00:09:23.480 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for frame with signature byte 0x01 class com.oxyggen.qzw.frame.FrameSOF
+00:09:23.485 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0x02 class com.oxyggen.qzw.function.FunctionSerialApiGetInitData
+00:09:23.487 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0x04 class com.oxyggen.qzw.function.FunctionApplicationCommandHandler
+00:09:23.488 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0x07 class com.oxyggen.qzw.function.FunctionSerialApiGetCapabilities
+00:09:23.490 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0x13 class com.oxyggen.qzw.function.FunctionZWSendData
+00:09:23.491 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0x15 class com.oxyggen.qzw.function.FunctionZWGetVersion
+00:09:23.493 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0x1c class com.oxyggen.qzw.function.FunctionZWGetRandom
+00:09:23.494 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0x49 class com.oxyggen.qzw.function.FunctionZWApplicationUpdate
+00:09:23.496 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf0 class com.oxyggen.qzw.function.FunctionProprietaryAny
+00:09:23.496 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf1 class com.oxyggen.qzw.function.FunctionProprietaryAny
+00:09:23.496 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf2 class com.oxyggen.qzw.function.FunctionProprietaryAny
+00:09:23.496 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf3 class com.oxyggen.qzw.function.FunctionProprietaryAny
+00:09:23.496 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf4 class com.oxyggen.qzw.function.FunctionProprietaryAny
+00:09:23.496 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf5 class com.oxyggen.qzw.function.FunctionProprietaryAny
+00:09:23.496 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf6 class com.oxyggen.qzw.function.FunctionProprietaryAny
+00:09:23.496 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf7 class com.oxyggen.qzw.function.FunctionProprietaryAny
+00:09:23.496 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf8 class com.oxyggen.qzw.function.FunctionProprietaryAny
+00:09:23.496 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf9 class com.oxyggen.qzw.function.FunctionProprietaryAny
+00:09:23.497 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xfa class com.oxyggen.qzw.function.FunctionProprietaryAny
+00:09:23.497 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xfb class com.oxyggen.qzw.function.FunctionProprietaryAny
+00:09:23.497 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xfc class com.oxyggen.qzw.function.FunctionProprietaryAny
+00:09:23.497 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xfd class com.oxyggen.qzw.function.FunctionProprietaryAny
+00:09:23.497 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xfe class com.oxyggen.qzw.function.FunctionProprietaryAny
+00:09:23.502 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x80 class com.oxyggen.qzw.command.CCBattery
+00:09:23.503 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf1 class com.oxyggen.qzw.command.CCExtended
+00:09:23.503 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf2 class com.oxyggen.qzw.command.CCExtended
+00:09:23.503 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf3 class com.oxyggen.qzw.command.CCExtended
+00:09:23.504 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf4 class com.oxyggen.qzw.command.CCExtended
+00:09:23.504 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf5 class com.oxyggen.qzw.command.CCExtended
+00:09:23.504 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf6 class com.oxyggen.qzw.command.CCExtended
+00:09:23.504 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf7 class com.oxyggen.qzw.command.CCExtended
+00:09:23.504 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf8 class com.oxyggen.qzw.command.CCExtended
+00:09:23.504 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf9 class com.oxyggen.qzw.command.CCExtended
+00:09:23.504 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xfa class com.oxyggen.qzw.command.CCExtended
+00:09:23.504 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xfb class com.oxyggen.qzw.command.CCExtended
+00:09:23.504 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xfc class com.oxyggen.qzw.command.CCExtended
+00:09:23.505 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xfd class com.oxyggen.qzw.command.CCExtended
+00:09:23.505 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xfe class com.oxyggen.qzw.command.CCExtended
+00:09:23.505 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xff class com.oxyggen.qzw.command.CCExtended
+00:09:23.506 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x82 class com.oxyggen.qzw.command.CCHail
+00:09:23.508 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x72 class com.oxyggen.qzw.command.CCManufacturerSpecific
+00:09:23.509 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x60 class com.oxyggen.qzw.command.CCMultiChannel
+00:09:23.510 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x71 class com.oxyggen.qzw.command.CCNotification
+00:09:23.512 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x31 class com.oxyggen.qzw.command.CCSensorMultilevel
+00:09:23.514 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x86 class com.oxyggen.qzw.command.CCVersion
+00:09:23.516 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x84 class com.oxyggen.qzw.command.CCWakeUp
+00:09:23.517 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x98 class com.oxyggen.qzw.command.CCSecurity
+00:09:23.520 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 17, command: CC WAKE_UP - Command WAKE_UP_NOTIFICATION())
+00:09:23.525 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:23.572 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 17, command: CC WAKE_UP - Command WAKE_UP_NOTIFICATION())
+00:09:23.573 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:23.623 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 17, command: CC WAKE_UP - Command WAKE_UP_NOTIFICATION())
+00:09:23.624 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:23.674 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 17, command: CC WAKE_UP - Command WAKE_UP_NOTIFICATION())
+00:09:23.674 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:30.736 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 33, command: CC SECURITY - Command SECURITY_NONCE_GET())
+00:09:30.737 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:30.750 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=REQ: ZW_SEND_DATA(CC SECURITY - Command SECURITY_NONCE_REPORT([-77, -104, 109, 40, 6, 97, -39, 37])))
+00:09:30.800 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received ACK
+00:09:30.810 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:45.988 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received RES: ZW_SEND_DATA(out result = false)
+00:09:45.989 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:46.039 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 33, command: CC SECURITY - Command SECURITY_NONCE_GET())
+00:09:46.039 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:46.050 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=REQ: ZW_SEND_DATA(CC SECURITY - Command SECURITY_NONCE_REPORT([-77, -104, 109, 40, 6, 97, -39, 37])))
+00:09:46.090 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 33, command: CC SECURITY - Command SECURITY_NONCE_GET())
+00:09:46.090 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:46.100 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=REQ: ZW_SEND_DATA(CC SECURITY - Command SECURITY_NONCE_REPORT([-77, -104, 109, 40, 6, 97, -39, 37])))
+00:09:46.140 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 33, command: CC SECURITY - Command SECURITY_NONCE_GET())
+00:09:46.140 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:46.151 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=REQ: ZW_SEND_DATA(CC SECURITY - Command SECURITY_NONCE_REPORT([-77, -104, 109, 40, 6, 97, -39, 37])))
+00:09:46.191 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 33, command: CC SECURITY - Command SECURITY_NONCE_GET())
+00:09:46.191 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:46.201 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=REQ: ZW_SEND_DATA(CC SECURITY - Command SECURITY_NONCE_REPORT([-77, -104, 109, 40, 6, 97, -39, 37])))
+00:09:46.241 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received ACK
+00:09:46.241 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:46.292 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received RES: ZW_SEND_DATA(out result = false)
+00:09:46.292 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:46.342 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received ACK
+00:09:46.342 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:46.393 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received RES: ZW_SEND_DATA(out result = false)
+00:09:46.393 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:46.443 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received ACK
+00:09:46.443 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:46.494 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received RES: ZW_SEND_DATA(out result = false)
+00:09:46.494 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:46.544 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received ACK
+00:09:46.544 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:09:46.595 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Frame received RES: ZW_SEND_DATA(out result = false)
+00:09:46.595 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=SEND_FRAME, data=ACK)
+00:10:22.276 DEBUG com.oxyggen.qzw.SerialDriverTest - Test: Stopping engine
+00:10:22.277 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job received event: EngineEvent(type=ABORT, data=null)
+00:10:22.287 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Send job stopped
+00:10:22.313 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Receive job received event: EngineEvent(type=ABORT, data=null)
+00:10:22.363 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Receive job stopped
+00:10:22.365 DEBUG com.oxyggen.qzw.engine.Engine - Engine: Driver stopped
+00:10:22.365 DEBUG com.oxyggen.qzw.SerialDriverTest - Test: Engine stopped
 </pre>
 </span>
 </div>
@@ -99,7 +202,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 6.7</a> at Jan 12, 2021, 11:56:17 AM</p>
+<a href="http://www.gradle.org">Gradle 6.7</a> at Jan 20, 2021, 12:10:22 AM</p>
 </div>
 </div>
 </body>

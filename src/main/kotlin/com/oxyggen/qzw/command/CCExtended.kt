@@ -22,10 +22,9 @@ class CCExtended {
 
         override fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Command {
             val ccSecondByte = inputStream.getByte()
+            val commandID = CommandID.getByByteValue(context.commandClassID, inputStream.getByte())
 
-            return when (val commandID = CommandID.getByByteValue(context.commandClassID, inputStream.getByte())) {
-                else -> throw IOException("${context.commandClassID}: Not implemented command ${commandID}!")
-            }
+            throw IOException("${context.commandClassID}: Not implemented command ${commandID}!")
         }
     }
 }

@@ -41,13 +41,18 @@ open class SerialDriver(private val device: String) : Driver, Logging {
         return buffer[0]
     }
 
+    override fun dataAvailable(): Int = if (started) port.inputStream.available() else -1
+
     override suspend fun getFrame(networkInfo: NetworkInfoGetter): Frame? {
-        if (!started) return null
-        return try {
-            FrameFactory.deserializeFrame(port.inputStream, networkInfo)
-        } catch (e: Throwable) {
-            logger.debug(e)
-            null
+        if (!started) {
+            return null
+        } else {
+            return try {
+                FrameFactory.deserializeFrame(port.inputStream, networkInfo)
+            } catch (e: Throwable) {
+                logger.debug(e)
+                null
+            }
         }
     }
 
@@ -64,6 +69,4 @@ open class SerialDriver(private val device: String) : Driver, Logging {
     override fun toString(): String {
         return super.toString() + " device: ${device}, is opened: $started"
     }
-
-
 }

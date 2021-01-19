@@ -27,6 +27,7 @@ class CommandFactory {
                 CCSensorMultilevel::class,
                 CCVersion::class,
                 CCWakeUp::class,
+                CCSecurity::class
             )
         }
 

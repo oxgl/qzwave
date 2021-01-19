@@ -8,6 +8,7 @@ interface Driver {
     fun start(): Boolean
     fun stop()
 
+    fun dataAvailable():Int
     suspend fun getFrame(networkInfo: NetworkInfoGetter): Frame?
     fun putFrame(frame: Frame, networkInfo: NetworkInfoGetter)
 

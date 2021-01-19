@@ -2,7 +2,6 @@ package com.oxyggen.qzw.node
 
 import com.oxyggen.qzw.types.CommandClassID
 import com.oxyggen.qzw.types.NodeID
-import org.w3c.dom.Node
 
 data class NodeInfo(val nodeID: NodeID, val supportedCommandClassVersion: Map<CommandClassID, Int>) {
     fun getSupportedCCVersion(commandClass: CommandClassID) = supportedCommandClassVersion[commandClass] ?: 1
