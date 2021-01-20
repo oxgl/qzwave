@@ -32,25 +32,17 @@ open class SerialDriver(private val device: String) : Driver, Logging {
         }
     }
 
-    protected suspend fun getSingleByte(): Byte {
-        while (port.bytesAvailable() <= 0) {
-            delay(10)
-        }
-        val buffer = ByteArray(1)
-        port.readBytes(buffer, 1)
-        return buffer[0]
-    }
-
     override fun dataAvailable(): Int = if (started) port.inputStream.available() else -1
 
     override suspend fun getFrame(networkInfo: NetworkInfoGetter): Frame? {
-        if (!started) {
-            return null
+        return if (!started) {
+            null
         } else {
-            return try {
+            try {
                 FrameFactory.deserializeFrame(port.inputStream, networkInfo)
             } catch (e: Throwable) {
-                logger.debug(e)
+                // Debug info only if driver was not stopped
+                if (started) logger.debug(e)
                 null
             }
         }
