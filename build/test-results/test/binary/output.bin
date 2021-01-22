@@ -1,73 +1,114 @@
-K21:49:07.797 DEBUG com.oxyggen.qzw.SerialDriverTest - Test: Engine started
-Q21:49:08.846 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Main: Driver started
-L21:49:08.848 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: started
-N21:49:08.849 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: started
-P21:49:08.850 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: started
-™21:49:13.062 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for frame with signature byte 0x06 class com.oxyggen.qzw.frame.FrameACK
-™21:49:13.064 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for frame with signature byte 0x15 class com.oxyggen.qzw.frame.FrameNAK
-™21:49:13.065 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for frame with signature byte 0x18 class com.oxyggen.qzw.frame.FrameCAN
-™21:49:13.070 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for frame with signature byte 0x01 class com.oxyggen.qzw.frame.FrameSOF
-³21:49:13.075 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0x02 class com.oxyggen.qzw.function.FunctionSerialApiGetInitData
-¸21:49:13.077 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0x04 class com.oxyggen.qzw.function.FunctionApplicationCommandHandler
-·21:49:13.078 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0x07 class com.oxyggen.qzw.function.FunctionSerialApiGetCapabilities
-©21:49:13.080 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0x13 class com.oxyggen.qzw.function.FunctionZWSendData
-«21:49:13.081 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0x15 class com.oxyggen.qzw.function.FunctionZWGetVersion
-ª21:49:13.083 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0x1c class com.oxyggen.qzw.function.FunctionZWGetRandom
-²21:49:13.084 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0x49 class com.oxyggen.qzw.function.FunctionZWApplicationUpdate
-­21:49:13.085 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf0 class com.oxyggen.qzw.function.FunctionProprietaryAny
-­21:49:13.086 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf1 class com.oxyggen.qzw.function.FunctionProprietaryAny
-­21:49:13.086 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf2 class com.oxyggen.qzw.function.FunctionProprietaryAny
-­21:49:13.086 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf3 class com.oxyggen.qzw.function.FunctionProprietaryAny
-­21:49:13.086 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf4 class com.oxyggen.qzw.function.FunctionProprietaryAny
-­21:49:13.086 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf5 class com.oxyggen.qzw.function.FunctionProprietaryAny
-­21:49:13.086 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf6 class com.oxyggen.qzw.function.FunctionProprietaryAny
-­21:49:13.086 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf7 class com.oxyggen.qzw.function.FunctionProprietaryAny
-­21:49:13.086 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf8 class com.oxyggen.qzw.function.FunctionProprietaryAny
-­21:49:13.087 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xf9 class com.oxyggen.qzw.function.FunctionProprietaryAny
-­21:49:13.087 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xfa class com.oxyggen.qzw.function.FunctionProprietaryAny
-­21:49:13.087 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xfb class com.oxyggen.qzw.function.FunctionProprietaryAny
-­21:49:13.087 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xfc class com.oxyggen.qzw.function.FunctionProprietaryAny
-­21:49:13.087 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xfd class com.oxyggen.qzw.function.FunctionProprietaryAny
-­21:49:13.087 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for function with signature byte 0xfe class com.oxyggen.qzw.function.FunctionProprietaryAny
-â21:49:13.091 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received REQ: ZW_APPLICATION_UPDATE(state: NODE_INFO_RECEIVED, source: 15, device: ROUTING_SLAVE / SENSOR_NOTIFICATION / NOTIFICATION_SENSOR, CC: [ZWAVEPLUS_INFO, ASSOCIATION, ASSOCIATION_GRP_INFO, BATTERY, CONFIGURATION, FIRMWARE_UPDATE_MD, NOTIFICATION, POWERLEVEL, SENSOR_MULTILEVEL, VERSION, WAKE_UP, MULTI_CHANNEL, MULTI_CHANNEL_ASSOCIATION, MANUFACTURER_SPECIFIC, DEVICE_RESET_LOCALLY, CONTROL_MARK]
-ñ21:49:13.093 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received REQ: ZW_APPLICATION_UPDATE(state: NODE_INFO_RECEIVED, source: 15, device: ROUTING_SLAVE / SENSOR_NOTIFICATION / NOTIFICATION_SENSOR, CC: [ZWAVEPLUS_INFO, ASSOCIATION, ASSOCIATION_GRP_INFO, BATTERY, CONFIGURATION, FIRMWARE_UPDATE_MD, NOTIFICATION, POWERLEVEL, SENSOR_MULTILEVEL, VERSION, WAKE_UP, MULTI_CHANNEL, MULTI_CHANNEL_ASSOCIATION, MANUFACTURER_SPECIFIC, DEVICE_RESET_LOCALLY, CONTROL_MARK], sending ACK
-W21:49:13.094 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
-¤21:49:14.860 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x80 class com.oxyggen.qzw.command.CCBattery
-¥21:49:14.862 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf1 class com.oxyggen.qzw.command.CCExtended
-¥21:49:14.862 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf2 class com.oxyggen.qzw.command.CCExtended
-¥21:49:14.862 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf3 class com.oxyggen.qzw.command.CCExtended
-¥21:49:14.863 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf4 class com.oxyggen.qzw.command.CCExtended
-¥21:49:14.863 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf5 class com.oxyggen.qzw.command.CCExtended
-¥21:49:14.863 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf6 class com.oxyggen.qzw.command.CCExtended
-¥21:49:14.863 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf7 class com.oxyggen.qzw.command.CCExtended
-¥21:49:14.864 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf8 class com.oxyggen.qzw.command.CCExtended
-¥21:49:14.864 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xf9 class com.oxyggen.qzw.command.CCExtended
-¥21:49:14.864 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xfa class com.oxyggen.qzw.command.CCExtended
-¥21:49:14.864 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xfb class com.oxyggen.qzw.command.CCExtended
-¥21:49:14.864 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xfc class com.oxyggen.qzw.command.CCExtended
-¥21:49:14.865 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xfd class com.oxyggen.qzw.command.CCExtended
-¥21:49:14.865 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xfe class com.oxyggen.qzw.command.CCExtended
-¥21:49:14.865 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0xff class com.oxyggen.qzw.command.CCExtended
-¡21:49:14.867 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x82 class com.oxyggen.qzw.command.CCHail
-±21:49:14.871 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x72 class com.oxyggen.qzw.command.CCManufacturerSpecific
-©21:49:14.873 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x60 class com.oxyggen.qzw.command.CCMultiChannel
-©21:49:14.876 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x71 class com.oxyggen.qzw.command.CCNotification
-­21:49:14.879 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x31 class com.oxyggen.qzw.command.CCSensorMultilevel
-¤21:49:14.882 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x86 class com.oxyggen.qzw.command.CCVersion
-£21:49:14.887 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x84 class com.oxyggen.qzw.command.CCWakeUp
-¥21:49:14.890 DEBUG com.oxyggen.qzw.serialization.DeserializableHandler - Handler for command class with signature byte 0x98 class com.oxyggen.qzw.command.CCSecurity
-¹21:49:14.897 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 15, command: CC WAKE_UP - Command WAKE_UP_NOTIFICATION())
-È21:49:14.897 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 15, command: CC WAKE_UP - Command WAKE_UP_NOTIFICATION()), sending ACK
-W21:49:14.897 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
-â21:49:23.165 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received REQ: ZW_APPLICATION_UPDATE(state: NODE_INFO_RECEIVED, source: 15, device: ROUTING_SLAVE / SENSOR_NOTIFICATION / NOTIFICATION_SENSOR, CC: [ZWAVEPLUS_INFO, ASSOCIATION, ASSOCIATION_GRP_INFO, BATTERY, CONFIGURATION, FIRMWARE_UPDATE_MD, NOTIFICATION, POWERLEVEL, SENSOR_MULTILEVEL, VERSION, WAKE_UP, MULTI_CHANNEL, MULTI_CHANNEL_ASSOCIATION, MANUFACTURER_SPECIFIC, DEVICE_RESET_LOCALLY, CONTROL_MARK]
-ñ21:49:23.165 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received REQ: ZW_APPLICATION_UPDATE(state: NODE_INFO_RECEIVED, source: 15, device: ROUTING_SLAVE / SENSOR_NOTIFICATION / NOTIFICATION_SENSOR, CC: [ZWAVEPLUS_INFO, ASSOCIATION, ASSOCIATION_GRP_INFO, BATTERY, CONFIGURATION, FIRMWARE_UPDATE_MD, NOTIFICATION, POWERLEVEL, SENSOR_MULTILEVEL, VERSION, WAKE_UP, MULTI_CHANNEL, MULTI_CHANNEL_ASSOCIATION, MANUFACTURER_SPECIFIC, DEVICE_RESET_LOCALLY, CONTROL_MARK], sending ACK
-W21:49:23.166 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
-¹21:49:25.123 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 15, command: CC WAKE_UP - Command WAKE_UP_NOTIFICATION())
-È21:49:25.123 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 15, command: CC WAKE_UP - Command WAKE_UP_NOTIFICATION()), sending ACK
-W21:49:25.124 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
-â21:49:26.995 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received REQ: ZW_APPLICATION_UPDATE(state: NODE_INFO_RECEIVED, source: 15, device: ROUTING_SLAVE / SENSOR_NOTIFICATION / NOTIFICATION_SENSOR, CC: [ZWAVEPLUS_INFO, ASSOCIATION, ASSOCIATION_GRP_INFO, BATTERY, CONFIGURATION, FIRMWARE_UPDATE_MD, NOTIFICATION, POWERLEVEL, SENSOR_MULTILEVEL, VERSION, WAKE_UP, MULTI_CHANNEL, MULTI_CHANNEL_ASSOCIATION, MANUFACTURER_SPECIFIC, DEVICE_RESET_LOCALLY, CONTROL_MARK]
-ñ21:49:26.995 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received REQ: ZW_APPLICATION_UPDATE(state: NODE_INFO_RECEIVED, source: 15, device: ROUTING_SLAVE / SENSOR_NOTIFICATION / NOTIFICATION_SENSOR, CC: [ZWAVEPLUS_INFO, ASSOCIATION, ASSOCIATION_GRP_INFO, BATTERY, CONFIGURATION, FIRMWARE_UPDATE_MD, NOTIFICATION, POWERLEVEL, SENSOR_MULTILEVEL, VERSION, WAKE_UP, MULTI_CHANNEL, MULTI_CHANNEL_ASSOCIATION, MANUFACTURER_SPECIFIC, DEVICE_RESET_LOCALLY, CONTROL_MARK], sending ACK
-W21:49:26.996 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
-¹21:49:28.953 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 15, command: CC WAKE_UP - Command WAKE_UP_NOTIFICATION())
-È21:49:28.953 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 15, command: CC WAKE_UP - Command WAKE_UP_NOTIFICATION()), sending ACK
-W21:49:28.954 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
+K18:22:47.564 DEBUG com.oxyggen.qzw.SerialDriverTest - Test: Engine started
+Q18:22:48.601 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Main: Driver started
+L18:22:48.604 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: started
+N18:22:48.604 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: started
+P18:22:48.604 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: started
+¯18:22:48.638 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 14, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
+L18:22:48.742 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Timeout
+°18:22:48.743 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 14, CC VERSION - Command VERSION_GET()) sent, waiting 1100ms for ACK (2/4)
+Y18:22:48.801 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+y18:22:48.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing sender job
+Y18:22:48.803 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+v18:22:48.823 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
+Y18:22:48.823 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received CAN
+…18:22:48.824 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
+y18:22:48.824 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received CAN, informing sender job
+W18:22:48.824 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
+¯18:22:51.575 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 15, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
+Y18:22:51.576 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+y18:22:51.576 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing sender job
+Y18:22:51.577 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+v18:22:51.585 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
+…18:22:51.585 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
+W18:22:51.587 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
+¯18:22:55.576 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 16, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
+Y18:22:55.577 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+y18:22:55.577 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing sender job
+Y18:22:55.577 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+v18:22:55.586 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
+…18:22:55.586 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
+W18:22:55.588 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
+¯18:22:59.576 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 17, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
+Y18:22:59.577 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+y18:22:59.577 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing sender job
+Y18:22:59.577 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+v18:22:59.586 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
+…18:22:59.586 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
+W18:22:59.588 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
+¯18:23:03.577 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 18, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
+Y18:23:03.577 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+y18:23:03.577 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing sender job
+Y18:23:03.578 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+v18:23:03.586 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
+…18:23:03.587 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
+W18:23:03.588 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
+¯18:23:07.577 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 19, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
+Y18:23:07.578 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+y18:23:07.578 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing sender job
+Y18:23:07.579 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+v18:23:07.587 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
+…18:23:07.588 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
+W18:23:07.589 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
+¯18:23:11.578 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 20, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
+Y18:23:11.578 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+y18:23:11.579 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing sender job
+Y18:23:11.579 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+v18:23:11.587 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
+…18:23:11.588 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
+W18:23:11.589 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
+¯18:23:15.578 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 21, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
+Y18:23:15.579 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+y18:23:15.579 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing sender job
+Y18:23:15.580 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+v18:23:15.588 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
+…18:23:15.589 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
+W18:23:15.590 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
+¯18:23:19.579 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 22, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
+Y18:23:19.579 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+y18:23:19.579 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing sender job
+Y18:23:19.580 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+v18:23:19.588 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
+…18:23:19.589 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
+W18:23:19.590 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
+¯18:23:23.579 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 23, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
+Y18:23:23.580 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+y18:23:23.580 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing sender job
+Y18:23:23.581 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+v18:23:23.589 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
+…18:23:23.590 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
+W18:23:23.591 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
+¯18:23:27.580 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 24, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
+Y18:23:27.581 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+y18:23:27.581 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing sender job
+Y18:23:27.581 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+v18:23:27.590 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
+…18:23:27.590 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
+W18:23:27.592 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
+¯18:23:31.580 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 25, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
+Y18:23:31.581 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+y18:23:31.581 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing sender job
+Y18:23:31.582 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+v18:23:31.590 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
+…18:23:31.590 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
+W18:23:31.592 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
+¯18:23:35.581 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 26, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
+Y18:23:35.582 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+y18:23:35.582 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing sender job
+Y18:23:35.583 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+v18:23:35.591 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
+…18:23:35.591 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
+W18:23:35.593 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
+¯18:23:39.582 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 27, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
+Y18:23:39.582 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+y18:23:39.582 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing sender job
+Y18:23:39.583 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+v18:23:39.591 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
+…18:23:39.592 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
+W18:23:39.593 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
+¯18:23:43.582 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 28, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
+Y18:23:43.583 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+y18:23:43.583 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing sender job
+Y18:23:43.583 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+v18:23:43.592 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
+…18:23:43.592 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
+W18:23:43.593 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK

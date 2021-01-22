@@ -25,7 +25,7 @@ import org.apache.logging.log4j.kotlin.Logging
 import org.junit.jupiter.api.*
 import java.io.ByteArrayOutputStream
 
-internal class SerialDriverTest:Logging {
+internal class SerialDriverTest : Logging {
 
     var driver: Driver? = null
 
@@ -49,6 +49,11 @@ internal class SerialDriverTest:Logging {
 
             e.start()
             logger.debug { "Test: Engine started" }
+            for (i in 14..33) {
+                val f = CCVersion.Get().getSendDataFrame(i.toUByte())
+                e.sendFrame(f)
+                delay(4000)
+            }
             delay(60_000)
             logger.debug { "Test: Stopping engine" }
             e.stopAndWait()

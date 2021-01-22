@@ -33,12 +33,12 @@ class DeserializableHandler<T, C : DeserializableObjectContext>(
         val desers = mutableSetOf<DeserializerDefinition<T, C>>()
         deserClasses.forEach { it ->
             analyze(it)?.forEach {
-                logger.debug(
+                /*logger.debug(
                     "Handler for $objectDescription with signature byte 0x%02x %s".format(
                         it.signatureByte,
                         it.deserializerClass
                     )
-                )
+                )*/
                 desers.add(it)
             }
         }

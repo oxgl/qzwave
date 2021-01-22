@@ -8,6 +8,7 @@ import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.apache.logging.log4j.kotlin.Logging
+import java.time.LocalDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope = GlobalScope) : Logging {
@@ -21,6 +22,9 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
 
     private fun listOfChannels(count: Int) =
         sequence<Channel<EngineEvent>> { while (true) yield(Channel(Channel.UNLIMITED)) }.take(count).toList()
+
+    // Transmit control channel
+    private val txStateChannel = Channel<EngineEvent>(Channel.UNLIMITED)
 
     // Create dispatcher Channels (this is the entry point for all events)
     private val dispatcherChannels = listOfChannels(CHANNEL_PRIO_COUNT)
@@ -132,6 +136,10 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
                     sendChannels[CHANNEL_PRIO_NORMAL].send(event)
                 }
                 EngineEvent.Type.FRAME_RECEIVED -> when (event.data) {
+                    is FrameState -> {
+                        logger.debug { "Engine - Dispatcher: control frame received ${event.data}, informing sender job" }
+                        txStateChannel.send(event)
+                    }
                     is FrameSOF -> {
                         logger.debug { "Engine - Dispatcher: frame received ${event.data}, sending ACK" }
                         sendChannels[CHANNEL_PRIO_HIGH].send(EngineEvent(EngineEvent.Type.FRAME_SEND, FrameACK()))
@@ -160,9 +168,29 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
                 }
                 EngineEvent.Type.FRAME_SEND -> when (event.data) {
                     is FrameSOF -> {
-                        logger.debug { "Engine - Sender: sending frame: ${event.data}, waiting for ACK" }
-                        engineConfig.driver.putFrame(event.data, networkInfo)
-                        // TODO: Wait for ACK/NAK/CAN!
+                        for (n in 0..3) {
+                            try {
+                                engineConfig.driver.putFrame(event.data, networkInfo)
+                                val sentDateTime = LocalDateTime.now()
+                                val wait = 100 + n * 1000
+                                logger.debug { "Engine - Sender: frame ${event.data} sent, waiting ${wait}ms for ACK (${n + 1}/4)" }
+                                val frameState = withTimeout(wait.toLong()) {
+                                    var stateEvent: EngineEvent?
+                                    while (true) {
+                                        stateEvent = txStateChannel.receive()
+                                        if (stateEvent.created.isAfter(sentDateTime)) {
+                                            break
+                                        }
+                                    }
+                                    stateEvent?.data as FrameState
+                                }
+                                logger.debug { "Engine - Sender: Status received: $frameState" }
+                                if (frameState is FrameACK)
+                                    break
+                            } catch (e: TimeoutCancellationException) {
+                                logger.debug { "Engine - Sender: Timeout" }
+                            }
+                        }
                     }
                     is Frame -> {
                         logger.debug { "Engine - Sender: sending frame: ${event.data}" }
@@ -185,7 +213,7 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
             val frame = engineConfig.driver.getFrame(networkInfo)
             if (frame != null) {
                 when (frame) {
-                    is FrameACK, is FrameNAK, is FrameCAN -> dispatchFrameReceived(frame, CHANNEL_PRIO_HIGH)
+                    is FrameState -> dispatchFrameReceived(frame, CHANNEL_PRIO_HIGH)
                     else -> dispatchFrameReceived(frame, CHANNEL_PRIO_NORMAL)
                 }
                 logger.debug("Engine - Receiver: frame received $frame")

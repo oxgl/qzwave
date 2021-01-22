@@ -65,7 +65,7 @@ abstract class FunctionZWSendData {
             outputStream.write(commandBytes)
         }
 
-        override fun toString(): String = "${functionID}($command)"
+        override fun toString(): String = "${functionID}(nodeId = $nodeID, $command)"
 
     }
 
@@ -83,7 +83,7 @@ abstract class FunctionZWSendData {
             outputStream.write(mapper.serialize(this))
         }
 
-        override fun toString(): String = "${functionID}(out result = $success)"
+        override fun toString(): String = "${functionID}(result = $success)"
     }
 
 }
