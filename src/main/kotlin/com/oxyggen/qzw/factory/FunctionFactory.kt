@@ -35,7 +35,7 @@ class FunctionFactory {
 //               FunctionMemoryGetByte::class,
 //               FunctionZWReadMemory::class,
 //               FunctionZWSetLearnNodeState::class,
-//               FunctionZWGetNodeProtocolInfo::class,
+               FunctionZWGetNodeProtocolInfo::class,
 //               FunctionZWSetDefault::class,
 //               FunctionZWNewController::class,
 //               FunctionZWReplicationCommandComplete::class,

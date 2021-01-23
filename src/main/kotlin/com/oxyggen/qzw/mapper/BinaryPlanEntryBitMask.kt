@@ -39,12 +39,16 @@ class BinaryPlanEntryBitMask(
                 // 2nd evaluate all sub-values
                 val mask = masks.entries.find { nameWithoutPrefix(it.key) == name }
                 if (mask != null) {
-                    val byte = context.binary[getByteIndexRange(context).first]
+                    if (isEnabled(context)) {
+                        val byte = context.binary[getByteIndexRange(context).first]
 
-                    masks.forEach {
-                        val key = nameWithoutPrefix(it.key)
-                        val value = byte.getBitRange(it.value.range)
-                        context.values[key] = value
+                        masks.forEach {
+                            val key = nameWithoutPrefix(it.key)
+                            val value = byte.getBitRange(it.value.range)
+                            context.values[key] = value
+                        }
+                    } else {
+                        context.values[name] = 0
                     }
 
                     return context.values[name]

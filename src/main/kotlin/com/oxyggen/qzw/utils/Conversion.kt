@@ -4,11 +4,16 @@ import com.oxyggen.qzw.types.TypeToByte
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 
+@OptIn(ExperimentalUnsignedTypes::class)
 class Conversion {
     companion object {
         fun toInt(value: Any): Int = when (value) {
             is Char -> value.toInt()
             is Number -> value.toInt()
+            is UByte -> value.toInt()
+            is UInt -> value.toInt()
+            is UShort -> value.toInt()
+            is ULong -> value.toInt()
             is Boolean -> if (value) 1 else 0
             is String -> if (value.startsWith("0x")) value.drop(2).toInt(16) else value.toInt()
             is TypeToByte -> value.byteValue.toInt()
@@ -20,9 +25,8 @@ class Conversion {
         fun toBoolean(value: Any): Boolean = when (value) {
             is Char -> value == '1' || value.toUpperCase() == 'X'
             is Boolean -> value
-            is Number -> value.toInt() != 0
             is String -> value.toLowerCase().trim() == "true"
-            else -> false
+            else -> toInt(value) != 0
         }
 
         fun toString(value: Any, charset: Charset = Charsets.UTF_8): String = when (value) {

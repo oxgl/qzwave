@@ -3,8 +3,8 @@ package com.oxyggen.qzw.function
 import com.oxyggen.qzw.device.DeviceBasicType
 import com.oxyggen.qzw.device.DeviceGenericType
 import com.oxyggen.qzw.device.DeviceSpecificType
-import com.oxyggen.qzw.extensions.*
-import com.oxyggen.qzw.frame.FrameSOF
+import com.oxyggen.qzw.extensions.get
+import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.mapper.mapper
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.serialization.DeserializableFunctionContext
@@ -20,7 +20,7 @@ import java.io.OutputStream
 abstract class FunctionZWGetNodeProtocolInfo {
 
     // HOST->ZW: REQ | 0x41 | bNodeID
-    // ZW->HOST: RES | 0x41 | nodeInfo (see figure above)
+    // ZW->HOST: RES | 0x41 | nodeInfo (see figure INS13954-Instruction-Z-Wave-500-Series-Appl-Programmers-Guide-v6_8x_0x.pdf)
 
     companion object : BinaryFunctionDeserializer {
 
@@ -52,6 +52,9 @@ abstract class FunctionZWGetNodeProtocolInfo {
             super.serialize(outputStream, context)
             outputStream.write(mapper.serialize(this))
         }
+
+        override fun toString() = buildParamList("nodeID", nodeID)
+
     }
 
 
@@ -66,6 +69,7 @@ abstract class FunctionZWGetNodeProtocolInfo {
     ) : FunctionResponse(FunctionID.ZW_GET_NODE_PROTOCOL_INFO) {
         companion object {
             fun deserialize(inputStream: InputStream): Response {
+                // We can't use mapper because DeviceSpecificType has 2 imports
                 val capability = inputStream.getByte()
                 val listening = capability[7]
                 val security = inputStream.getByte()
@@ -90,6 +94,16 @@ abstract class FunctionZWGetNodeProtocolInfo {
                 )
             }
         }
-    }
 
+        override fun toString(): String =
+            buildParamList(
+                "basic", deviceBasicType,
+                "generic", deviceGenericType,
+                "specific", deviceSpecificType,
+                "listening", listening,
+                "optionalFunctionality", optionalFunctionality,
+                "sensor 1000ms", sensor1000ms,
+                "sensor 250ms", sensor250ms
+            )
+    }
 }

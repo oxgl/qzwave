@@ -21,6 +21,7 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+    //implementation("com.neuronrobotics:nrjavaserial:5.2.1")
     implementation("com.fazecast:jSerialComm:[2.0.0,3.0.0)")
     implementation("org.junit.jupiter:junit-jupiter:5.4.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")

@@ -25,6 +25,7 @@ class CCManufacturerSpecific {
             return when (val commandID = CommandID.getByByteValue(context.commandClassID, inputStream.getByte())) {
                 CommandID.MANUFACTURER_SPECIFIC_GET -> Get.deserialize(inputStream, context)
                 CommandID.MANUFACTURER_SPECIFIC_REPORT -> Report.deserialize(inputStream, context)
+                CommandID.DEVICE_SPECIFIC_GET -> DeviceSpecificGet.deserialize(inputStream, context)
                 CommandID.DEVICE_SPECIFIC_REPORT -> DeviceSpecificReport.deserialize(inputStream, context)
                 else -> throw IOException("${context.commandClassID}: Not implemented command ${commandID}!")
             }

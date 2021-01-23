@@ -22,7 +22,6 @@ abstract class FunctionZWApplicationUpdate {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(SIGNATURE)
 
-        @ExperimentalUnsignedTypes
         override fun deserialize(
             inputStream: InputStream,
             context: DeserializableFunctionContext
@@ -46,7 +45,7 @@ abstract class FunctionZWApplicationUpdate {
             fun deserialize(inputStream: InputStream): Request {
                 val updateState =
                     UpdateState.getByByteValue(inputStream.getByte()) ?: throw IOException("Invalid update state!")
-                val nodeId = inputStream.getUByte()
+                val nodeID = inputStream.getUByte()
                 val cmdLength = inputStream.getUByte().toInt()
                 val deviceBasicType =
                     DeviceBasicType.getByByteValue(inputStream.getByte())
@@ -67,7 +66,7 @@ abstract class FunctionZWApplicationUpdate {
 
                 return Request(
                     updateState,
-                    nodeId,
+                    nodeID,
                     deviceBasicType,
                     deviceGenericType,
                     deviceSpecificType,

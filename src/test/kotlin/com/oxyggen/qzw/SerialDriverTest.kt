@@ -1,9 +1,6 @@
 package com.oxyggen.qzw
 
-import com.oxyggen.qzw.command.CCBattery
-import com.oxyggen.qzw.command.CCNotification
-import com.oxyggen.qzw.command.CCSensorMultilevel
-import com.oxyggen.qzw.command.CCVersion
+import com.oxyggen.qzw.command.*
 import com.oxyggen.qzw.driver.Driver
 import com.oxyggen.qzw.driver.SerialDriver
 import com.oxyggen.qzw.engine.Engine
@@ -13,10 +10,7 @@ import com.oxyggen.qzw.factory.FrameFactory
 import com.oxyggen.qzw.factory.FunctionFactory
 import com.oxyggen.qzw.frame.FrameACK
 import com.oxyggen.qzw.frame.FrameSOF
-import com.oxyggen.qzw.function.FunctionSerialApiGetCapabilities
-import com.oxyggen.qzw.function.FunctionSerialApiGetInitData
-import com.oxyggen.qzw.function.FunctionZWGetRandom
-import com.oxyggen.qzw.function.FunctionZWGetVersion
+import com.oxyggen.qzw.function.*
 import com.oxyggen.qzw.serialization.SerializableFrameContext
 import com.oxyggen.qzw.types.*
 import kotlinx.coroutines.delay
@@ -49,11 +43,17 @@ internal class SerialDriverTest : Logging {
 
             e.start()
             logger.debug { "Test: Engine started" }
-            for (i in 14..33) {
-                val f = CCVersion.Get().getSendDataFrame(i.toUByte())
-                e.sendFrame(f)
+
+            e.sendFrame(FunctionSerialApiGetInitData.Request().getFrame())
+
+            /*for (i in 2..10) {
+                val fNPI = FunctionZWGetNodeProtocolInfo.Request(i.toUByte()).getFrame()
+                e.sendFrame(fNPI)
+                val f =
+                    CCVersion.Get().getSendDataFrame(i.toUByte())
+//                e.sendFrame(f)
                 delay(4000)
-            }
+            }*/
             delay(60_000)
             logger.debug { "Test: Stopping engine" }
             e.stopAndWait()

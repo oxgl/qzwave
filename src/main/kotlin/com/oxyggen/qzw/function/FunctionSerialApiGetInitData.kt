@@ -78,11 +78,11 @@ abstract class FunctionSerialApiGetInitData {
             outputStream.putByte(chipVersion)
         }
 
-        override fun toString(): String =
-            "${functionID}(" +
-                    "ver: $serialApiVersion, " +
-                    "capabilities: [$capabilities], " +
-                    "chip type/version: $chipType/$chipVersion, " +
-                    "nodes: $nodes)"
+        override fun toString() = buildParamList(
+            "version", serialApiVersion,
+            "capabilities", "[$capabilities]",
+            "chip type/version", "$chipType/$chipVersion",
+            "nodes", "$nodes"
+        )
     }
 }

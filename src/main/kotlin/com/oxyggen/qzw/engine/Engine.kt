@@ -44,10 +44,11 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
 
     fun stop(gently: Boolean = true) = coroutineScope.launch { stopWithLock(gently) }
 
-    fun sendFrame(frame: Frame) =
+    fun sendFrame(frame: Frame) {
         coroutineScope.launch {
-            if (started) dispatchFrameSend(frame)
+            dispatchFrameSend(frame)
         }
+    }
 
     suspend fun stopAndWait(gently: Boolean = true) {
         stopWithLock(gently)
@@ -103,7 +104,6 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
 
         // Wait for receiver job
         receiverJob.join()
-
     }
 
     private suspend fun dispatch(event: EngineEvent, priority: Int = CHANNEL_PRIO_NORMAL) =
@@ -172,7 +172,7 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
                             try {
                                 engineConfig.driver.putFrame(event.data, networkInfo)
                                 val sentDateTime = LocalDateTime.now()
-                                val wait = 100 + n * 1000
+                                val wait = 200 + n * 1000
                                 logger.debug { "Engine - Sender: frame ${event.data} sent, waiting ${wait}ms for ACK (${n + 1}/4)" }
                                 val frameState = withTimeout(wait.toLong()) {
                                     var stateEvent: EngineEvent?
@@ -198,7 +198,7 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
                     }
                 }
                 else -> {
-                    logger.debug { "Engine - Sender: unknown event received ${event}" }
+                    logger.debug { "Engine - Sender: unknown event received $event" }
                 }
             }
             delay(10)
@@ -212,11 +212,11 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
         while (engineConfig.driver.started) {
             val frame = engineConfig.driver.getFrame(networkInfo)
             if (frame != null) {
+                logger.debug("Engine - Receiver: frame received $frame")
                 when (frame) {
                     is FrameState -> dispatchFrameReceived(frame, CHANNEL_PRIO_HIGH)
                     else -> dispatchFrameReceived(frame, CHANNEL_PRIO_NORMAL)
                 }
-                logger.debug("Engine - Receiver: frame received $frame")
             }
         }
 

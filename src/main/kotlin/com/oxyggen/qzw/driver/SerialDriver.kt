@@ -5,7 +5,6 @@ import com.oxyggen.qzw.factory.FrameFactory
 import com.oxyggen.qzw.frame.Frame
 import com.oxyggen.qzw.node.NetworkInfoGetter
 import com.oxyggen.qzw.serialization.SerializableFrameContext
-import kotlinx.coroutines.delay
 import org.apache.logging.log4j.kotlin.Logging
 
 open class SerialDriver(private val device: String) : Driver, Logging {

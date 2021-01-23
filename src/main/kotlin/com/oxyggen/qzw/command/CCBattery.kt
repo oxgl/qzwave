@@ -79,5 +79,7 @@ class CCBattery {
             super.serialize(outputStream, context)
             outputStream.write(mapper.serialize(this, context.commandClassVersion))
         }
+
+        override fun toString(): String = "CC $commandClassID - Command ${commandId}(level $batteryLevel%)"
     }
 }

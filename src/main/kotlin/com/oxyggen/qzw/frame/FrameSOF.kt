@@ -83,8 +83,6 @@ open class FrameSOF(val function: Function) : Frame() {
 
     @ExperimentalUnsignedTypes
     override fun serialize(outputStream: OutputStream, context: SerializableFrameContext) {
-        outputStream.putByte(SIGNATURE)
-
         var resultData = ByteArray(0)
 
         val functionOS = ByteArrayOutputStream()
@@ -101,6 +99,7 @@ open class FrameSOF(val function: Function) : Frame() {
 
         resultData += calculateChecksum(resultData)
 
+        outputStream.putByte(SIGNATURE)
         outputStream.write(resultData)
     }
 

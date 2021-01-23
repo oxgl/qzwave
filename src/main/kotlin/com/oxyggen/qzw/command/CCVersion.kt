@@ -70,9 +70,9 @@ class CCVersion {
 
         override fun toString(): String =
             "CC ${commandClassID} - Command ${commandId}(" +
-                    "out library type ${libraryType}, " +
-                    "out prot vers ${protocolVersion}.${protocolSubVersion}, " +
-                    "out appl vers ${applicationVersion}.${applicationSubVersion})"
+                    "library type ${libraryType}, " +
+                    "prot vers ${protocolVersion}.${protocolSubVersion}, " +
+                    "appl vers ${applicationVersion}.${applicationSubVersion})"
     }
 
     class CommandClassGet(val ccID: CommandClassID) :

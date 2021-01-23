@@ -1,6 +1,7 @@
 package com.oxyggen.qzw.function
 
 import com.oxyggen.qzw.command.Command
+import com.oxyggen.qzw.extensions.putByte
 import com.oxyggen.qzw.extensions.putUByte
 import com.oxyggen.qzw.frame.FrameSOF
 import com.oxyggen.qzw.mapper.mapper
@@ -52,17 +53,25 @@ abstract class FunctionZWSendData {
         companion object {
         }
 
+        // HOST->ZW: REQ | 0x13 | nodeID | dataLength | pData[ ] | txOptions | funcID
         override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
             super.serialize(outputStream, context)
-            outputStream.putUByte(nodeID)
-
             val currentNode = context.networkInfo.node[nodeID] ?: NodeInfo.getInitial(nodeID)
 
             val commandOS = ByteArrayOutputStream()
             command.serialize(commandOS, SerializableCommandContext(context, this, currentNode, command.commandClassID))
-
             val commandBytes = commandOS.toByteArray()
+
+            // Send nodeID
+            outputStream.putUByte(nodeID)
+            // dataLength & pData[ ]
+            outputStream.putUByte(commandBytes.size.toUByte())
             outputStream.write(commandBytes)
+            // txOptions
+            outputStream.putByte(txOptions.byteValue)
+            // funcID
+            outputStream.putByte(callbackFunction)
+
         }
 
         override fun toString(): String = "${functionID}(nodeId = $nodeID, $command)"

@@ -1,120 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.oxyggen.qzw.SerialDriverTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2021-01-22T16:48:56" hostname="oxyggen-pc" time="96.225">
+<testsuite name="com.oxyggen.qzw.SerialDriverTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2021-01-23T00:25:05" hostname="oxyggen-pc" time="60.224">
   <properties/>
-  <testcase name="Device open &amp; close test()" classname="com.oxyggen.qzw.SerialDriverTest" time="96.225"/>
-  <system-out><![CDATA[17:48:56.790 DEBUG com.oxyggen.qzw.SerialDriverTest - Test: Engine started
-17:48:57.837 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Main: Driver started
-17:48:57.838 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: started
-17:48:57.839 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: started
-17:48:57.839 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: started
-17:48:57.863 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 1, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
-17:48:57.966 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Timeout
-17:48:57.967 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 1, CC VERSION - Command VERSION_GET()) sent, waiting 1100ms for ACK (2/4)
-17:48:58.022 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
-17:48:58.022 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing receiver
-17:48:58.023 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
-17:48:58.043 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
-17:48:58.043 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received CAN
-17:48:58.044 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
-17:48:58.044 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received CAN, informing receiver
-17:48:58.044 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
-17:49:00.801 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 2, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
-17:49:00.801 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: CAN
-17:49:00.801 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
-17:49:00.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 2, CC VERSION - Command VERSION_GET()) sent, waiting 1100ms for ACK (2/4)
-17:49:00.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing receiver
-17:49:00.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
-17:49:00.810 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
-17:49:00.811 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
-17:49:00.813 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
-17:49:00.813 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received CAN
-17:49:00.814 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received CAN, informing receiver
-17:49:04.801 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 3, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
-17:49:04.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: CAN
-17:49:04.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 3, CC VERSION - Command VERSION_GET()) sent, waiting 1100ms for ACK (2/4)
-17:49:04.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
-17:49:04.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing receiver
-17:49:04.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
-17:49:04.814 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
-17:49:04.814 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
-17:49:04.815 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
-17:49:04.818 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received CAN
-17:49:04.818 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received CAN, informing receiver
-17:49:08.801 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 4, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
-17:49:08.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: CAN
-17:49:08.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 4, CC VERSION - Command VERSION_GET()) sent, waiting 1100ms for ACK (2/4)
-17:49:08.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
-17:49:08.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing receiver
-17:49:08.803 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
-17:49:08.811 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
-17:49:08.812 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
-17:49:08.813 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
-17:49:08.814 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received CAN
-17:49:08.815 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received CAN, informing receiver
-17:49:12.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 5, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
-17:49:12.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: CAN
-17:49:12.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 5, CC VERSION - Command VERSION_GET()) sent, waiting 1100ms for ACK (2/4)
-17:49:12.803 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
-17:49:12.803 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing receiver
-17:49:12.803 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
-17:49:12.812 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
-17:49:12.812 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
-17:49:12.813 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
-17:49:12.815 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received CAN
-17:49:12.815 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received CAN, informing receiver
-17:49:16.802 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 6, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
-17:49:16.803 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: CAN
-17:49:16.803 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 6, CC VERSION - Command VERSION_GET()) sent, waiting 1100ms for ACK (2/4)
-17:49:16.803 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
-17:49:16.803 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing receiver
-17:49:16.803 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
-17:49:16.812 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
-17:49:16.812 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
-17:49:16.814 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
-17:49:16.815 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received CAN
-17:49:16.815 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received CAN, informing receiver
-17:49:20.803 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 7, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
-17:49:20.803 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: CAN
-17:49:20.803 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 7, CC VERSION - Command VERSION_GET()) sent, waiting 1100ms for ACK (2/4)
-17:49:20.803 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
-17:49:20.804 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing receiver
-17:49:20.804 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
-17:49:20.812 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
-17:49:20.813 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
-17:49:20.814 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
-17:49:20.815 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received CAN
-17:49:20.816 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received CAN, informing receiver
-17:49:24.804 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 8, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
-17:49:24.804 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: CAN
-17:49:24.804 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 8, CC VERSION - Command VERSION_GET()) sent, waiting 1100ms for ACK (2/4)
-17:49:24.804 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
-17:49:24.805 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing receiver
-17:49:24.805 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
-17:49:24.813 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
-17:49:24.814 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
-17:49:24.815 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
-17:49:24.816 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received CAN
-17:49:24.817 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received CAN, informing receiver
-17:49:28.804 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 9, CC VERSION - Command VERSION_GET()) sent, waiting 100ms for ACK (1/4)
-17:49:28.805 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: CAN
-17:49:28.805 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: ZW_SEND_DATA(nodeId = 9, CC VERSION - Command VERSION_GET()) sent, waiting 1100ms for ACK (2/4)
-17:49:28.805 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
-17:49:28.805 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing receiver
-17:49:28.805 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
-17:49:28.814 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: ZW_SEND_DATA(result = true)
-17:49:28.814 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: ZW_SEND_DATA(result = true), sending ACK
-17:49:28.816 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
-17:49:28.817 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received CAN
-17:49:28.817 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received CAN, informing receiver
-17:50:32.804 DEBUG com.oxyggen.qzw.SerialDriverTest - Test: Stopping engine
-17:50:32.805 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: received event: EngineEvent(type=ABORT, data=null)
-17:50:32.805 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: stopped
-17:50:32.805 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: received event: EngineEvent(type=ABORT, data=null)
-17:50:32.816 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: stopped
-17:50:32.816 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Main: Stopping driver
-17:50:32.817 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: job stopped (because driver is inactive)
-17:50:32.817 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Main: Driver stopped
-17:50:32.818 DEBUG com.oxyggen.qzw.SerialDriverTest - Test: Engine stopped
+  <testcase name="Device open &amp; close test()" classname="com.oxyggen.qzw.SerialDriverTest" time="60.224"/>
+  <system-out><![CDATA[01:25:05.714 DEBUG com.oxyggen.qzw.SerialDriverTest - Test: Engine started
+01:25:06.754 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Main: Driver started
+01:25:06.755 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: started
+01:25:06.756 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: started
+01:25:06.756 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: started
+01:25:06.780 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: SERIAL_API_GET_INIT_DATA() sent, waiting 200ms for ACK (1/4)
+01:25:06.918 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+01:25:06.919 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: control frame received ACK, informing sender job
+01:25:06.920 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+01:25:06.934 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: SERIAL_API_GET_INIT_DATA(version: 5, capabilities: [Controller API, Timer not supported, Primary controller, SIS controller], chip type/version: 5/0, nodes: [1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 28, 30, 32, 33])
+01:25:06.935 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: SERIAL_API_GET_INIT_DATA(version: 5, capabilities: [Controller API, Timer not supported, Primary controller, SIS controller], chip type/version: 5/0, nodes: [1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 28, 30, 32, 33]), sending ACK
+01:25:06.935 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: sending frame: ACK
+01:26:05.720 DEBUG com.oxyggen.qzw.SerialDriverTest - Test: Stopping engine
+01:26:05.721 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: received event: EngineEvent(type=ABORT, data=null, created=2021-01-23T01:25:05.723345)
+01:26:05.721 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: stopped
+01:26:05.722 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: received event: EngineEvent(type=ABORT, data=null, created=2021-01-23T01:25:05.723345)
+01:26:05.732 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: stopped
+01:26:05.732 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Main: Stopping driver
+01:26:05.733 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Main: Driver stopped
+01:26:05.734 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: job stopped (because driver is inactive)
+01:26:05.734 DEBUG com.oxyggen.qzw.SerialDriverTest - Test: Engine stopped
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

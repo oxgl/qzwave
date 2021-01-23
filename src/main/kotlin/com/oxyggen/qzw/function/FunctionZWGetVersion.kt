@@ -60,12 +60,10 @@ abstract class FunctionZWGetVersion {
         override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
             super.serialize(outputStream, context)
             outputStream.write(mapper.serialize(this))
-/*            outputStream.write(ByteArray(12))
-            outputStream.putByte(LibraryType.CONTROLLER_STATIC.byteValue)*/
         }
 
         override fun toString(): String {
-            return "$functionID(out '$versionText', out $libraryType)"
+            return "$functionID('$versionText', $libraryType)"
         }
     }
 
