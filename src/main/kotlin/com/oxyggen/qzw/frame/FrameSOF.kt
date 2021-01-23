@@ -75,6 +75,9 @@ open class FrameSOF(val function: Function) : Frame() {
         }
     }
 
+    override val sendTimeouts: List<Long>
+        get() = SEND_TIMEOUTS_DEFAULT
+
     val frameType = when (function) {
         is FunctionRequest -> FrameType.REQUEST
         is FunctionResponse -> FrameType.RESPONSE

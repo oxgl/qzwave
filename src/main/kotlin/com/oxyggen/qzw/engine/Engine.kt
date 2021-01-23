@@ -167,34 +167,34 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
                     isActive = false
                 }
                 EngineEvent.Type.FRAME_SEND -> when (event.data) {
-                    is FrameSOF -> {
-                        for (n in 0..3) {
+                    is Frame -> {
+                        val timeouts = event.data.sendTimeouts
+                        for (timeout in timeouts.withIndex())
                             try {
                                 engineConfig.driver.putFrame(event.data, networkInfo)
-                                val sentDateTime = LocalDateTime.now()
-                                val wait = 200 + n * 1000
-                                logger.debug { "Engine - Sender: frame ${event.data} sent, waiting ${wait}ms for ACK (${n + 1}/4)" }
-                                val frameState = withTimeout(wait.toLong()) {
-                                    var stateEvent: EngineEvent?
-                                    while (true) {
-                                        stateEvent = txStateChannel.receive()
-                                        if (stateEvent.created.isAfter(sentDateTime)) {
-                                            break
+                                if (timeout.value > 0) {
+                                    val sentDateTime = LocalDateTime.now()
+                                    logger.debug { "Engine - Sender: frame ${event.data} sent, waiting ${timeout}ms for ACK (${timeout.index + 1}/${timeouts.size})" }
+                                    val frameState = withTimeout(timeout.value) {
+                                        var stateEvent: EngineEvent?
+                                        while (true) {
+                                            stateEvent = txStateChannel.receive()
+                                            if (stateEvent.created.isAfter(sentDateTime)) {
+                                                break
+                                            }
                                         }
+                                        stateEvent?.data as FrameState
                                     }
-                                    stateEvent?.data as FrameState
-                                }
-                                logger.debug { "Engine - Sender: Status received: $frameState" }
-                                if (frameState is FrameACK)
+                                    logger.debug { "Engine - Sender: Status received: $frameState" }
+                                    if (frameState is FrameACK)
+                                        break
+                                } else {
+                                    logger.debug { "Engine - Sender: frame ${event.data} sent" }
                                     break
+                                }
                             } catch (e: TimeoutCancellationException) {
                                 logger.debug { "Engine - Sender: Timeout" }
                             }
-                        }
-                    }
-                    is Frame -> {
-                        logger.debug { "Engine - Sender: sending frame: ${event.data}" }
-                        engineConfig.driver.putFrame(event.data, networkInfo)
                     }
                 }
                 else -> {
