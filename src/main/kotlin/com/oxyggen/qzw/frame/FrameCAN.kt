@@ -10,7 +10,7 @@ import com.oxyggen.qzw.serialization.SerializableFrameContext
 import java.io.InputStream
 import java.io.OutputStream
 
-class FrameCAN : FrameState() {
+class FrameCAN(predecessor: Frame? = null) : FrameState(predecessor) {
 
     companion object : BinaryFrameDeserializer {
         const val SIGNATURE = 0x18.toByte()
@@ -20,7 +20,6 @@ class FrameCAN : FrameState() {
 
     override fun serialize(outputStream: OutputStream, context: SerializableFrameContext) =
         outputStream.putByte(SIGNATURE)
-
 
     override fun toString() = "CAN"
 

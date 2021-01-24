@@ -20,7 +20,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import kotlin.experimental.xor
 
-open class FrameSOF(val function: Function) : Frame() {
+open class FrameSOF(val function: Function, predecessor: Frame? = null) : Frame(predecessor) {
 
     companion object : BinaryFrameDeserializer {
         const val SIGNATURE = 0x01.toByte()

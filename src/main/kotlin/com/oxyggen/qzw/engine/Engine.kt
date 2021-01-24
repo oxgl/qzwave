@@ -89,7 +89,7 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
         val senderJob = coroutineScope.launch { sendJob() }
 
         // Driver -> DispatcherChannel
-        val receiverJob = coroutineScope.launch { receiveJob() }
+        val receiverJob = coroutineScope.launch(Dispatchers.IO) { receiveJob() }
 
         // DispatcherChannel -> SendChannel
         val dispatcherJob = coroutineScope.launch { dispatcherJob() }
@@ -183,11 +183,12 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
                                                 break
                                             }
                                         }
-                                        stateEvent?.data as FrameState
+                                        (stateEvent?.data as FrameState).withPredecessor(event.data)
                                     }
                                     logger.debug { "Engine - Sender: Status received: $frameState" }
-                                    if (frameState is FrameACK)
+                                    if (frameState is FrameACK) {
                                         break
+                                    }
                                 } else {
                                     logger.debug { "Engine - Sender: frame ${event.data} sent" }
                                     break
