@@ -12,13 +12,15 @@ abstract class Frame(predecessor: Frame? = null) {
         protected set
 
     companion object {
-        val SEND_TIMEOUTS_DEFAULT = listOf<Long>(100, 1100, 2100, 3100)
+        val SEND_TIMEOUTS_DEFAULT = generateSequence(100L) { it + 1000 }.take(4).toList()
         val SENT_TIMEOUTS_SEND_ONLY = listOf<Long>(0)
     }
 
     abstract val sendTimeouts: List<Long>
 
     abstract fun serialize(outputStream: OutputStream, context: SerializableFrameContext)
+
+    //abstract fun isSuccessorOf(frame: Frame): Boolean
 
     open fun withPredecessor(predecessor: Frame): Frame {
         this.predecessor = predecessor
@@ -31,7 +33,7 @@ abstract class Frame(predecessor: Frame? = null) {
             result += predecessor?.toStringWithPredecessor()
             result += " -> "
         }
-        return result
+        return result + toString()
     }
 
 }

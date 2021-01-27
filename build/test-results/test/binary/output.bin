@@ -1,2 +1,46 @@
-„13:55:57.251 [DefaultDispatcher-worker-2 @coroutine#3] ERROR com.oxyggen.qzw.engine.Engine - Engine - Main: Unable to start driver!
-K13:55:57.540 DEBUG com.oxyggen.qzw.SerialDriverTest - Test: Engine started
+Q15:30:43.623 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Main: Driver started
+L15:30:43.626 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: started
+N15:30:43.626 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: started
+P15:30:43.626 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: started
+„15:30:43.632 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame send request REQ: SERIAL_API_GET_INIT_DATA(), sending
+Œ15:30:43.645 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: SERIAL_API_GET_INIT_DATA() sent, waiting 100ms for ACK (1/4)
+L15:30:43.749 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Timeout
+15:30:43.749 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: SERIAL_API_GET_INIT_DATA() sent, waiting 1100ms for ACK (2/4)
+Y15:30:43.797 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received CAN
+Y15:30:43.797 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received CAN
+³15:30:43.797 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: status frame without predecessor received CAN, informing sender job - it's probably waiting for this frame
+³15:30:43.798 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: status frame without predecessor received CAN, informing sender job - it's probably waiting for this frame
+Y15:30:43.798 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: CAN
+15:30:43.799 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: SERIAL_API_GET_INIT_DATA() sent, waiting 2100ms for ACK (3/4)
+Y15:30:43.799 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received CAN
+³15:30:43.799 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: status frame without predecessor received CAN, informing sender job - it's probably waiting for this frame
+Y15:30:43.800 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: CAN
+15:30:43.800 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: SERIAL_API_GET_INIT_DATA() sent, waiting 3100ms for ACK (4/4)
+Y15:30:43.800 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received CAN
+³15:30:43.800 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: status frame without predecessor received CAN, informing sender job - it's probably waiting for this frame
+Y15:30:43.801 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: CAN
+½15:30:44.088 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 18, command: CC BATTERY - Command BATTERY_REPORT(level 100%))
+Ì15:30:44.089 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 18, command: CC BATTERY - Command BATTERY_REPORT(level 100%)), sending ACK
+S15:30:44.089 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame ACK sent
+Ç15:30:44.090 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 18, command: CC SENSOR_MULTILEVEL - Command SENSOR_MULTILEVEL_REPORT())
+Ö15:30:44.091 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 18, command: CC SENSOR_MULTILEVEL - Command SENSOR_MULTILEVEL_REPORT()), sending ACK
+S15:30:44.099 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame ACK sent
+Ç15:30:44.101 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 18, command: CC SENSOR_MULTILEVEL - Command SENSOR_MULTILEVEL_REPORT())
+Ö15:30:44.101 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received REQ: APPLICATION_COMMAND_HANDLER(status ReceiveStatus(routedBusy=false, lowPower=false, castType=SINGLE, explore=false, foreignFrame=false, foreignHomeId=false), source: 18, command: CC SENSOR_MULTILEVEL - Command SENSOR_MULTILEVEL_REPORT()), sending ACK
+S15:30:44.110 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame ACK sent
+„15:30:48.538 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame send request REQ: SERIAL_API_GET_INIT_DATA(), sending
+Œ15:30:48.538 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame REQ: SERIAL_API_GET_INIT_DATA() sent, waiting 100ms for ACK (1/4)
+Y15:30:48.538 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received ACK
+³15:30:48.539 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: status frame without predecessor received ACK, informing sender job - it's probably waiting for this frame
+Y15:30:48.539 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: Status received: ACK
+…15:30:48.539 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: status frame received REQ: SERIAL_API_GET_INIT_DATA() -> ACK
+Ñ15:30:48.638 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Receiver: frame received RES: SERIAL_API_GET_INIT_DATA(version: 5, capabilities: [Controller API, Timer not supported, Primary controller, SIS controller], chip type/version: 5/0, nodes: [1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 28, 30, 32, 33])
+à15:30:48.639 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: frame received RES: SERIAL_API_GET_INIT_DATA(version: 5, capabilities: [Controller API, Timer not supported, Primary controller, SIS controller], chip type/version: 5/0, nodes: [1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 28, 30, 32, 33]), sending ACK
+S15:30:48.639 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: frame ACK sent
+L15:31:48.538 DEBUG com.oxyggen.qzw.SerialDriverTest - Test: Stopping engine
+^15:31:48.539 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: received event: ABORT
+P15:31:48.539 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Dispatcher: stopped
+Z15:31:48.539 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: received event: ABORT
+L15:31:48.550 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Sender: stopped
+R15:31:48.550 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Main: Stopping driver
+Q15:31:48.637 DEBUG com.oxyggen.qzw.engine.Engine - Engine - Main: Driver stopped

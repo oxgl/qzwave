@@ -3,17 +3,13 @@ package com.oxyggen.qzw.function
 import com.oxyggen.qzw.command.Command
 import com.oxyggen.qzw.extensions.putByte
 import com.oxyggen.qzw.extensions.putUByte
-import com.oxyggen.qzw.frame.FrameSOF
 import com.oxyggen.qzw.mapper.mapper
 import com.oxyggen.qzw.node.NodeInfo
 import com.oxyggen.qzw.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.serialization.DeserializableFunctionContext
 import com.oxyggen.qzw.serialization.SerializableCommandContext
 import com.oxyggen.qzw.serialization.SerializableFunctionContext
-import com.oxyggen.qzw.types.FrameType
-import com.oxyggen.qzw.types.FunctionID
-import com.oxyggen.qzw.types.NodeID
-import com.oxyggen.qzw.types.TransmitOptions
+import com.oxyggen.qzw.types.*
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -48,7 +44,7 @@ abstract class FunctionZWSendData {
         val nodeID: NodeID,
         val command: Command,
         val txOptions: TransmitOptions,
-        val callbackFunction: Byte
+        val callbackID: FunctionCallbackID
     ) : FunctionRequest(FunctionID.ZW_SEND_DATA) {
         companion object {
         }
@@ -64,13 +60,16 @@ abstract class FunctionZWSendData {
 
             // Send nodeID
             outputStream.putUByte(nodeID)
+
             // dataLength & pData[ ]
             outputStream.putUByte(commandBytes.size.toUByte())
             outputStream.write(commandBytes)
+
             // txOptions
             outputStream.putByte(txOptions.byteValue)
+
             // funcID
-            outputStream.putByte(callbackFunction)
+            outputStream.putUByte(callbackID)
 
         }
 

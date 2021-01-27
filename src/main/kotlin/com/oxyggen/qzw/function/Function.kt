@@ -26,4 +26,5 @@ abstract class Function(val functionID: FunctionID) : Logging {
     }
 
     override fun toString(): String = "${functionID}()"
+
 }

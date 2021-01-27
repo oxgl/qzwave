@@ -4,10 +4,7 @@ import com.oxyggen.qzw.extensions.putByte
 import com.oxyggen.qzw.frame.FrameSOF
 import com.oxyggen.qzw.function.FunctionZWSendData
 import com.oxyggen.qzw.serialization.SerializableCommandContext
-import com.oxyggen.qzw.types.CommandClassID
-import com.oxyggen.qzw.types.CommandID
-import com.oxyggen.qzw.types.NodeID
-import com.oxyggen.qzw.types.TransmitOptions
+import com.oxyggen.qzw.types.*
 import java.io.OutputStream
 
 @OptIn(ExperimentalUnsignedTypes::class)
@@ -16,23 +13,23 @@ abstract class Command(val commandClassID: CommandClassID, val commandId: Comman
     open fun getSendDataFunctionRequest(
         nodeId: NodeID,
         txOptions: TransmitOptions = TransmitOptions(),
-        callbackFunction: Byte = 0
+        callbackID: FunctionCallbackID = 0u
     ) = FunctionZWSendData.Request(
         nodeID = nodeId,
         command = this,
         txOptions = txOptions,
-        callbackFunction = callbackFunction
+        callbackID = callbackID
     )
 
     open fun getSendDataFrame(
         nodeId: NodeID,
         txOptions: TransmitOptions = TransmitOptions(),
-        callbackFunction: Byte = 0
+        callbackID: FunctionCallbackID = 0u
     ) = FrameSOF(
         getSendDataFunctionRequest(
             nodeId = nodeId,
             txOptions = txOptions,
-            callbackFunction = callbackFunction
+            callbackID = callbackID
         )
     )
 
