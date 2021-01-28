@@ -1,9 +1,13 @@
 package com.oxyggen.qzw.engine
 
-import com.oxyggen.qzw.frame.*
-import com.oxyggen.qzw.node.NetworkInfo
+import com.oxyggen.qzw.engine.channel.EnginePriorityChannel
+import com.oxyggen.qzw.engine.config.EngineConfig
+import com.oxyggen.qzw.engine.event.EngineEventAbort
+import com.oxyggen.qzw.engine.event.EngineEventFrameReceived
+import com.oxyggen.qzw.engine.event.EngineEventFrameSend
+import com.oxyggen.qzw.transport.frame.*
+import com.oxyggen.qzw.engine.network.NetworkInfo
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.apache.logging.log4j.kotlin.Logging
@@ -12,10 +16,10 @@ import java.time.LocalDateTime
 @OptIn(ExperimentalCoroutinesApi::class)
 class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope = GlobalScope) : Logging {
 
-    // Create dispatcher Channels (this is the entry point for all events)
+    // Create dispatcher Channel (this is the entry point for all events)
     private val dispatchChannel = EnginePriorityChannel()
 
-    // Create send Channels
+    // Create send Channel
     private val sendChannel = EnginePriorityChannel()
 
     private var executionJob: Job? = null

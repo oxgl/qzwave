@@ -1,0 +1,69 @@
+package com.oxyggen.qzw.transport.function
+
+import com.oxyggen.qzw.transport.mapper.mapper
+import com.oxyggen.qzw.transport.serialization.BinaryFunctionDeserializer
+import com.oxyggen.qzw.transport.serialization.DeserializableFunctionContext
+import com.oxyggen.qzw.transport.serialization.SerializableFunctionContext
+import com.oxyggen.qzw.types.FrameType
+import com.oxyggen.qzw.types.FunctionID
+import com.oxyggen.qzw.types.LibraryType
+import java.io.InputStream
+import java.io.OutputStream
+
+@OptIn(ExperimentalUnsignedTypes::class)
+abstract class FunctionZWGetVersion {
+
+    companion object : BinaryFunctionDeserializer {
+
+        override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.ZW_GET_VERSION.byteValue)
+
+        // HOST->ZW: REQ | 0x15
+        // ZW->HOST: RES | 0x15 | buffer (12 bytes) | library type
+        override fun deserialize(
+            inputStream: InputStream,
+            context: DeserializableFunctionContext
+        ): Function =
+            when (context.frameType) {
+                FrameType.REQUEST -> Request.deserialize(inputStream)
+                FrameType.RESPONSE -> Response.deserialize(inputStream)
+            }
+    }
+
+    class Request : FunctionRequest(FunctionID.ZW_GET_VERSION) {
+        companion object {
+            fun deserialize(inputStream: InputStream): Request = Request()
+        }
+    }
+
+    class Response(
+        val versionText: String,
+        val libraryType: LibraryType
+    ) : FunctionResponse(FunctionID.ZW_GET_VERSION) {
+
+        companion object {
+            private val mapper by lazy {
+                mapper<Response> {
+                    string("versionText", "12")
+                    byte("libraryType")
+                }
+            }
+
+
+            fun deserialize(inputStream: InputStream): Response = mapper.deserialize(inputStream.readAllBytes())
+/*                val versionText = inputStream.readNBytes(12).decodeToString()
+                val libraryType = LibraryType.getByByteValue(inputStream.getByte())
+                return Response(versionText, libraryType ?: LibraryType.CONTROLLER_STATIC)
+            }*/
+        }
+
+        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+            super.serialize(outputStream, context)
+            outputStream.write(mapper.serialize(this))
+        }
+
+        override fun toString(): String {
+            return "$functionID('$versionText', $libraryType)"
+        }
+    }
+
+}
