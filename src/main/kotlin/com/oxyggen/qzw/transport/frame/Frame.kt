@@ -1,5 +1,6 @@
 package com.oxyggen.qzw.transport.frame
 
+import com.oxyggen.qzw.engine.network.FunctionCallbackKey
 import com.oxyggen.qzw.transport.serialization.SerializableFrameContext
 import java.io.OutputStream
 import java.time.LocalDateTime
@@ -17,6 +18,10 @@ abstract class Frame(predecessor: Frame? = null) {
     }
 
     abstract val sendTimeouts: List<Long>
+
+    abstract fun isFunctionCallbackKeyRequired(): Boolean
+
+    abstract fun getFunctionCallbackKey():FunctionCallbackKey?
 
     abstract fun serialize(outputStream: OutputStream, context: SerializableFrameContext)
 

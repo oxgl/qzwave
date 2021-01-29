@@ -117,5 +117,7 @@ class CCVersion {
             super.serialize(outputStream, context)
             outputStream.write(mapper.serialize(this, context.commandClassVersion))
         }
+
+        override fun toString(): String = buildParamList("ccID", ccID, "ccVersion", ccVersion)
     }
 }

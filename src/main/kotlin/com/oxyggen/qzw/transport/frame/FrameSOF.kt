@@ -2,6 +2,7 @@
 
 package com.oxyggen.qzw.transport.frame
 
+import com.oxyggen.qzw.engine.network.FunctionCallbackKey
 import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.extensions.putByte
 import com.oxyggen.qzw.transport.factory.FunctionFactory
@@ -104,6 +105,10 @@ open class FrameSOF(val function: Function, predecessor: Frame? = null) : Frame(
         outputStream.putByte(SIGNATURE)
         outputStream.write(resultData)
     }
+
+    override fun isFunctionCallbackKeyRequired(): Boolean = function.isFunctionCallbackKeyRequired()
+
+    override fun getFunctionCallbackKey(): FunctionCallbackKey? = function.getFunctionCallbackKey()
 
     override fun toString() = "${frameType.toString().substring(0..2)}: $function"
 

@@ -1,10 +1,13 @@
 package com.oxyggen.qzw.transport.function
 
+import com.oxyggen.qzw.engine.network.FunctionCallbackKey
 import com.oxyggen.qzw.transport.command.Command
 import com.oxyggen.qzw.extensions.putByte
 import com.oxyggen.qzw.extensions.putUByte
 import com.oxyggen.qzw.transport.mapper.mapper
 import com.oxyggen.qzw.engine.network.NodeInfo
+import com.oxyggen.qzw.extensions.getByte
+import com.oxyggen.qzw.extensions.getUByte
 import com.oxyggen.qzw.transport.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableFunctionContext
 import com.oxyggen.qzw.transport.serialization.SerializableCommandContext
@@ -35,7 +38,7 @@ abstract class FunctionZWSendData {
             context: DeserializableFunctionContext
         ): Function =
             when (context.frameType) {
-                FrameType.REQUEST -> throw IOException("FunctionZWSendData: Receiving data for IMA enabled targets not implemented the transmission")
+                FrameType.REQUEST -> ZWRequest.deserialize(inputStream)
                 FrameType.RESPONSE -> Response.deserialize(inputStream)
             }
     }
@@ -44,7 +47,7 @@ abstract class FunctionZWSendData {
         val nodeID: NodeID,
         val command: Command,
         val txOptions: TransmitOptions,
-        var callbackID: FunctionCallbackID? = null
+        var functionCallbackID: FunctionCallbackID? = null
     ) : FunctionRequest(FunctionID.ZW_SEND_DATA) {
         companion object {
         }
@@ -69,11 +72,15 @@ abstract class FunctionZWSendData {
             outputStream.putByte(txOptions.byteValue)
 
             // funcID
-            if (callbackID==null) callbackID = 0u
-            outputStream.putUByte(callbackID ?: 0u)
+            if (functionCallbackID == null) functionCallbackID = context.networkInfo.getCurrentCallbackKey().functionCallbackID
+            outputStream.putUByte(functionCallbackID ?: throw IOException("Invalid callback ID!"))
         }
 
-        override fun toString(): String = "${functionID}(nodeId = $nodeID, $command)"
+        override fun isFunctionCallbackKeyRequired(): Boolean = functionCallbackID == null
+
+        override fun getFunctionCallbackKey(): FunctionCallbackKey? = functionCallbackID?.let { FunctionCallbackKey(it) }
+
+        override fun toString(): String = "${functionID}(nodeId = $nodeID, $command, functionCallbackID = $functionCallbackID)"
 
     }
 
@@ -92,6 +99,26 @@ abstract class FunctionZWSendData {
         }
 
         override fun toString(): String = "${functionID}(result = $success)"
+    }
+
+    class ZWRequest(
+        val functionCallbackID: FunctionCallbackID,
+        val txStatus: TransmitStatus
+    ) : FunctionRequest(FunctionID.ZW_SEND_DATA) {
+
+        companion object {
+            fun deserialize(inputStream: InputStream): ZWRequest {
+                val functionCallbackID = inputStream.getUByte()
+                val txStatusByte = inputStream.getByte()
+                return ZWRequest(
+                    functionCallbackID,
+                    TransmitStatus.getByByteValue(txStatusByte) ?: TransmitStatus.COMPLETE_FAIL
+                )
+            }
+        }
+
+        override fun toString(): String = buildParamList("functionCallbackID", functionCallbackID, "txStatus", txStatus)
+
     }
 
 }

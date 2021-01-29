@@ -7,6 +7,7 @@ import com.oxyggen.qzw.transport.serialization.SerializableFrameContext
 import gnu.io.NRSerialPort
 import gnu.io.UnsupportedCommOperationException
 import org.apache.logging.log4j.kotlin.Logging
+import java.lang.Exception
 
 open class NRSerialDriver(private val device: String) : Driver, Logging {
     private val port: NRSerialPort = NRSerialPort(device, 115200, 1, 8)
@@ -17,7 +18,7 @@ open class NRSerialDriver(private val device: String) : Driver, Logging {
     override fun start(): Boolean {
         if (!started) try {
             port.connect()
-        } catch (e: UnsupportedCommOperationException) {
+        } catch (e: Exception) {
 
         }
         return started

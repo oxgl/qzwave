@@ -4,6 +4,7 @@ import com.oxyggen.qzw.engine.event.EngineEvent
 import com.oxyggen.qzw.engine.event.EngineEventFrame
 import com.oxyggen.qzw.engine.event.EngineEventFrameReceived
 import com.oxyggen.qzw.engine.event.EngineEventFrameSend
+import com.oxyggen.qzw.extensions.init
 import com.oxyggen.qzw.transport.frame.Frame
 import com.oxyggen.qzw.transport.frame.FrameState
 import kotlinx.coroutines.channels.Channel
@@ -34,6 +35,10 @@ class EnginePriorityChannel() {
                 channels[CHANNEL_PRIO_NORMAL].send(event)
             }
         }
+    }
+
+    fun init() {
+        for (channel in channels) channel.init()
     }
 
     suspend fun sendFrame(frame: Frame) {

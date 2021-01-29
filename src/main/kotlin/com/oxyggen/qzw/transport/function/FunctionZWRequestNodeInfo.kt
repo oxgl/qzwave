@@ -66,6 +66,9 @@ abstract class FunctionZWRequestNodeInfo {
             super.serialize(outputStream, context)
             outputStream.write(mapper.serialize(this))
         }
+
+        override fun toString(): String = buildParamList("retVal", retVal)
+
     }
 
 }

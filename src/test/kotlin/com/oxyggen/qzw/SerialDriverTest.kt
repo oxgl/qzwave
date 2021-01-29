@@ -4,7 +4,11 @@ import com.oxyggen.qzw.engine.driver.Driver
 import com.oxyggen.qzw.engine.driver.NRSerialDriver
 import com.oxyggen.qzw.engine.Engine
 import com.oxyggen.qzw.engine.config.EngineConfig
+import com.oxyggen.qzw.engine.driver.JSerialDriver
+import com.oxyggen.qzw.transport.command.CCVersion
+import com.oxyggen.qzw.transport.frame.Frame
 import com.oxyggen.qzw.transport.function.*
+import com.oxyggen.qzw.types.CommandClassID
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.Logging
@@ -26,16 +30,24 @@ internal class SerialDriverTest : Logging {
         driver = null*/
     }
 
+    fun resultCallback(frame: Frame) {
+        logger.info("Result: $frame")
+    }
 
     @Test
     fun `Device open & close test`() {
         runBlocking {
-            val e = Engine(EngineConfig(NRSerialDriver("/dev/ttyACM0")))
+            val e = Engine(EngineConfig(JSerialDriver("/dev/ttyACM0")))
 
             e.start()
-            logger.debug { "Test: Engine started" }
 
-            e.sendFrame(FunctionSerialApiGetInitData.Request().getFrame())
+            logger.debug { "Test: Engine started: ${e.started}" }
+
+            //val frame = FunctionZWGetNodeProtocolInfo.Request(4u).getFrame()
+            val frame = FunctionZWRequestNodeInfo.Request(4u).getFrame()
+
+            //e.sendFrame(FunctionSerialApiGetInitData.Request().getFrame(), ::resultCallback)
+
 
             /*for (i in 2..10) {
                 val fNPI = FunctionZWGetNodeProtocolInfo.Request(i.toUByte()).getFrame()
@@ -47,7 +59,16 @@ internal class SerialDriverTest : Logging {
             }*/
 
             delay((5_000))
-            e.sendFrame(FunctionSerialApiGetInitData.Request().getFrame())
+            e.sendFrame(frame, ::resultCallback)
+
+            delay((5_000))
+            val frame2 = CCVersion.CommandClassGet(CommandClassID.SWITCH_MULTILEVEL).getSendDataFrame(4u)
+            e.sendFrame(frame2, ::resultCallback)
+
+            val frame3 = CCVersion.CommandClassGet(CommandClassID.SWITCH_BINARY).getSendDataFrame(4u)
+            e.sendFrame(frame3, ::resultCallback)
+
+            //e.sendFrame(FunctionSerialApiGetInitData.Request().getFrame())
 
             delay(60_000)
             logger.debug { "Test: Stopping engine" }

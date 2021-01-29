@@ -1,5 +1,6 @@
 package com.oxyggen.qzw.transport.function
 
+import com.oxyggen.qzw.engine.network.FunctionCallbackKey
 import com.oxyggen.qzw.extensions.putByte
 import com.oxyggen.qzw.transport.frame.FrameSOF
 import com.oxyggen.qzw.transport.serialization.SerializableFunctionContext
@@ -13,6 +14,10 @@ abstract class Function(val functionID: FunctionID) : Logging {
     }
 
     open fun getFrame(): FrameSOF = FrameSOF(this)
+
+    open fun isFunctionCallbackKeyRequired(): Boolean = false
+
+    open fun getFunctionCallbackKey():FunctionCallbackKey? = null
 
     fun buildParamList(vararg params: Any): String {
         var result = ""

@@ -1,6 +1,6 @@
 package com.oxyggen.qzw.types
 
-enum class SecurityKey(override val byteValue: Byte) :TypeToByte {
+enum class SecurityKey(override val byteValue: Byte) : TypeToByte {
     NONE(0x00.toByte()),
     S2_UNAUTHENTICATED(0x01.toByte()),
     S2_AUTHENTICATED(0x02.toByte()),

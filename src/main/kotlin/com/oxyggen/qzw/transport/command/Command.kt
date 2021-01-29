@@ -13,23 +13,19 @@ abstract class Command(val commandClassID: CommandClassID, val commandId: Comman
     open fun getSendDataFunctionRequest(
         nodeId: NodeID,
         txOptions: TransmitOptions = TransmitOptions(),
-        callbackID: FunctionCallbackID? = null
     ) = FunctionZWSendData.Request(
         nodeID = nodeId,
         command = this,
         txOptions = txOptions,
-        callbackID = callbackID
     )
 
     open fun getSendDataFrame(
         nodeId: NodeID,
         txOptions: TransmitOptions = TransmitOptions(),
-        callbackID: FunctionCallbackID? = null
     ) = FrameSOF(
         getSendDataFunctionRequest(
             nodeId = nodeId,
             txOptions = txOptions,
-            callbackID = callbackID
         )
     )
 
@@ -39,5 +35,16 @@ abstract class Command(val commandClassID: CommandClassID, val commandId: Comman
     }
 
     override fun toString(): String = "CC $commandClassID - Command ${commandId}()"
+
+    fun buildParamList(vararg params: Any): String {
+        var result = ""
+        for (i in params.indices step 2) {
+            val name = params[i]
+            val value = params[i + 1]
+            if (result.isNotBlank()) result += ", "
+            result += "$name: $value"
+        }
+        return "CC $commandClassID - Command ${commandId}($result)"
+    }
 
 }

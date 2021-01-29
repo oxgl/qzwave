@@ -3,6 +3,7 @@ package com.oxyggen.qzw.transport.mapper
 import com.oxyggen.qzw.types.ByteToType
 import com.oxyggen.qzw.utils.Conversion
 import java.io.InvalidClassException
+import java.lang.IllegalArgumentException
 import java.lang.reflect.Modifier
 import java.nio.charset.Charset
 import kotlin.reflect.KClass
