@@ -9,6 +9,7 @@ import com.oxyggen.qzw.transport.command.CCVersion
 import com.oxyggen.qzw.transport.frame.Frame
 import com.oxyggen.qzw.transport.function.*
 import com.oxyggen.qzw.types.CommandClassID
+import com.oxyggen.qzw.types.TransmitOptions
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.Logging
@@ -62,10 +63,11 @@ internal class SerialDriverTest : Logging {
             e.sendFrame(frame, ::resultCallback)
 
             delay((5_000))
-            val frame2 = CCVersion.CommandClassGet(CommandClassID.SWITCH_MULTILEVEL).getSendDataFrame(4u)
+            val frame2 = CCVersion.CommandClassGet(CommandClassID.SWITCH_MULTILEVEL)
+                .getSendDataFrame(5u, TransmitOptions(requestAcknowledge = false))
             e.sendFrame(frame2, ::resultCallback)
 
-            val frame3 = CCVersion.CommandClassGet(CommandClassID.SWITCH_BINARY).getSendDataFrame(4u)
+            val frame3 = CCVersion.CommandClassGet(CommandClassID.SWITCH_BINARY).getSendDataFrame(6u)
             e.sendFrame(frame3, ::resultCallback)
 
             //e.sendFrame(FunctionSerialApiGetInitData.Request().getFrame())

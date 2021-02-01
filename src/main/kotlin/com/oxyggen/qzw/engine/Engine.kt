@@ -16,6 +16,12 @@ import java.time.LocalDateTime
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalUnsignedTypes::class)
 class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope = GlobalScope) : Logging {
 
+    companion object {
+        const val LOG_PFX_SENDER = "H -> ZW"
+        const val LOG_PFX_RECEIVER = "H <- ZW"
+        const val LOG_PFX_DISPATCHER = "<- * ->"
+    }
+
     // Create dispatcher Channel (this is the entry point for all events)
     private val dispatchChannel = EnginePriorityChannel()
 
@@ -98,13 +104,13 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
     }
 
     private suspend fun dispatcherJob() {
-        logger.debug { "Engine - Dispatcher: started" }
+        logger.debug { "$LOG_PFX_DISPATCHER: started" }
         var isActive = true
         while (isActive) {
 
             when (val event = dispatchChannel.receive()) {
                 is EngineEventAbort -> {
-                    logger.debug { "Engine - Dispatcher: received event: $event" }
+                    logger.debug { "$LOG_PFX_DISPATCHER: received event: $event" }
                     sendChannel.send(event)
                     isActive = false
                 }
@@ -112,18 +118,18 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
                     when (event.frame) {
                         is FrameState -> {
                             if (event.frame.predecessor == null) {
-                                logger.debug { "Engine - Dispatcher: status frame without predecessor received ${event.frame}, informing sender job - it's probably waiting for this frame" }
+                                logger.debug { "$LOG_PFX_DISPATCHER: status frame without predecessor received ${event.frame}, informing sender job - it's probably waiting for this frame" }
                                 sendChannel.send(event)
                             } else {
                                 if (networkInfo.isFrameWaitingForResult(event.frame)) {
-                                    logger.debug { "Engine - Dispatcher: status frame received ${event.frame.toStringWithPredecessor()}, callback suspended, waiting for result" }
+                                    logger.debug { "$LOG_PFX_DISPATCHER: status frame received ${event.frame.toStringWithPredecessor()}, callback suspended, waiting for result" }
                                 } else {
-                                    logger.debug { "Engine - Dispatcher: status frame received ${event.frame.toStringWithPredecessor()}, calling callback" }
+                                    logger.debug { "$LOG_PFX_DISPATCHER: status frame received ${event.frame.toStringWithPredecessor()}, calling callback" }
                                 }
                             }
                         }
                         is FrameSOF -> {
-                            logger.debug { "Engine - Dispatcher: frame received ${event.frame}, sending ACK" }
+                            logger.debug { "$LOG_PFX_DISPATCHER: frame received ${event.frame}, sending ACK" }
                             val cbKey = event.frame.getFunctionCallbackKey()
                             val frame = cbKey?.let {
                                 val predecessor = networkInfo.dequeueCallbackKey(cbKey)
@@ -137,17 +143,17 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
                     }
                 }
                 is EngineEventFrameSend -> {
-                    logger.debug { "Engine - Dispatcher: frame send request ${event.frame}, sending" }
+                    logger.debug { "$LOG_PFX_DISPATCHER: frame send request ${event.frame}, sending" }
                     sendChannel.send(event)
                 }
             }
         }
-        logger.debug { "Engine - Dispatcher: stopped" }
+        logger.debug { "$LOG_PFX_DISPATCHER: stopped" }
     }
 
 
     private suspend fun sendJob() {
-        logger.debug { "Engine - Sender: started" }
+        logger.debug { "$LOG_PFX_SENDER: started" }
 
         var isActive = true
         while (isActive) {
@@ -155,7 +161,7 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
 
             when (event) {
                 is EngineEventAbort -> {
-                    logger.debug { "Engine - Sender: received event: $event" }
+                    logger.debug { "$LOG_PFX_SENDER: received event: $event" }
                     isActive = false
                 }
                 is EngineEventFrameSend -> {
@@ -168,23 +174,23 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
                                 engineConfig.driver.putFrame(it, networkInfo)
                                 if (timeout.value > 0) {
                                     val sentDateTime = LocalDateTime.now()
-                                    logger.debug { "Engine - Sender: frame $it sent, waiting ${timeout.value}ms for ACK (${timeout.index + 1}/${timeouts.size})" }
+                                    logger.debug { "$LOG_PFX_SENDER: frame $it sent, waiting ${timeout.value}ms for ACK (${timeout.index + 1}/${timeouts.size})" }
                                     resultAwaited = true
                                     val frameState =
                                         withTimeout(timeout.value) { sendChannel.receiveFrameState(sentDateTime) }
-                                    logger.debug { "Engine - Sender: Status received: $frameState" }
+                                    logger.debug { "$LOG_PFX_SENDER: Status received: $frameState" }
                                     if (frameState is FrameACK) {
                                         // ACK received before timeout, so break the loop
                                         result = frameState.withPredecessor(it)
                                         break
                                     }
                                 } else {
-                                    logger.debug { "Engine - Sender: frame $it sent" }
+                                    logger.debug { "$LOG_PFX_SENDER: frame $it sent" }
                                     break
                                 }
                             } catch (e: TimeoutCancellationException) {
                                 // Catch timeout, and try again (if was not the last iteration)
-                                logger.debug { "Engine - Sender: Timeout" }
+                                logger.debug { "$LOG_PFX_SENDER: Timeout" }
                             }
                         // If result was awaited & no result received create dummy frame
                         if (resultAwaited && result == it) {
@@ -200,29 +206,29 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
                         dispatchChannel.receivedFrame(resultFrame)
                 }
                 is EngineEventFrameReceived -> {
-                    logger.debug { "Engine - Sender: frame ${event.frame} received, probably too late. Ignoring." }
+                    logger.debug { "$LOG_PFX_SENDER: frame ${event.frame} received, probably too late. Ignoring." }
                 }
                 else -> {
-                    logger.debug { "Engine - Sender: unknown event received $event" }
+                    logger.debug { "$LOG_PFX_SENDER: unknown event received $event" }
                 }
             }
             delay(10)
         }
-        logger.debug { "Engine - Sender: stopped" }
+        logger.debug { "$LOG_PFX_SENDER: stopped" }
     }
 
     private suspend fun receiveJob() {
-        logger.debug { "Engine - Receiver: started" }
+        logger.debug { "$LOG_PFX_RECEIVER: started" }
 
         while (engineConfig.driver.started) {
             val frame = engineConfig.driver.getFrame(networkInfo)
             if (frame != null) {
-                logger.debug("Engine - Receiver: frame received $frame")
+                logger.debug("$LOG_PFX_RECEIVER: frame received $frame")
                 dispatchChannel.receivedFrame(frame)
             }
         }
 
-        logger.debug { "Engine - Receiver: job stopped (because driver is inactive)" }
+        logger.debug { "$LOG_PFX_RECEIVER: job stopped (because driver is inactive)" }
     }
 
 }
