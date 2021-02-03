@@ -94,6 +94,8 @@ class CCVersion {
             super.serialize(outputStream, context)
             outputStream.write(mapper.serialize(this, context.commandClassVersion))
         }
+
+        override fun toString() = buildParamList("ccID", ccID)
     }
 
     class CommandClassReport(val ccID: CommandClassID, val ccVersion: Byte) :

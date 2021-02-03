@@ -13,7 +13,7 @@ abstract class Frame(predecessor: Frame? = null) {
         protected set
 
     companion object {
-        val SEND_TIMEOUTS_DEFAULT = generateSequence(100L) { it + 1000 }.take(4).toList()
+        val SEND_TIMEOUTS_DEFAULT = generateSequence(200L) { it + 1000 }.take(4).toList()
         val SENT_TIMEOUTS_SEND_ONLY = listOf<Long>(0)
     }
 
@@ -21,7 +21,7 @@ abstract class Frame(predecessor: Frame? = null) {
 
     abstract fun isFunctionCallbackKeyRequired(): Boolean
 
-    abstract fun getFunctionCallbackKey():FunctionCallbackKey?
+    abstract fun getFunctionCallbackKey(): FunctionCallbackKey?
 
     abstract fun serialize(outputStream: OutputStream, context: SerializableFrameContext)
 

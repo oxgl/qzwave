@@ -109,27 +109,28 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
         while (isActive) {
 
             when (val event = dispatchChannel.receive()) {
-                is EngineEventAbort -> {
+                is EngineEventAbort -> {                    // Special, ABORT event
                     logger.debug { "$LOG_PFX_DISPATCHER: received event: $event" }
                     sendChannel.send(event)
                     isActive = false
                 }
-                is EngineEventFrameReceived -> {
+                is EngineEventFrameReceived -> {            // Frame received from network
                     when (event.frame) {
-                        is FrameState -> {
+                        is FrameState -> {                  // Status frame received
                             if (event.frame.predecessor == null) {
-                                logger.debug { "$LOG_PFX_DISPATCHER: status frame without predecessor received ${event.frame}, informing sender job - it's probably waiting for this frame" }
+                                logger.debug { "$LOG_PFX_DISPATCHER: status frame without predecessor received ${event.frame}, forwarding to sender job - it's probably waiting for this frame" }
                                 sendChannel.send(event)
                             } else {
                                 if (networkInfo.isFrameWaitingForResult(event.frame)) {
+                                    // Predecessor of the status frame is waiting for result
                                     logger.debug { "$LOG_PFX_DISPATCHER: status frame received ${event.frame.toStringWithPredecessor()}, callback suspended, waiting for result" }
                                 } else {
+                                    // Predecessor is not waiting for
                                     logger.debug { "$LOG_PFX_DISPATCHER: status frame received ${event.frame.toStringWithPredecessor()}, calling callback" }
                                 }
                             }
                         }
-                        is FrameSOF -> {
-                            logger.debug { "$LOG_PFX_DISPATCHER: frame received ${event.frame}, sending ACK" }
+                        is FrameSOF -> {                    // Data frame received
                             val cbKey = event.frame.getFunctionCallbackKey()
                             val frame = cbKey?.let {
                                 val predecessor = networkInfo.dequeueCallbackKey(cbKey)
@@ -138,11 +139,18 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
                                 else
                                     event.frame
                             } ?: event.frame
+
+                            if (frame.predecessor == null) {
+                                logger.debug { "$LOG_PFX_DISPATCHER: frame received ${event.frame}, sending ACK" }
+                            } else {
+                                logger.debug { "$LOG_PFX_DISPATCHER: frame received $frame, as result for ${frame.predecessor}, sending ACK" }
+                            }
+
                             sendChannel.sendFrame(FrameACK(predecessor = frame))
                         }
                     }
                 }
-                is EngineEventFrameSend -> {
+                is EngineEventFrameSend -> {                 // Frame send request
                     logger.debug { "$LOG_PFX_DISPATCHER: frame send request ${event.frame}, sending" }
                     sendChannel.send(event)
                 }

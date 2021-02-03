@@ -72,15 +72,18 @@ abstract class FunctionZWSendData {
             outputStream.putByte(txOptions.byteValue)
 
             // funcID
-            if (functionCallbackID == null) functionCallbackID = context.networkInfo.getCurrentCallbackKey().functionCallbackID
+            functionCallbackID = functionCallbackID ?: context.networkInfo.getCurrentCallbackKey().functionCallbackID
+
             outputStream.putUByte(functionCallbackID ?: throw IOException("Invalid callback ID!"))
         }
 
         override fun isFunctionCallbackKeyRequired(): Boolean = functionCallbackID == null
 
-        override fun getFunctionCallbackKey(): FunctionCallbackKey? = functionCallbackID?.let { FunctionCallbackKey(it) }
+        override fun getFunctionCallbackKey(): FunctionCallbackKey? =
+            functionCallbackID?.let { FunctionCallbackKey(it) }
 
-        override fun toString(): String = "${functionID}(nodeId = $nodeID, $command, functionCallbackID = $functionCallbackID)"
+        override fun toString(): String =
+            "${functionID}(nodeId = $nodeID, $command, functionCallbackID = $functionCallbackID)"
 
     }
 
@@ -116,6 +119,8 @@ abstract class FunctionZWSendData {
                 )
             }
         }
+
+        override fun getFunctionCallbackKey(): FunctionCallbackKey? = FunctionCallbackKey(functionCallbackID)
 
         override fun toString(): String = buildParamList("functionCallbackID", functionCallbackID, "txStatus", txStatus)
 

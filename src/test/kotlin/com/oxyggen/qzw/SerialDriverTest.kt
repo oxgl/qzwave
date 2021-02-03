@@ -64,10 +64,11 @@ internal class SerialDriverTest : Logging {
 
             delay((5_000))
             val frame2 = CCVersion.CommandClassGet(CommandClassID.SWITCH_MULTILEVEL)
-                .getSendDataFrame(5u, TransmitOptions(requestAcknowledge = false))
+                .getSendDataFrame(4u, TransmitOptions(requestAcknowledge = false))
             e.sendFrame(frame2, ::resultCallback)
 
-            val frame3 = CCVersion.CommandClassGet(CommandClassID.SWITCH_BINARY).getSendDataFrame(6u)
+            delay(5_000)
+            val frame3 = CCVersion.CommandClassGet(CommandClassID.SWITCH_BINARY).getSendDataFrame(4u)
             e.sendFrame(frame3, ::resultCallback)
 
             //e.sendFrame(FunctionSerialApiGetInitData.Request().getFrame())
