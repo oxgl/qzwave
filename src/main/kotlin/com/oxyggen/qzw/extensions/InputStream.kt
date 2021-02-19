@@ -5,27 +5,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayInputStream
 import java.io.InputStream
-
-fun InputStream.isBlocking() = this !is ByteArrayInputStream
+import kotlin.coroutines.coroutineContext
 
 @Suppress("BlockingMethodInNonBlockingContext")
-suspend fun InputStream.getByte(): Byte =
-    if (isBlocking()) withContext(Dispatchers.IO) { readNBytes(1)[0] } else readNBytes(1)[0]
+fun InputStream.getByte(): Byte = readNBytes(1)[0]
 
 @OptIn(ExperimentalUnsignedTypes::class)
 @Suppress("BlockingMethodInNonBlockingContext")
-suspend fun InputStream.getUByte(): UByte =
-    if (isBlocking()) withContext(Dispatchers.IO) { readNBytes(1)[0].toUByte() } else readNBytes(1)[0].toUByte()
+suspend fun InputStream.getUByte(): UByte = readNBytes(1)[0].toUByte()
 
 @Suppress("BlockingMethodInNonBlockingContext")
-suspend fun InputStream.getAllBytes(): ByteArray =
-    if (isBlocking()) withContext(Dispatchers.IO) { readAllBytes() } else readAllBytes()
+suspend fun InputStream.getAllBytes(): ByteArray = readAllBytes()
 
 @Suppress("BlockingMethodInNonBlockingContext")
-suspend fun InputStream.getNBytes(len: Int): ByteArray =
-    if (isBlocking()) withContext(Dispatchers.IO) { readNBytes(len) } else readNBytes(len)
+suspend fun InputStream.getNBytes(len: Int): ByteArray = readNBytes(len)
 
 @Suppress("BlockingMethodInNonBlockingContext")
-suspend fun InputStream.availableBytes(): Int =
-    if (isBlocking()) withContext(Dispatchers.IO) { available() } else available()
+suspend fun InputStream.availableBytes(): Int = available()
 

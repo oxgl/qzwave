@@ -85,7 +85,7 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
         //sendChannel.init()
 
         // SendChannel -> Driver
-        val senderJob = coroutineScope.launch { sendJob() }
+        val senderJob = coroutineScope.launch(Dispatchers.IO) { sendJob() }
 
         // Driver -> DispatcherChannel
         val receiverJob = coroutineScope.launch(Dispatchers.IO) { receiveJob() }
