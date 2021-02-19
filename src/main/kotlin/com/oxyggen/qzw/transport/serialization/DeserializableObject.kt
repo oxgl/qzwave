@@ -6,5 +6,5 @@ interface DeserializableObject<T, C : DeserializableObjectContext> {
 
     fun getHandledSignatureBytes(): Set<Byte>
 
-    fun deserialize(inputStream: InputStream, context: C): T
+    suspend fun deserialize(inputStream: InputStream, context: C): T
 }

@@ -1,6 +1,8 @@
 package com.oxyggen.qzw.transport.function
 
+import com.oxyggen.qzw.extensions.getAllBytes
 import com.oxyggen.qzw.extensions.getUByte
+import com.oxyggen.qzw.extensions.putBytes
 import com.oxyggen.qzw.extensions.putUByte
 import com.oxyggen.qzw.transport.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableFunctionContext
@@ -17,7 +19,7 @@ abstract class FunctionSerialApiGetCapabilities {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.SERIAL_API_GET_CAPABILITIES.byteValue)
 
-        override fun deserialize(
+        override suspend fun deserialize(
             inputStream: InputStream,
             context: DeserializableFunctionContext
         ): Function = when (context.frameType) {
@@ -45,7 +47,7 @@ abstract class FunctionSerialApiGetCapabilities {
     ) : FunctionResponse(FunctionID.SERIAL_API_GET_CAPABILITIES) {
 
         companion object {
-            fun deserialize(inputStream: InputStream): Response {
+            suspend fun deserialize(inputStream: InputStream): Response {
                 val serialApplVersion = inputStream.getUByte()
                 val serialApplRevision = inputStream.getUByte()
                 val serialManufId1 = inputStream.getUByte()
@@ -54,7 +56,7 @@ abstract class FunctionSerialApiGetCapabilities {
                 val serialManufProdType2 = inputStream.getUByte()
                 val serialManufProdId1 = inputStream.getUByte()
                 val serialManufProdId2 = inputStream.getUByte()
-                val supportedFuncBitmask = inputStream.readAllBytes()
+                val supportedFuncBitmask = inputStream.getAllBytes()
                 val supportedFuncBytes = BitmaskUtils.decompressBitmaskToByteSet(supportedFuncBitmask)
                 val supportedFunctionId = mutableSetOf<FunctionID>()
                 supportedFuncBytes.forEach {
@@ -76,7 +78,7 @@ abstract class FunctionSerialApiGetCapabilities {
             }
         }
 
-        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+        override suspend fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
             super.serialize(outputStream, context)
             outputStream.putUByte(serialApplVersion)
             outputStream.putUByte(serialApplRevision)
@@ -91,7 +93,7 @@ abstract class FunctionSerialApiGetCapabilities {
                 supportedFuncBytes += it.byteValue.toUByte()
             }
             val supportedFuncBitmask = BitmaskUtils.compressUByteSetToBitmask(supportedFuncBytes)
-            outputStream.write(supportedFuncBitmask)
+            outputStream.putBytes(supportedFuncBitmask)
         }
 
 

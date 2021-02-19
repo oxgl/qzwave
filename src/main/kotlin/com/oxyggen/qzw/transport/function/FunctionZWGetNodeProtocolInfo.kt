@@ -1,17 +1,14 @@
 package com.oxyggen.qzw.transport.function
 
-import com.oxyggen.qzw.types.DeviceBasicType
-import com.oxyggen.qzw.types.DeviceGenericType
-import com.oxyggen.qzw.types.DeviceSpecificType
 import com.oxyggen.qzw.extensions.get
+import com.oxyggen.qzw.extensions.getAllBytes
 import com.oxyggen.qzw.extensions.getByte
+import com.oxyggen.qzw.extensions.putBytes
 import com.oxyggen.qzw.transport.mapper.mapper
 import com.oxyggen.qzw.transport.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableFunctionContext
 import com.oxyggen.qzw.transport.serialization.SerializableFunctionContext
-import com.oxyggen.qzw.types.FrameType
-import com.oxyggen.qzw.types.FunctionID
-import com.oxyggen.qzw.types.NodeID
+import com.oxyggen.qzw.types.*
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -26,7 +23,7 @@ abstract class FunctionZWGetNodeProtocolInfo {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.ZW_GET_NODE_PROTOCOL_INFO.byteValue)
 
-        override fun deserialize(
+        override suspend fun deserialize(
             inputStream: InputStream,
             context: DeserializableFunctionContext
         ): Function =
@@ -45,12 +42,12 @@ abstract class FunctionZWGetNodeProtocolInfo {
                 }
             }
 
-            fun deserialize(inputStream: InputStream) = mapper.deserialize<Request>(inputStream.readAllBytes())
+            suspend fun deserialize(inputStream: InputStream) = mapper.deserialize<Request>(inputStream.getAllBytes())
         }
 
-        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+        override suspend fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
             super.serialize(outputStream, context)
-            outputStream.write(mapper.serialize(this))
+            outputStream.putBytes(mapper.serialize(this))
         }
 
         override fun toString() = buildParamList("nodeID", nodeID)
@@ -68,7 +65,7 @@ abstract class FunctionZWGetNodeProtocolInfo {
         val deviceSpecificType: DeviceSpecificType
     ) : FunctionResponse(FunctionID.ZW_GET_NODE_PROTOCOL_INFO) {
         companion object {
-            fun deserialize(inputStream: InputStream): Response {
+            suspend fun deserialize(inputStream: InputStream): Response {
                 // We can't use mapper because DeviceSpecificType has 2 imports
                 val capability = inputStream.getByte()
                 val listening = capability[7]

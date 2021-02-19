@@ -4,10 +4,10 @@ import com.oxyggen.qzw.extensions.get
 import com.oxyggen.qzw.extensions.getBitRange
 import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.transport.factory.CommandFactory
-import com.oxyggen.qzw.types.CommandClassID
-import com.oxyggen.qzw.types.CommandID
 import com.oxyggen.qzw.transport.serialization.CommandDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableCommandContext
+import com.oxyggen.qzw.types.CommandClassID
+import com.oxyggen.qzw.types.CommandID
 import com.oxyggen.qzw.types.EndpointID
 import java.io.IOException
 import java.io.InputStream
@@ -18,7 +18,7 @@ class CCMultiChannel {
     companion object : CommandDeserializer {
         override fun getHandledSignatureBytes() = setOf(CommandClassID.MULTI_CHANNEL.byteValue)
 
-        override fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Command {
+        override suspend fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Command {
 
             return when (val commandID = CommandID.getByByteValue(context.commandClassID, inputStream.getByte())) {
                 CommandID.MULTI_CHANNEL_CMD_ENCAP -> CmdEncap.deserialize(inputStream, context)
@@ -36,11 +36,11 @@ class CCMultiChannel {
     ) :
         Command(CommandClassID.MULTI_CHANNEL, CommandID.MULTI_CHANNEL_CMD_ENCAP) {
         companion object {
-            fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): CmdEncap {
+            suspend fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): CmdEncap {
                 val srcEndpointByte = inputStream.getByte()
-                val srcEndpointID = srcEndpointByte.getBitRange(0..6)
+                val srcEndpointID = EndpointID.getByByteValue(srcEndpointByte.getBitRange(0..6))
                 val dstEndpointByte = inputStream.getByte()
-                val dstEndpointID = dstEndpointByte.getBitRange(0..6)
+                val dstEndpointID = EndpointID.getByByteValue(dstEndpointByte.getBitRange(0..6))
                 val dstEndpointIsBitmask = dstEndpointByte[7]
 
                 val command = CommandFactory.deserializeCommand(inputStream, context, context.currentNode)

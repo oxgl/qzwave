@@ -1,11 +1,11 @@
 package com.oxyggen.qzw.transport.command
 
 import com.oxyggen.qzw.extensions.*
-import com.oxyggen.qzw.types.CommandClassID
-import com.oxyggen.qzw.types.CommandID
 import com.oxyggen.qzw.transport.serialization.CommandDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableCommandContext
 import com.oxyggen.qzw.transport.serialization.SerializableCommandContext
+import com.oxyggen.qzw.types.CommandClassID
+import com.oxyggen.qzw.types.CommandID
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -18,7 +18,7 @@ class CCSensorMultilevel {
     companion object : CommandDeserializer {
         override fun getHandledSignatureBytes() = setOf(CommandClassID.SENSOR_MULTILEVEL.byteValue)
 
-        override fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Command {
+        override suspend fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Command {
 
             return when (val commandID = CommandID.getByByteValue(context.commandClassID, inputStream.getByte())) {
                 CommandID.SENSOR_MULTILEVEL_GET -> Get.deserialize(inputStream, context)
@@ -43,8 +43,7 @@ class CCSensorMultilevel {
         val sensorValues: List<Float>,
     ) : Command(CommandClassID.SENSOR_MULTILEVEL, CommandID.SENSOR_MULTILEVEL_REPORT) {
         companion object {
-
-            fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Report {
+            suspend fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Report {
                 val sensorType = inputStream.getByte()
                 val dataTypeInfo = inputStream.getByte()
                 val precision = dataTypeInfo.getBitRange(5..7)
@@ -54,7 +53,7 @@ class CCSensorMultilevel {
                 var remaining = size.toInt()
                 var value = 0
                 val divider = 10.toFloat().pow(precision.toInt())
-                while (inputStream.available() > 0) {
+                while (inputStream.availableBytes() > 0) {
                     val dataUByte = inputStream.getUByte()
                     value = value.shl(8).or(dataUByte.toInt())
                     remaining--
@@ -68,7 +67,7 @@ class CCSensorMultilevel {
             }
         }
 
-        override fun serialize(outputStream: OutputStream, context: SerializableCommandContext) {
+        override suspend fun serialize(outputStream: OutputStream, context: SerializableCommandContext) {
             super.serialize(outputStream, context)
             outputStream.putByte(sensorType)
             outputStream.putByte(
@@ -83,7 +82,7 @@ class CCSensorMultilevel {
                     rest = rest.shr(8)
                 }
                 byteArray.reverse()
-                outputStream.write(byteArray)
+                outputStream.putBytes(byteArray)
             }
 
         }

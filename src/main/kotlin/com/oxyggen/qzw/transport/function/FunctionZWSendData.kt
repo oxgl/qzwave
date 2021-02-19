@@ -1,13 +1,10 @@
 package com.oxyggen.qzw.transport.function
 
 import com.oxyggen.qzw.engine.network.FunctionCallbackKey
+import com.oxyggen.qzw.engine.network.Node
+import com.oxyggen.qzw.extensions.*
 import com.oxyggen.qzw.transport.command.Command
-import com.oxyggen.qzw.extensions.putByte
-import com.oxyggen.qzw.extensions.putUByte
 import com.oxyggen.qzw.transport.mapper.mapper
-import com.oxyggen.qzw.engine.network.NodeInfo
-import com.oxyggen.qzw.extensions.getByte
-import com.oxyggen.qzw.extensions.getUByte
 import com.oxyggen.qzw.transport.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableFunctionContext
 import com.oxyggen.qzw.transport.serialization.SerializableCommandContext
@@ -33,7 +30,7 @@ abstract class FunctionZWSendData {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.ZW_SEND_DATA.byteValue)
 
-        override fun deserialize(
+        override suspend fun deserialize(
             inputStream: InputStream,
             context: DeserializableFunctionContext
         ): Function =
@@ -47,43 +44,36 @@ abstract class FunctionZWSendData {
         val nodeID: NodeID,
         val command: Command,
         val txOptions: TransmitOptions,
-        var functionCallbackID: FunctionCallbackID? = null
     ) : FunctionRequest(FunctionID.ZW_SEND_DATA) {
-        companion object {
-        }
+        companion object;
 
         // HOST->ZW: REQ | 0x13 | nodeID | dataLength | pData[ ] | txOptions | funcID
-        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+        override suspend fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
             super.serialize(outputStream, context)
-            val currentNode = context.networkInfo.node[nodeID] ?: NodeInfo.getInitial(nodeID)
+            val currentNode = context.frame.network.node[nodeID] ?: Node.getInitial(nodeID)
 
             val commandOS = ByteArrayOutputStream()
             command.serialize(commandOS, SerializableCommandContext(context, this, currentNode, command.commandClassID))
             val commandBytes = commandOS.toByteArray()
 
             // Send nodeID
-            outputStream.putUByte(nodeID)
+            outputStream.put(nodeID)
 
             // dataLength & pData[ ]
             outputStream.putUByte(commandBytes.size.toUByte())
-            outputStream.write(commandBytes)
+            outputStream.putBytes(commandBytes)
 
             // txOptions
-            outputStream.putByte(txOptions.byteValue)
+            outputStream.put(txOptions)
 
             // funcID
-            functionCallbackID = functionCallbackID ?: context.networkInfo.getCurrentCallbackKey().functionCallbackID
+            val functionCallbackID = context.frame.network.provideCallbackKey(context.frame).functionCallbackID
 
-            outputStream.putUByte(functionCallbackID ?: throw IOException("Invalid callback ID!"))
+            outputStream.put(functionCallbackID)
         }
 
-        override fun isFunctionCallbackKeyRequired(): Boolean = functionCallbackID == null
-
-        override fun getFunctionCallbackKey(): FunctionCallbackKey? =
-            functionCallbackID?.let { FunctionCallbackKey(it) }
-
         override fun toString(): String =
-            "${functionID}(nodeId = $nodeID, $command, functionCallbackID = $functionCallbackID)"
+            "${functionID}(nodeId = $nodeID, $command)"
 
     }
 
@@ -93,12 +83,12 @@ abstract class FunctionZWSendData {
                 byte("success")
             }
 
-            fun deserialize(inputStream: InputStream): Response = mapper.deserialize(inputStream.readAllBytes())
+            suspend fun deserialize(inputStream: InputStream): Response = mapper.deserialize(inputStream.getAllBytes())
         }
 
-        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+        override suspend fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
             super.serialize(outputStream, context)
-            outputStream.write(mapper.serialize(this))
+            outputStream.putBytes(mapper.serialize(this))
         }
 
         override fun toString(): String = "${functionID}(result = $success)"
@@ -110,8 +100,8 @@ abstract class FunctionZWSendData {
     ) : FunctionRequest(FunctionID.ZW_SEND_DATA) {
 
         companion object {
-            fun deserialize(inputStream: InputStream): ZWRequest {
-                val functionCallbackID = inputStream.getUByte()
+            suspend fun deserialize(inputStream: InputStream): ZWRequest {
+                val functionCallbackID = FunctionCallbackID.getByByteValue(inputStream.getByte())
                 val txStatusByte = inputStream.getByte()
                 return ZWRequest(
                     functionCallbackID,
@@ -120,7 +110,7 @@ abstract class FunctionZWSendData {
             }
         }
 
-        override fun getFunctionCallbackKey(): FunctionCallbackKey? = FunctionCallbackKey(functionCallbackID)
+        override fun getFunctionCallbackKey(): FunctionCallbackKey = FunctionCallbackKey(functionCallbackID)
 
         override fun toString(): String = buildParamList("functionCallbackID", functionCallbackID, "txStatus", txStatus)
 

@@ -1,10 +1,10 @@
 package com.oxyggen.qzw.transport.command
 
 import com.oxyggen.qzw.extensions.getByte
-import com.oxyggen.qzw.types.CommandClassID
-import com.oxyggen.qzw.types.CommandID
 import com.oxyggen.qzw.transport.serialization.CommandDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableCommandContext
+import com.oxyggen.qzw.types.CommandClassID
+import com.oxyggen.qzw.types.CommandID
 import java.io.IOException
 import java.io.InputStream
 
@@ -20,7 +20,7 @@ class CCExtended {
             return result
         }
 
-        override fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Command {
+        override suspend fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Command {
             val ccSecondByte = inputStream.getByte()
             val commandID = CommandID.getByByteValue(context.commandClassID, inputStream.getByte())
 

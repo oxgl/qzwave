@@ -1,12 +1,14 @@
 package com.oxyggen.qzw.transport.command
 
+import com.oxyggen.qzw.extensions.getAllBytes
 import com.oxyggen.qzw.extensions.getByte
-import com.oxyggen.qzw.types.CommandClassID
-import com.oxyggen.qzw.types.CommandID
+import com.oxyggen.qzw.extensions.putBytes
 import com.oxyggen.qzw.transport.mapper.mapper
 import com.oxyggen.qzw.transport.serialization.CommandDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableCommandContext
 import com.oxyggen.qzw.transport.serialization.SerializableCommandContext
+import com.oxyggen.qzw.types.CommandClassID
+import com.oxyggen.qzw.types.CommandID
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -17,7 +19,7 @@ class CCSecurity {
     companion object : CommandDeserializer {
         override fun getHandledSignatureBytes() = setOf(CommandClassID.SECURITY.byteValue)
 
-        override fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Command {
+        override suspend fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Command {
 
             return when (val commandID = CommandID.getByByteValue(context.commandClassID, inputStream.getByte())) {
                 CommandID.SECURITY_NONCE_GET -> NonceGet.deserialize(inputStream, context)
@@ -44,16 +46,16 @@ class CCSecurity {
                 }
             }
 
-            fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): NonceReport =
+            suspend fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): NonceReport =
                 mapper.deserialize(
-                    inputStream.readAllBytes(),
+                    inputStream.getAllBytes(),
                     context.commandClassVersion
                 )
         }
 
-        override fun serialize(outputStream: OutputStream, context: SerializableCommandContext) {
+        override suspend fun serialize(outputStream: OutputStream, context: SerializableCommandContext) {
             super.serialize(outputStream, context)
-            outputStream.write(mapper.serialize(this, context.commandClassVersion))
+            outputStream.putBytes(mapper.serialize(this, context.commandClassVersion))
         }
 
         override fun toString(): String =

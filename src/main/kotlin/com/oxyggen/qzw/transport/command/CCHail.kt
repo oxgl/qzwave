@@ -1,10 +1,10 @@
 package com.oxyggen.qzw.transport.command
 
 import com.oxyggen.qzw.extensions.getByte
-import com.oxyggen.qzw.types.CommandClassID
-import com.oxyggen.qzw.types.CommandID
 import com.oxyggen.qzw.transport.serialization.CommandDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableCommandContext
+import com.oxyggen.qzw.types.CommandClassID
+import com.oxyggen.qzw.types.CommandID
 import java.io.IOException
 import java.io.InputStream
 
@@ -14,7 +14,7 @@ class CCHail {
     companion object : CommandDeserializer {
         override fun getHandledSignatureBytes() = setOf(CommandClassID.HAIL.byteValue)
 
-        override fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Command {
+        override suspend fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Command {
 
             return when (val commandID = CommandID.getByByteValue(context.commandClassID, inputStream.getByte())) {
                 CommandID.HAIL -> Hail.deserialize(inputStream, context)

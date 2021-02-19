@@ -1,8 +1,6 @@
 package com.oxyggen.qzw.transport.function
 
-import com.oxyggen.qzw.extensions.getByte
-import com.oxyggen.qzw.extensions.getUByte
-import com.oxyggen.qzw.extensions.putByte
+import com.oxyggen.qzw.extensions.*
 import com.oxyggen.qzw.transport.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableFunctionContext
 import com.oxyggen.qzw.transport.serialization.SerializableFunctionContext
@@ -20,7 +18,7 @@ abstract class FunctionSerialApiGetInitData {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.SERIAL_API_GET_INIT_DATA.byteValue)
 
-        override fun deserialize(
+        override suspend fun deserialize(
             inputStream: InputStream,
             context: DeserializableFunctionContext
         ): Function =
@@ -45,12 +43,12 @@ abstract class FunctionSerialApiGetInitData {
     ) : FunctionResponse(FunctionID.SERIAL_API_GET_INIT_DATA) {
 
         companion object {
-            fun deserialize(inputStream: InputStream): Response {
+            suspend fun deserialize(inputStream: InputStream): Response {
                 val serialApiVersion = inputStream.getByte()
                 val capabilities = Capabilities.getByByteValue(inputStream.getByte())
                 val nodeCount = inputStream.getUByte().toInt()
-                val nodeBitmap = if (nodeCount > 0) inputStream.readNBytes(nodeCount) else ByteArray(0)
-                val nodes = BitmaskUtils.decompressBitmaskToUByteSet(nodeBitmap)
+                val nodeBitmap = if (nodeCount > 0) inputStream.getNBytes(nodeCount) else ByteArray(0)
+                val nodes = BitmaskUtils.decompressBitmaskToObjectSet(nodeBitmap, parser = NodeID::getByByteValue)
                 val chipType = inputStream.getByte()
                 val chipVersion = inputStream.getByte()
                 return Response(
@@ -64,14 +62,14 @@ abstract class FunctionSerialApiGetInitData {
         }
 
 
-        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+        override suspend fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
             super.serialize(outputStream, context)
             outputStream.putByte(serialApiVersion)
             outputStream.putByte(capabilities.byteValue)
             outputStream.putByte(if (!nodes.isNullOrEmpty()) 29 else 0)
             if (!nodes.isNullOrEmpty()) {
-                val nodeBitmask = BitmaskUtils.compressUByteSetToBitmask(nodes, resultBytes = 29)
-                outputStream.write(nodeBitmask)
+                val nodeBitmask = BitmaskUtils.compressObjectSetToBitmask(nodes, resultBytes = 29)
+                outputStream.putBytes(nodeBitmask)
             }
             outputStream.putByte(chipType)
             outputStream.putByte(chipVersion)

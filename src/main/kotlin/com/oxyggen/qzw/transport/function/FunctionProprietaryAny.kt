@@ -17,7 +17,7 @@ abstract class FunctionProprietaryAny {
             return result
         }
 
-        override fun deserialize(
+        override suspend fun deserialize(
             inputStream: InputStream,
             context: DeserializableFunctionContext
         ): Function =

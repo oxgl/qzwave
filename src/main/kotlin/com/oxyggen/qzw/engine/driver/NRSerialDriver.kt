@@ -1,13 +1,11 @@
 package com.oxyggen.qzw.engine.driver
 
+import com.oxyggen.qzw.engine.network.Network
 import com.oxyggen.qzw.transport.factory.FrameFactory
 import com.oxyggen.qzw.transport.frame.Frame
-import com.oxyggen.qzw.engine.network.NetworkInfoGetter
 import com.oxyggen.qzw.transport.serialization.SerializableFrameContext
 import gnu.io.NRSerialPort
-import gnu.io.UnsupportedCommOperationException
 import org.apache.logging.log4j.kotlin.Logging
-import java.lang.Exception
 
 open class NRSerialDriver(private val device: String) : Driver, Logging {
     private val port: NRSerialPort = NRSerialPort(device, 115200, 1, 8)
@@ -30,12 +28,12 @@ open class NRSerialDriver(private val device: String) : Driver, Logging {
 
     override fun dataAvailable(): Int = if (started) port.inputStream.available() else -1
 
-    override suspend fun getFrame(networkInfo: NetworkInfoGetter): Frame? {
+    override suspend fun getFrame(network: Network): Frame? {
         return if (!started) {
             null
         } else {
             try {
-                FrameFactory.deserializeFrame(port.inputStream, networkInfo)
+                FrameFactory.deserializeFrame(port.inputStream, network)
             } catch (e: Throwable) {
                 // Debug info only if driver was not stopped
                 if (started) logger.debug(e)
@@ -44,10 +42,10 @@ open class NRSerialDriver(private val device: String) : Driver, Logging {
         }
     }
 
-    override fun putFrame(frame: Frame, networkInfo: NetworkInfoGetter) {
+    override suspend fun putFrame(frame: Frame) {
         if (started) {
             try {
-                frame.serialize(port.outputStream, SerializableFrameContext(networkInfo))
+                frame.serialize(port.outputStream, SerializableFrameContext())
             } catch (e: Throwable) {
                 logger.debug(e)
             }

@@ -13,7 +13,7 @@ abstract class FunctionTemplate {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.DEBUG_OUTPUT.byteValue)
 
-        override fun deserialize(
+        override suspend fun deserialize(
             inputStream: InputStream,
             context: DeserializableFunctionContext
         ): Function =

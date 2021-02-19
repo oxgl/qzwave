@@ -1,19 +1,16 @@
 package com.oxyggen.qzw
 
-import com.oxyggen.qzw.engine.driver.Driver
-import com.oxyggen.qzw.engine.driver.NRSerialDriver
 import com.oxyggen.qzw.engine.Engine
 import com.oxyggen.qzw.engine.config.EngineConfig
+import com.oxyggen.qzw.engine.driver.Driver
 import com.oxyggen.qzw.engine.driver.JSerialDriver
-import com.oxyggen.qzw.transport.command.CCVersion
 import com.oxyggen.qzw.transport.frame.Frame
-import com.oxyggen.qzw.transport.function.*
-import com.oxyggen.qzw.types.CommandClassID
-import com.oxyggen.qzw.types.TransmitOptions
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.Logging
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 internal class SerialDriverTest : Logging {
 
@@ -45,7 +42,7 @@ internal class SerialDriverTest : Logging {
             logger.debug { "Test: Engine started: ${e.started}" }
 
             //val frame = FunctionZWGetNodeProtocolInfo.Request(4u).getFrame()
-            val frame = FunctionZWRequestNodeInfo.Request(4u).getFrame()
+            //val frame = FunctionZWRequestNodeInfo.Request(NodeID(4)).getFrame()
 
             //e.sendFrame(FunctionSerialApiGetInitData.Request().getFrame(), ::resultCallback)
 
@@ -59,17 +56,17 @@ internal class SerialDriverTest : Logging {
                 delay(4000)
             }*/
 
-            delay((5_000))
+            /*delay((5_000))
             e.sendFrame(frame, ::resultCallback)
 
-            delay((5_000))
-            val frame2 = CCVersion.CommandClassGet(CommandClassID.SWITCH_MULTILEVEL)
-                .getSendDataFrame(4u, TransmitOptions(requestAcknowledge = false))
+            delay((5_000))*/
+/*            val frame2 = CCVersion.CommandClassGet(CommandClassID.SWITCH_MULTILEVEL)
+                .getSendDataFrame(NodeID(4), TransmitOptions(requestAcknowledge = false))
             e.sendFrame(frame2, ::resultCallback)
 
             delay(5_000)
-            val frame3 = CCVersion.CommandClassGet(CommandClassID.SWITCH_BINARY).getSendDataFrame(4u)
-            e.sendFrame(frame3, ::resultCallback)
+            val frame3 = CCVersion.CommandClassGet(CommandClassID.SWITCH_BINARY).getSendDataFrame(NodeID(4))
+            e.sendFrame(frame3, ::resultCallback)*/
 
             //e.sendFrame(FunctionSerialApiGetInitData.Request().getFrame())
 

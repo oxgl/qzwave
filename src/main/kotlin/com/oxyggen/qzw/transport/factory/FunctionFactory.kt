@@ -3,9 +3,9 @@ package com.oxyggen.qzw.transport.factory
 import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.transport.function.*
 import com.oxyggen.qzw.transport.function.Function
-import com.oxyggen.qzw.transport.serialization.DeserializableHandler
 import com.oxyggen.qzw.transport.serialization.DeserializableFrameContext
 import com.oxyggen.qzw.transport.serialization.DeserializableFunctionContext
+import com.oxyggen.qzw.transport.serialization.DeserializableHandler
 import com.oxyggen.qzw.types.FrameType
 import com.oxyggen.qzw.types.FunctionID
 import org.apache.logging.log4j.kotlin.Logging
@@ -75,7 +75,7 @@ class FunctionFactory {
             )
         }
 
-        fun deserializeFunction(
+        suspend fun deserializeFunction(
             inputStream: InputStream,
             frameContext: DeserializableFrameContext,
             frameType: FrameType

@@ -2,7 +2,6 @@ package com.oxyggen.qzw.utils
 
 import com.oxyggen.qzw.types.TypeToByte
 import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class Conversion {

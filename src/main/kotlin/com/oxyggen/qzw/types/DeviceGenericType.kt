@@ -1,6 +1,6 @@
 package com.oxyggen.qzw.types
 
-enum class DeviceGenericType(override val byteValue: Byte): TypeToByte {
+enum class DeviceGenericType(override val byteValue: Byte) : TypeToByte {
     DOES_NOT_EXIST(0x00.toByte()),
     APPLIANCE(0x06.toByte()),
     AV_CONTROL_POINT(0x03.toByte()),

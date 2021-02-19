@@ -3,8 +3,11 @@
 package com.oxyggen.qzw.transport.frame
 
 import com.oxyggen.qzw.engine.network.FunctionCallbackKey
+import com.oxyggen.qzw.engine.network.Network
 import com.oxyggen.qzw.extensions.getByte
+import com.oxyggen.qzw.extensions.getNBytes
 import com.oxyggen.qzw.extensions.putByte
+import com.oxyggen.qzw.extensions.putBytes
 import com.oxyggen.qzw.transport.factory.FunctionFactory
 import com.oxyggen.qzw.transport.function.Function
 import com.oxyggen.qzw.transport.function.FunctionRequest
@@ -14,13 +17,15 @@ import com.oxyggen.qzw.transport.serialization.DeserializableFrameContext
 import com.oxyggen.qzw.transport.serialization.SerializableFrameContext
 import com.oxyggen.qzw.transport.serialization.SerializableFunctionContext
 import com.oxyggen.qzw.types.FrameType
+import com.oxyggen.qzw.types.NodeID
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import kotlin.experimental.xor
 
-open class FrameSOF(val function: Function, predecessor: Frame? = null) : Frame(predecessor) {
+open class FrameSOF(network: Network, val function: Function, predecessor: Frame? = null) :
+    Frame(network, predecessor) {
 
     companion object : BinaryFrameDeserializer {
         const val SIGNATURE = 0x01.toByte()
@@ -36,7 +41,7 @@ open class FrameSOF(val function: Function, predecessor: Frame? = null) : Frame(
         }
 
         @ExperimentalUnsignedTypes
-        override fun deserialize(inputStream: InputStream, context: DeserializableFrameContext): FrameSOF {
+        override suspend fun deserialize(inputStream: InputStream, context: DeserializableFrameContext): FrameSOF {
             // First is always the length byte
             val lengthByte = inputStream.getByte()
             val length = lengthByte.toUByte().toInt()
@@ -50,7 +55,7 @@ open class FrameSOF(val function: Function, predecessor: Frame? = null) : Frame(
             // and Checksum fields.
             // On the other hand the we already removed length and type
             // byte from buffer, so we should decrease the size by 2
-            val data = inputStream.readNBytes(length - 2)
+            val data = inputStream.getNBytes(length - 2)
 
 
             // Now create data for checksum calculation
@@ -71,7 +76,7 @@ open class FrameSOF(val function: Function, predecessor: Frame? = null) : Frame(
             val function = FunctionFactory.deserializeFunction(data.inputStream(), context, frameType)
 
             // Create new SOF frame
-            return FrameSOF(function)
+            return FrameSOF(context.network, function)
         }
     }
 
@@ -84,8 +89,12 @@ open class FrameSOF(val function: Function, predecessor: Frame? = null) : Frame(
         else -> FrameType.REQUEST
     }
 
+    override fun getNodeId(): NodeID? {
+        TODO("Not yet implemented")
+    }
+
     @ExperimentalUnsignedTypes
-    override fun serialize(outputStream: OutputStream, context: SerializableFrameContext) {
+    override suspend fun serialize(outputStream: OutputStream, context: SerializableFrameContext) {
         var resultData = ByteArray(0)
 
         val functionOS = ByteArrayOutputStream()
@@ -103,12 +112,12 @@ open class FrameSOF(val function: Function, predecessor: Frame? = null) : Frame(
         resultData += calculateChecksum(resultData)
 
         outputStream.putByte(SIGNATURE)
-        outputStream.write(resultData)
+        outputStream.putBytes(resultData)
     }
 
-    override fun isFunctionCallbackKeyRequired(): Boolean = function.isFunctionCallbackKeyRequired()
+    //override fun isFunctionCallbackKeyRequired(): Boolean = function.isFunctionCallbackKeyRequired()
 
-    override fun getFunctionCallbackKey(): FunctionCallbackKey? = function.getFunctionCallbackKey()
+    //override fun getFunctionCallbackKey(): FunctionCallbackKey? = function.getFunctionCallbackKey()
 
     override fun toString() = "${frameType.toString().substring(0..2)}: $function"
 

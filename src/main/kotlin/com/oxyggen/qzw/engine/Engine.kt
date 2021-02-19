@@ -5,8 +5,9 @@ import com.oxyggen.qzw.engine.config.EngineConfig
 import com.oxyggen.qzw.engine.event.EngineEventAbort
 import com.oxyggen.qzw.engine.event.EngineEventFrameReceived
 import com.oxyggen.qzw.engine.event.EngineEventFrameSend
-import com.oxyggen.qzw.transport.frame.*
+import com.oxyggen.qzw.engine.network.Network
 import com.oxyggen.qzw.engine.network.NetworkInfo
+import com.oxyggen.qzw.transport.frame.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -31,6 +32,7 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
     private var executionJob: Job? = null
     private val loopResultMutex = Mutex()
     private val networkInfo = NetworkInfo()
+    private val network = Network()
 
     fun start() = coroutineScope.launch { startWithLock() }
 
@@ -78,7 +80,7 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
         }
 
         // Initialize all channels
-        networkInfo.initCallbacks()
+        network.initCallbackKeys()
         //dispatchChannel.init()
         //sendChannel.init()
 
@@ -131,13 +133,13 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
                             }
                         }
                         is FrameSOF -> {                    // Data frame received
-                            val cbKey = event.frame.getFunctionCallbackKey()
+                            val cbKey = null//event.frame.getFunctionCallbackKey()
                             val frame = cbKey?.let {
-                                val predecessor = networkInfo.dequeueCallbackKey(cbKey)
-                                if (predecessor != null)
+                                val predecessor = null//networkInfo.dequeueCallbackKey(cbKey)
+                                /*if (predecessor != null)
                                     event.frame.withPredecessor(predecessor)
-                                else
-                                    event.frame
+                                else*/
+                                event.frame
                             } ?: event.frame
 
                             if (frame.predecessor == null) {
@@ -146,7 +148,7 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
                                 logger.debug { "$LOG_PFX_DISPATCHER: frame received $frame, as result for ${frame.predecessor}, sending ACK" }
                             }
 
-                            sendChannel.sendFrame(FrameACK(predecessor = frame))
+                            sendChannel.sendFrame(FrameACK(network, predecessor = frame))
                         }
                     }
                 }
@@ -165,9 +167,8 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
 
         var isActive = true
         while (isActive) {
-            val event = sendChannel.receive()
 
-            when (event) {
+            when (val event = sendChannel.receive()) {
                 is EngineEventAbort -> {
                     logger.debug { "$LOG_PFX_SENDER: received event: $event" }
                     isActive = false
@@ -179,7 +180,7 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
                         var resultAwaited = false
                         for (timeout in timeouts.withIndex())
                             try {
-                                engineConfig.driver.putFrame(it, networkInfo)
+                                engineConfig.driver.putFrame(it)
                                 if (timeout.value > 0) {
                                     val sentDateTime = LocalDateTime.now()
                                     logger.debug { "$LOG_PFX_SENDER: frame $it sent, waiting ${timeout.value}ms for ACK (${timeout.index + 1}/${timeouts.size})" }
@@ -202,7 +203,7 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
                             }
                         // If result was awaited & no result received create dummy frame
                         if (resultAwaited && result == it) {
-                            FrameNUL(it)
+                            FrameNUL(network, it)
                         } else {
                             result
                         }
@@ -229,7 +230,7 @@ class Engine(val engineConfig: EngineConfig, val coroutineScope: CoroutineScope 
         logger.debug { "$LOG_PFX_RECEIVER: started" }
 
         while (engineConfig.driver.started) {
-            val frame = engineConfig.driver.getFrame(networkInfo)
+            val frame = engineConfig.driver.getFrame(network)
             if (frame != null) {
                 logger.debug("$LOG_PFX_RECEIVER: frame received $frame")
                 dispatchChannel.receivedFrame(frame)

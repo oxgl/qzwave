@@ -1,14 +1,17 @@
 package com.oxyggen.qzw.transport.frame
 
-import com.oxyggen.qzw.engine.network.FunctionCallbackKey
+import com.oxyggen.qzw.engine.network.Network
+import com.oxyggen.qzw.types.NodeID
 
 
-abstract class FrameState(predecessor: Frame? = null) : Frame(predecessor) {
+abstract class FrameState(network: Network, predecessor: Frame? = null) : Frame(network, predecessor) {
     override val sendTimeouts: List<Long>
         get() = SENT_TIMEOUTS_SEND_ONLY
 
-    override fun isFunctionCallbackKeyRequired() = false
+    override fun getNodeId(): NodeID? = predecessor?.getNodeId()
 
-    override fun getFunctionCallbackKey(): FunctionCallbackKey? = predecessor?.getFunctionCallbackKey()
+    /*override fun isFunctionCallbackKeyRequired() = false
+
+    override fun getFunctionCallbackKey(): FunctionCallbackKey? = predecessor?.getFunctionCallbackKey()*/
 
 }

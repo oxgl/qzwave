@@ -1,17 +1,11 @@
 package com.oxyggen.qzw.transport.function
 
-import com.oxyggen.qzw.types.CommandClassID
-import com.oxyggen.qzw.types.DeviceBasicType
-import com.oxyggen.qzw.types.DeviceGenericType
-import com.oxyggen.qzw.types.DeviceSpecificType
 import com.oxyggen.qzw.extensions.getByte
+import com.oxyggen.qzw.extensions.getNBytes
 import com.oxyggen.qzw.extensions.getUByte
 import com.oxyggen.qzw.transport.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableFunctionContext
-import com.oxyggen.qzw.types.FrameType
-import com.oxyggen.qzw.types.FunctionID
-import com.oxyggen.qzw.types.NodeID
-import com.oxyggen.qzw.types.UpdateState
+import com.oxyggen.qzw.types.*
 import java.io.IOException
 import java.io.InputStream
 
@@ -22,7 +16,7 @@ abstract class FunctionZWApplicationUpdate {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(SIGNATURE)
 
-        override fun deserialize(
+        override suspend fun deserialize(
             inputStream: InputStream,
             context: DeserializableFunctionContext
         ): Function =
@@ -42,10 +36,10 @@ abstract class FunctionZWApplicationUpdate {
     ) : FunctionRequest(FunctionID.ZW_APPLICATION_UPDATE) {
 
         companion object {
-            fun deserialize(inputStream: InputStream): Request {
+            suspend fun deserialize(inputStream: InputStream): Request {
                 val updateState =
                     UpdateState.getByByteValue(inputStream.getByte()) ?: throw IOException("Invalid update state!")
-                val nodeID = inputStream.getUByte()
+                val nodeID = NodeID.getByByteValue(inputStream.getByte())
                 val cmdLength = inputStream.getUByte().toInt()
                 val deviceBasicType =
                     DeviceBasicType.getByByteValue(inputStream.getByte())
@@ -55,7 +49,7 @@ abstract class FunctionZWApplicationUpdate {
                 val deviceSpecificType = DeviceSpecificType.getByByteValue(deviceGenericType, inputStream.getByte())
                     ?: DeviceSpecificType.NOT_USED
 
-                val ccBytes = inputStream.readNBytes(cmdLength - 3)
+                val ccBytes = inputStream.getNBytes(cmdLength - 3)
 
                 val commandClassList = mutableListOf<CommandClassID>()
 

@@ -1,8 +1,8 @@
 package com.oxyggen.qzw.transport.factory
 
+import com.oxyggen.qzw.engine.network.Network
 import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.transport.frame.*
-import com.oxyggen.qzw.engine.network.NetworkInfoGetter
 import com.oxyggen.qzw.transport.serialization.DeserializableFrameContext
 import com.oxyggen.qzw.transport.serialization.DeserializableHandler
 import com.oxyggen.qzw.types.FrameID
@@ -22,13 +22,13 @@ class FrameFactory {
             )
         }
 
-        fun deserializeFrame(inputStream: InputStream, networkInfo: NetworkInfoGetter): Frame {
+        suspend fun deserializeFrame(inputStream: InputStream, newtwork: Network): Frame {
             val signatureByte = inputStream.getByte()
             val frameID = FrameID.getByByteValue(signatureByte) ?: throw IOException(
                 "Unknown frame signature byte 0x%02x!".format(signatureByte)
             )
 
-            val context = DeserializableFrameContext(networkInfo, frameID)
+            val context = DeserializableFrameContext(newtwork, frameID)
 
             return bdh.deserialize(inputStream, context)
         }

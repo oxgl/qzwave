@@ -11,7 +11,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.selects.select
 import java.time.LocalDateTime
 
-class EnginePriorityChannel() {
+class EnginePriorityChannel {
     companion object {
         const val CHANNEL_PRIO_COUNT = 3
         const val CHANNEL_PRIO_STATE = 0             // ACK/NAK/CAN Frames
@@ -49,7 +49,7 @@ class EnginePriorityChannel() {
         send(EngineEventFrameReceived(frame))
     }
 
-    suspend fun receive(): EngineEvent = select<EngineEvent> {
+    suspend fun receive(): EngineEvent = select {
         for (channel in channels) {
             channel.onReceive { it }
         }

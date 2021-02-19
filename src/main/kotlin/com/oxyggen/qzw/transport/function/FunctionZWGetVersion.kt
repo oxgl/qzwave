@@ -1,5 +1,7 @@
 package com.oxyggen.qzw.transport.function
 
+import com.oxyggen.qzw.extensions.getAllBytes
+import com.oxyggen.qzw.extensions.putBytes
 import com.oxyggen.qzw.transport.mapper.mapper
 import com.oxyggen.qzw.transport.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableFunctionContext
@@ -19,7 +21,7 @@ abstract class FunctionZWGetVersion {
 
         // HOST->ZW: REQ | 0x15
         // ZW->HOST: RES | 0x15 | buffer (12 bytes) | library type
-        override fun deserialize(
+        override suspend fun deserialize(
             inputStream: InputStream,
             context: DeserializableFunctionContext
         ): Function =
@@ -48,17 +50,16 @@ abstract class FunctionZWGetVersion {
                 }
             }
 
-
-            fun deserialize(inputStream: InputStream): Response = mapper.deserialize(inputStream.readAllBytes())
+            suspend fun deserialize(inputStream: InputStream): Response = mapper.deserialize(inputStream.getAllBytes())
 /*                val versionText = inputStream.readNBytes(12).decodeToString()
                 val libraryType = LibraryType.getByByteValue(inputStream.getByte())
                 return Response(versionText, libraryType ?: LibraryType.CONTROLLER_STATIC)
             }*/
         }
 
-        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+        override suspend fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
             super.serialize(outputStream, context)
-            outputStream.write(mapper.serialize(this))
+            outputStream.putBytes(mapper.serialize(this))
         }
 
         override fun toString(): String {

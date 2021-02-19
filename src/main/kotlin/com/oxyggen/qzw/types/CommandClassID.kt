@@ -1,7 +1,5 @@
 package com.oxyggen.qzw.types
 
-import java.lang.reflect.Type
-
 enum class CommandClassID(override val byteValue: Byte, val maxVersion: Int = 1, val category: Category) : TypeToByte {
 
     // Alarm Command Class

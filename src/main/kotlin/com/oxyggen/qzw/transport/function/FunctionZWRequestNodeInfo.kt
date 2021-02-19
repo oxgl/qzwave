@@ -1,5 +1,7 @@
 package com.oxyggen.qzw.transport.function
 
+import com.oxyggen.qzw.extensions.getAllBytes
+import com.oxyggen.qzw.extensions.putBytes
 import com.oxyggen.qzw.transport.mapper.mapper
 import com.oxyggen.qzw.transport.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableFunctionContext
@@ -23,7 +25,7 @@ abstract class FunctionZWRequestNodeInfo {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.ZW_REQUEST_NODE_INFO.byteValue)
 
-        override fun deserialize(
+        override suspend fun deserialize(
             inputStream: InputStream,
             context: DeserializableFunctionContext
         ): Function =
@@ -41,12 +43,12 @@ abstract class FunctionZWRequestNodeInfo {
                 }
             }
 
-            fun deserialize(inputStream: InputStream) = mapper.deserialize<Request>(inputStream.readAllBytes())
+            suspend fun deserialize(inputStream: InputStream) = mapper.deserialize<Request>(inputStream.getAllBytes())
         }
 
-        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+        override suspend fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
             super.serialize(outputStream, context)
-            outputStream.write(mapper.serialize(this))
+            outputStream.putBytes(mapper.serialize(this))
         }
 
     }
@@ -59,12 +61,12 @@ abstract class FunctionZWRequestNodeInfo {
                 }
             }
 
-            fun deserialize(inputStream: InputStream) = mapper.deserialize<Response>(inputStream.readAllBytes())
+            suspend fun deserialize(inputStream: InputStream) = mapper.deserialize<Response>(inputStream.getAllBytes())
         }
 
-        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+        override suspend fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
             super.serialize(outputStream, context)
-            outputStream.write(mapper.serialize(this))
+            outputStream.putBytes(mapper.serialize(this))
         }
 
         override fun toString(): String = buildParamList("retVal", retVal)

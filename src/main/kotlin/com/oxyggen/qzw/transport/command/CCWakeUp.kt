@@ -1,12 +1,14 @@
 package com.oxyggen.qzw.transport.command
 
+import com.oxyggen.qzw.extensions.getAllBytes
 import com.oxyggen.qzw.extensions.getByte
-import com.oxyggen.qzw.types.CommandClassID
-import com.oxyggen.qzw.types.CommandID
+import com.oxyggen.qzw.extensions.putBytes
 import com.oxyggen.qzw.transport.mapper.mapper
 import com.oxyggen.qzw.transport.serialization.CommandDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableCommandContext
 import com.oxyggen.qzw.transport.serialization.SerializableCommandContext
+import com.oxyggen.qzw.types.CommandClassID
+import com.oxyggen.qzw.types.CommandID
 import com.oxyggen.qzw.types.NodeID
 import java.io.IOException
 import java.io.InputStream
@@ -18,7 +20,7 @@ class CCWakeUp {
     companion object : CommandDeserializer {
         override fun getHandledSignatureBytes() = setOf(CommandClassID.WAKE_UP.byteValue)
 
-        override fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Command {
+        override suspend fun deserialize(inputStream: InputStream, context: DeserializableCommandContext): Command {
 
             return when (val commandID = CommandID.getByByteValue(context.commandClassID, inputStream.getByte())) {
                 CommandID.WAKE_UP_INTERVAL_GET -> IntervalGet.deserialize(inputStream, context)
@@ -52,16 +54,16 @@ class CCWakeUp {
                 }
             }
 
-            fun deserialize(inputStream: InputStream, context: DeserializableCommandContext) =
+            suspend fun deserialize(inputStream: InputStream, context: DeserializableCommandContext) =
                 mapper.deserialize<IntervalSet>(
-                    inputStream.readAllBytes(),
+                    inputStream.getAllBytes(),
                     context.commandClassVersion
                 )
         }
 
-        override fun serialize(outputStream: OutputStream, context: SerializableCommandContext) {
+        override suspend fun serialize(outputStream: OutputStream, context: SerializableCommandContext) {
             super.serialize(outputStream, context)
-            outputStream.write(mapper.serialize(this, context.commandClassVersion))
+            outputStream.putBytes(mapper.serialize(this, context.commandClassVersion))
         }
     }
 
@@ -76,16 +78,16 @@ class CCWakeUp {
                 }
             }
 
-            fun deserialize(inputStream: InputStream, context: DeserializableCommandContext) =
+            suspend fun deserialize(inputStream: InputStream, context: DeserializableCommandContext) =
                 mapper.deserialize<IntervalReport>(
-                    inputStream.readAllBytes(),
+                    inputStream.getAllBytes(),
                     context.commandClassVersion
                 )
         }
 
-        override fun serialize(outputStream: OutputStream, context: SerializableCommandContext) {
+        override suspend fun serialize(outputStream: OutputStream, context: SerializableCommandContext) {
             super.serialize(outputStream, context)
-            outputStream.write(mapper.serialize(this, context.commandClassVersion))
+            outputStream.putBytes(mapper.serialize(this, context.commandClassVersion))
         }
     }
 
@@ -97,7 +99,8 @@ class CCWakeUp {
 
     class NoMoreInformation : Command(CommandClassID.WAKE_UP, CommandID.WAKE_UP_NO_MORE_INFORMATION) {
         companion object {
-            fun deserialize(inputStream: InputStream, context: DeserializableCommandContext) = NoMoreInformation()
+            fun deserialize(inputStream: InputStream, context: DeserializableCommandContext) =
+                NoMoreInformation()
         }
     }
 
@@ -124,16 +127,16 @@ class CCWakeUp {
                 }
             }
 
-            fun deserialize(inputStream: InputStream, context: DeserializableCommandContext) =
+            suspend fun deserialize(inputStream: InputStream, context: DeserializableCommandContext) =
                 mapper.deserialize<IntervalCapabilitiesReport>(
-                    inputStream.readAllBytes(),
+                    inputStream.getAllBytes(),
                     context.commandClassVersion
                 )
         }
 
-        override fun serialize(outputStream: OutputStream, context: SerializableCommandContext) {
+        override suspend fun serialize(outputStream: OutputStream, context: SerializableCommandContext) {
             super.serialize(outputStream, context)
-            outputStream.write(mapper.serialize(this, context.commandClassVersion))
+            outputStream.putBytes(mapper.serialize(this, context.commandClassVersion))
         }
     }
 

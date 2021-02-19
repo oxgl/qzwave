@@ -1,11 +1,12 @@
 package com.oxyggen.qzw.transport.frame
 
-import com.oxyggen.qzw.engine.network.FunctionCallbackKey
+import com.oxyggen.qzw.engine.network.Network
 import com.oxyggen.qzw.transport.serialization.SerializableFrameContext
+import com.oxyggen.qzw.types.NodeID
 import java.io.OutputStream
 import java.time.LocalDateTime
 
-abstract class Frame(predecessor: Frame? = null) {
+abstract class Frame(val network: Network, predecessor: Frame? = null) {
 
     val created: LocalDateTime = LocalDateTime.now()
 
@@ -19,26 +20,20 @@ abstract class Frame(predecessor: Frame? = null) {
 
     abstract val sendTimeouts: List<Long>
 
-    abstract fun isFunctionCallbackKeyRequired(): Boolean
+    //abstract fun isFunctionCallbackKeyRequired(): Boolean
 
-    abstract fun getFunctionCallbackKey(): FunctionCallbackKey?
+    //abstract fun getFunctionCallbackKey(): FunctionCallbackKey?
 
-    abstract fun serialize(outputStream: OutputStream, context: SerializableFrameContext)
+    abstract suspend fun serialize(outputStream: OutputStream, context: SerializableFrameContext)
 
-    //abstract fun isSuccessorOf(frame: Frame): Boolean
+    abstract fun getNodeId(): NodeID?
 
     open fun withPredecessor(predecessor: Frame): Frame {
         this.predecessor = predecessor
         return this
     }
 
-    open fun toStringWithPredecessor(): String {
-        var result = ""
-        if (predecessor != null) {
-            result += predecessor?.toStringWithPredecessor()
-            result += " -> "
-        }
-        return result + toString()
-    }
+    open fun toStringWithPredecessor(): String =
+        predecessor?.let { predecessor?.toStringWithPredecessor() + " -> " } + toString()
 
 }

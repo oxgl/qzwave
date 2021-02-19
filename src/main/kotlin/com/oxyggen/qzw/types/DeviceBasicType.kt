@@ -1,6 +1,6 @@
 package com.oxyggen.qzw.types
 
-enum class DeviceBasicType(override val byteValue: Byte): TypeToByte {
+enum class DeviceBasicType(override val byteValue: Byte) : TypeToByte {
     CONTROLLER(0x01.toByte()),
     STATIC_CONTROLLER(0x02.toByte()),
     SLAVE(0x03.toByte()),

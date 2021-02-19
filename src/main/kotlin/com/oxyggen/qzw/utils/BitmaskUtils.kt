@@ -2,6 +2,7 @@ package com.oxyggen.qzw.utils
 
 import com.oxyggen.qzw.extensions.get
 import com.oxyggen.qzw.extensions.withBit
+import com.oxyggen.qzw.types.TypeToByte
 
 @OptIn(ExperimentalUnsignedTypes::class)
 class BitmaskUtils {
@@ -39,8 +40,21 @@ class BitmaskUtils {
             return result
         }
 
-        fun compressUByteSetToBitmask(input: Set<UByte>, resultBytes: Int? = null, startIndex: UByte = 1u): ByteArray {
+        fun <T> decompressBitmaskToObjectSet(
+            byteArray: ByteArray,
+            startIndex: Byte = 1,
+            parser: (b: Byte) -> T
+        ): Set<T> {
+            val byteSet = decompressBitmaskToByteSet(byteArray, startIndex)
+            val result = mutableSetOf<T>()
+            for (byte in byteSet) {
+                val obj = parser(byte)
+                result.add(obj)
+            }
+            return result
+        }
 
+        fun compressUByteSetToBitmask(input: Set<UByte>, resultBytes: Int? = null, startIndex: UByte = 1u): ByteArray {
             val maxKey = input.maxOrNull()?.toInt() ?: 0
 
             // Number of bits + 7 div 8
@@ -59,6 +73,17 @@ class BitmaskUtils {
             }
             return result
         }
-    }
 
+        fun compressObjectSetToBitmask(
+            input: Set<TypeToByte>,
+            resultBytes: Int? = null,
+            startIndex: UByte = 1u
+        ): ByteArray {
+            val byteSet = mutableSetOf<UByte>()
+            for (obj in input)
+                byteSet.add(obj.byteValue.toUByte())
+
+            return compressUByteSetToBitmask(byteSet, resultBytes, startIndex)
+        }
+    }
 }

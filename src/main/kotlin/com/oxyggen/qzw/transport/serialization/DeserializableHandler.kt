@@ -65,7 +65,7 @@ class DeserializableHandler<T, C : DeserializableObjectContext>(
     fun getClassBySignatureByte(signatureByte: Byte) =
         deserializers.find { it.signatureByte == signatureByte }?.deserializerClass
 
-    fun deserialize(inputStream: InputStream, context: C): T {
+    suspend fun deserialize(inputStream: InputStream, context: C): T {
         val deserializer = deserializers.find { it.signatureByte == context.getSignatureByte() }?.deserializableInstance
             ?: throw IOException(
                 "%s deserializer not found for signature byte 0x%02x!".format(

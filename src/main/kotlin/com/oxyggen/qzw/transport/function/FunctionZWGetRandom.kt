@@ -1,5 +1,7 @@
 package com.oxyggen.qzw.transport.function
 
+import com.oxyggen.qzw.extensions.getAllBytes
+import com.oxyggen.qzw.extensions.putBytes
 import com.oxyggen.qzw.transport.mapper.mapper
 import com.oxyggen.qzw.transport.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableFunctionContext
@@ -15,7 +17,7 @@ abstract class FunctionZWGetRandom {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.ZW_GET_RANDOM.byteValue)
 
-        override fun deserialize(
+        override suspend fun deserialize(
             inputStream: InputStream,
             context: DeserializableFunctionContext
         ): Function = when (context.frameType) {
@@ -34,13 +36,13 @@ abstract class FunctionZWGetRandom {
                 }
             }
 
-            fun deserialize(inputStream: InputStream): Request =
-                mapper.deserialize<Request>(inputStream.readAllBytes())
+            suspend fun deserialize(inputStream: InputStream): Request =
+                mapper.deserialize(inputStream.getAllBytes())
         }
 
-        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+        override suspend fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
             super.serialize(outputStream, context)
-            outputStream.write(mapper.serialize(this))
+            outputStream.putBytes(mapper.serialize(this))
         }
 
         override fun toString(): String = "$functionID($noRandomBytes)"
@@ -56,13 +58,13 @@ abstract class FunctionZWGetRandom {
                 }
             }
 
-            fun deserialize(inputStream: InputStream): Response =
-                mapper.deserialize<Response>(inputStream.readAllBytes())
+            suspend fun deserialize(inputStream: InputStream): Response =
+                mapper.deserialize(inputStream.getAllBytes())
         }
 
-        override fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
+        override suspend fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
             super.serialize(outputStream, context)
-            outputStream.write(mapper.serialize(this))
+            outputStream.putBytes(mapper.serialize(this))
         }
 
         override fun toString(): String = "$functionID(out ${randomBytes.size}, out ${randomBytes.toList()})"

@@ -11,10 +11,11 @@ import kotlinx.coroutines.channels.Channel
 import java.io.IOException
 
 @OptIn(ExperimentalUnsignedTypes::class, ExperimentalCoroutinesApi::class)
-class NetworkInfo() : NetworkInfoGetter {
-    var nodeMap: Map<NodeID, NodeInfo> = mutableMapOf()
+class NetworkInfo {
+    //}: NetworkInfoGetter {
+    var nodeMap: Map<NodeID, Node> = mutableMapOf()
 
-    override val node: Map<NodeID, NodeInfo> get() = nodeMap
+    val node: Map<NodeID, Node> get() = nodeMap
 
     // Free callback ID channel
     private val callbackMap = mutableMapOf<FunctionCallbackKey, Frame>()
@@ -25,8 +26,8 @@ class NetworkInfo() : NetworkInfoGetter {
         // Remove all old data
         callbackNextKey.init()
         // Create new sequence
-        for (cbID in (1.toUByte()..FunctionCallbackID.MAX_VALUE))
-            callbackNextKey.send(FunctionCallbackKey(cbID.toUByte()))
+        for (cbID in FunctionCallbackID.ALL_VALID)
+            callbackNextKey.send(FunctionCallbackKey(cbID))
     }
 
     suspend fun handleFrameEnqueue(frame: Frame, action: suspend (frame: Frame) -> Frame): Frame {
@@ -48,13 +49,7 @@ class NetworkInfo() : NetworkInfoGetter {
         }
     }
 
-    suspend fun enqueueCallbackKey(frame: Frame): FunctionCallbackKey? = if (frame.isFunctionCallbackKeyRequired()) {
-        val callbackKey = callbackNextKey.receive()
-        callbackMap[callbackKey] = frame
-        callbackKey
-    } else {
-        null
-    }
+    fun enqueueCallbackKey(frame: Frame): FunctionCallbackKey? = null
 
     suspend fun dequeueCallbackKey(functionCallbackKey: FunctionCallbackKey): Frame? {
         // Get the frame from callback map
@@ -75,7 +70,7 @@ class NetworkInfo() : NetworkInfoGetter {
         return false
     }
 
-    override fun getCurrentCallbackKey(): FunctionCallbackKey = functionCallbackKey
+    fun getCurrentCallbackKey(): FunctionCallbackKey = functionCallbackKey
         ?: throw IOException("Invalid usage! Callback not requested by frame, but it tries to get one!")
 
 }
