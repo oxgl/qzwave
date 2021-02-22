@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 class EnginePriorityChannel {
     companion object {
         const val CHANNEL_PRIO_COUNT = 3
-        const val CHANNEL_PRIO_STATE = 0             // ACK/NAK/CAN Frames
+        const val CHANNEL_PRIO_STATE = 0            // ACK/NAK/CAN Frames
         const val CHANNEL_PRIO_NORMAL = 1           // Standard Frames
         const val CHANNEL_PRIO_LOW = 2              // Low priority frames
     }
