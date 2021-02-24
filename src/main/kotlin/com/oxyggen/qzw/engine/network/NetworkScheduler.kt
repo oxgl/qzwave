@@ -1,39 +1,71 @@
 package com.oxyggen.qzw.engine.network
 
-import com.oxyggen.qzw.engine.channel.FramePriorityChannel
-import com.oxyggen.qzw.engine.channel.FramePriorityChannel.Direction
-import com.oxyggen.qzw.engine.channel.FramePriorityReceiveChannel
-import com.oxyggen.qzw.engine.channel.FramePrioritySendChannel
-import com.oxyggen.qzw.engine.channel.framePrioritySelect
+import com.oxyggen.qzw.engine.channel.FrameDuplexPriorityChannel
+import com.oxyggen.qzw.engine.channel.FrameDuplexPriorityChannel.Connection
+import com.oxyggen.qzw.engine.channel.FrameDuplexPriorityChannelEndpoint
 import com.oxyggen.qzw.types.NodeID
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.apache.logging.log4j.kotlin.Logging
 
 
 class NetworkScheduler(
     val network: Network = Network(),
-    val fromSW: FramePriorityReceiveChannel = FramePriorityChannel(Direction.FROM_SW),          // From software component (in)
-    val toSW: FramePrioritySendChannel = FramePriorityChannel(Direction.TO_SW),                 // To software component (out)
-    val fromZW: FramePriorityReceiveChannel = FramePriorityChannel(Direction.FROM_ZW),          // From ZWave driver (received)
-    val toZW: FramePrioritySendChannel = FramePriorityChannel(Direction.TO_ZW)                  // To ZWave driver (send)
+    val epSW: FrameDuplexPriorityChannelEndpoint,
+    val epZW: FrameDuplexPriorityChannelEndpoint
 ) : Logging {
 
-    private var nodeScheduler = mutableMapOf<Node, NodeScheduler>()
+    private data class NodeSchedulerExt(
+        val nodeScheduler: NodeScheduler,
+        val epSW: FrameDuplexPriorityChannelEndpoint,
+        val epZW: FrameDuplexPriorityChannelEndpoint
+    )
 
     fun getLocalNodeId() = NodeID(1)
 
-    operator fun get(node: Node): NodeScheduler = nodeScheduler.getOrPut(node, { NodeScheduler(this, node) })
+    private var loopJob: Job? = null
+    private val loopJobMutex = Mutex()
 
-    private suspend fun loop() {
-        logger.debug { "Network scheduler: started" }
-        var isActive = true
-        while (isActive) {
-            val received = framePrioritySelect(fromSW, fromZW)
+    private var nodeSchedulerExt = mutableMapOf<Node, NodeSchedulerExt>()
 
-            //when (received.first)
+    private fun createNodeSchedulerExt(node: Node, coroutineScope: CoroutineScope): NodeSchedulerExt {
+        val duplexChannelSW = FrameDuplexPriorityChannel(Connection.SW)
+        val duplexChannelZW = FrameDuplexPriorityChannel(Connection.ZW)
+
+        val nodeScheduler = NodeScheduler(this, node, duplexChannelSW.endpointB, duplexChannelZW.endpointB)
 
 
-        }
-        logger.debug { "Network scheduler: stopped" }
+        return NodeSchedulerExt(
+            NodeScheduler(this, node, duplexChannelSW.endpointB, duplexChannelZW.endpointB),
+            duplexChannelSW.endpointA, duplexChannelZW.endpointA
+        )
     }
 
+    private fun getNodeSchedulerExt(node: Node, coroutineScope: CoroutineScope): NodeSchedulerExt =
+        nodeSchedulerExt.getOrPut(node, { createNodeSchedulerExt(node, coroutineScope) })
+
+    suspend fun start(coroutineScope: CoroutineScope) = loopJobMutex.withLock {
+        if (loopJob?.isActive?.not() == true)
+            loopJob = coroutineScope.launch { loop(this) }
+    }
+
+    suspend fun stop() = loopJobMutex.withLock {
+        loopJob?.cancelAndJoin()
+        loopJob = null
+    }
+
+    private suspend fun loop(coroutineScope: CoroutineScope) {
+        try {
+            logger.debug { "Network scheduler: started" }
+            while (true) {
+
+
+            }
+        } catch (e: CancellationException) {
+
+        } finally {
+            logger.debug { "Network scheduler: stopped" }
+        }
+    }
 }
