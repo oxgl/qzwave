@@ -72,7 +72,7 @@ internal class SerialDriverTest : Logging {
 
             delay(60_000)
             logger.debug { "Test: Stopping engine" }
-            e.stopAndWait()
+            e.stop()
             logger.debug { "Test: Engine stopped" }
         }
     }

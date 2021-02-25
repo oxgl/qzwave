@@ -1,6 +1,7 @@
 package com.oxyggen.qzw.engine.channel
 
 import com.oxyggen.qzw.transport.frame.Frame
+import com.oxyggen.qzw.transport.frame.FrameSOF
 import com.oxyggen.qzw.transport.frame.FrameState
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -44,11 +45,11 @@ class FrameDuplexPriorityChannel(val connection: Connection) : DuplexPriorityCha
             }
         }
 
-        override suspend fun receiveFrameState(afterDateTime: LocalDateTime): FrameState {
+        override suspend fun receiveFrameState(frameSOF: FrameSOF): FrameState {
             while (true) {
                 val frame = channelsIn[CHANNEL_PRIORITY_STATE].receive()
-                if (frame.created.isAfter(afterDateTime)) {
-                    return frame as FrameState
+                if (frame.created.isAfter(frameSOF.created)) {
+                    return frame.withPredecessor(frameSOF) as FrameState
                 }
             }
         }

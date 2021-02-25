@@ -2,8 +2,9 @@
 
 package com.oxyggen.qzw.transport.frame
 
-import com.oxyggen.qzw.engine.network.FunctionCallbackKey
 import com.oxyggen.qzw.engine.network.Network
+import com.oxyggen.qzw.engine.network.NetworkCallbackKey
+import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.extensions.getNBytes
 import com.oxyggen.qzw.extensions.putByte
@@ -80,18 +81,16 @@ open class FrameSOF(network: Network, val function: Function, predecessor: Frame
         }
     }
 
-    override val sendTimeouts: List<Long>
-        get() = SEND_TIMEOUTS_DEFAULT
-
     val frameType = when (function) {
         is FunctionRequest -> FrameType.REQUEST
         is FunctionResponse -> FrameType.RESPONSE
         else -> FrameType.REQUEST
     }
 
-    override fun getNodeId(): NodeID? {
-        TODO("Not yet implemented")
-    }
+    open fun getNetworkCallbackKey(): NetworkCallbackKey? = function.getNetworkCallbackKey(network)
+
+    open fun getNode(): Node? =
+        function.getNode(network) ?: getNetworkCallbackKey()?.let { network.getNodeByCallbackKey(it, this) }
 
     @ExperimentalUnsignedTypes
     override suspend fun serialize(outputStream: OutputStream, context: SerializableFrameContext) {
@@ -115,10 +114,6 @@ open class FrameSOF(network: Network, val function: Function, predecessor: Frame
         outputStream.putBytes(resultData)
     }
 
-    //override fun isFunctionCallbackKeyRequired(): Boolean = function.isFunctionCallbackKeyRequired()
-
-    //override fun getFunctionCallbackKey(): FunctionCallbackKey? = function.getFunctionCallbackKey()
-
     override fun toString() = "${frameType.toString().substring(0..2)}: $function"
-
 }
+

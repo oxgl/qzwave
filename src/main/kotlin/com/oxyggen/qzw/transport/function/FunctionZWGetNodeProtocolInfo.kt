@@ -1,5 +1,8 @@
 package com.oxyggen.qzw.transport.function
 
+import com.oxyggen.qzw.engine.network.Network
+import com.oxyggen.qzw.engine.network.NetworkCallbackKey
+import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.extensions.get
 import com.oxyggen.qzw.extensions.getAllBytes
 import com.oxyggen.qzw.extensions.getByte
@@ -44,6 +47,8 @@ abstract class FunctionZWGetNodeProtocolInfo {
 
             suspend fun deserialize(inputStream: InputStream) = mapper.deserialize<Request>(inputStream.getAllBytes())
         }
+
+        override fun getNode(network: Network): Node? = network.node[nodeID]
 
         override suspend fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
             super.serialize(outputStream, context)

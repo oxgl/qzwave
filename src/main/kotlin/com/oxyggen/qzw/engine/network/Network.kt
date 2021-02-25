@@ -11,30 +11,41 @@ class Network {
 
     val node: Map<NodeID, Node> get() = nodeMap
 
-    private val callbackKeyToFrame = mutableMapOf<FunctionCallbackKey, FrameSOF>()
-    private val callbackNextKey = Channel<FunctionCallbackKey>(256)
+    private val callbackKeyToFrame = mutableMapOf<NetworkCallbackKey, FrameSOF>()
+    private val callbackNextKey = Channel<NetworkCallbackKey>(256)
 
     suspend fun initCallbackKeys() {
         // Remove all old data
         callbackNextKey.init()
         // Create new sequence
         for (cbID in FunctionCallbackID.ALL_VALID)
-            callbackNextKey.send(FunctionCallbackKey(cbID))
+            callbackNextKey.send(NetworkCallbackKey(cbID))
     }
 
-    private suspend fun registerCallbackKey(frame: FrameSOF): FunctionCallbackKey {
+    private suspend fun registerCallbackKey(frame: FrameSOF): NetworkCallbackKey {
         val cbKey = callbackNextKey.receive()
         callbackKeyToFrame[cbKey] = frame
         return cbKey
     }
 
-    fun getCallbackKey(frame: FrameSOF): FunctionCallbackKey? =
+    fun getCallbackKey(frame: FrameSOF): NetworkCallbackKey? =
         callbackKeyToFrame.filterValues { it == frame }.keys.firstOrNull()
 
-    suspend fun provideCallbackKey(frame: FrameSOF): FunctionCallbackKey =
+    suspend fun provideCallbackKey(frame: FrameSOF): NetworkCallbackKey =
         getCallbackKey(frame) ?: registerCallbackKey(frame)
 
-    suspend fun deregisterCallbackKey(cbKey: FunctionCallbackKey): FrameSOF? {
+    fun getFrameByCallbackKey(networkCallbackKey: NetworkCallbackKey): FrameSOF? =
+        callbackKeyToFrame[networkCallbackKey]
+
+    fun getNodeByCallbackKey(networkCallbackKey: NetworkCallbackKey, callerFrame: FrameSOF? = null): Node? {
+        val foundFrame = getFrameByCallbackKey(networkCallbackKey)
+        return if (foundFrame != callerFrame)
+            foundFrame?.getNode()
+        else
+            null
+    }
+
+    suspend fun deregisterCallbackKey(cbKey: NetworkCallbackKey): FrameSOF? {
         // Get the frame from callback map
         val result = callbackKeyToFrame.remove(cbKey)
         // If frame found, remove entry and also put back callback key into

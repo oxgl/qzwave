@@ -1,6 +1,7 @@
 package com.oxyggen.qzw.transport.function
 
-import com.oxyggen.qzw.engine.network.FunctionCallbackKey
+import com.oxyggen.qzw.engine.network.Network
+import com.oxyggen.qzw.engine.network.NetworkCallbackKey
 import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.extensions.*
 import com.oxyggen.qzw.transport.command.Command
@@ -11,7 +12,6 @@ import com.oxyggen.qzw.transport.serialization.SerializableCommandContext
 import com.oxyggen.qzw.transport.serialization.SerializableFunctionContext
 import com.oxyggen.qzw.types.*
 import java.io.ByteArrayOutputStream
-import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -43,7 +43,7 @@ abstract class FunctionZWSendData {
     class Request(
         val nodeID: NodeID,
         val command: Command,
-        val txOptions: TransmitOptions,
+        val txOptions: TransmitOptions
     ) : FunctionRequest(FunctionID.ZW_SEND_DATA) {
         companion object;
 
@@ -69,12 +69,14 @@ abstract class FunctionZWSendData {
             // funcID
             val functionCallbackID = context.frame.network.provideCallbackKey(context.frame).functionCallbackID
 
+            // Send callbackID
             outputStream.put(functionCallbackID)
         }
 
+        override fun getNode(network: Network): Node? = network.node[nodeID]
+
         override fun toString(): String =
             "${functionID}(nodeId = $nodeID, $command)"
-
     }
 
     class Response(val success: Boolean) : FunctionResponse(FunctionID.ZW_SEND_DATA) {
@@ -110,7 +112,8 @@ abstract class FunctionZWSendData {
             }
         }
 
-        override fun getFunctionCallbackKey(): FunctionCallbackKey = FunctionCallbackKey(functionCallbackID)
+        override fun getNetworkCallbackKey(network: Network): NetworkCallbackKey =
+            NetworkCallbackKey(functionCallbackID)
 
         override fun toString(): String = buildParamList("functionCallbackID", functionCallbackID, "txStatus", txStatus)
 

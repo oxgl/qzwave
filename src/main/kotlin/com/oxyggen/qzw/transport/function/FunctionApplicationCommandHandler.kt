@@ -1,5 +1,7 @@
 package com.oxyggen.qzw.transport.function
 
+import com.oxyggen.qzw.engine.network.Network
+import com.oxyggen.qzw.engine.network.NetworkCallbackKey
 import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.extensions.availableBytes
 import com.oxyggen.qzw.extensions.getByte
@@ -54,6 +56,8 @@ abstract class FunctionApplicationCommandHandler {
                 return Request(receiveStatus, sourceNodeID, command, receiveRSSIVal, securityKey)
             }
         }
+
+        override fun getNode(network: Network): Node? = network.node[sourceNodeID]
 
         override fun toString(): String =
             buildParamList("source", sourceNodeID, "command", command, "status", receiveStatus)

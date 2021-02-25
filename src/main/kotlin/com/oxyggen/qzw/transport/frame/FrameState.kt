@@ -5,13 +5,7 @@ import com.oxyggen.qzw.types.NodeID
 
 
 abstract class FrameState(network: Network, predecessor: Frame? = null) : Frame(network, predecessor) {
-    override val sendTimeouts: List<Long>
-        get() = SENT_TIMEOUTS_SEND_ONLY
-
-    override fun getNodeId(): NodeID? = predecessor?.getNodeId()
-
-    /*override fun isFunctionCallbackKeyRequired() = false
-
-    override fun getFunctionCallbackKey(): FunctionCallbackKey? = predecessor?.getFunctionCallbackKey()*/
-
+    override fun withPredecessor(predecessor: Frame): FrameState {
+        return super.withPredecessor(predecessor) as FrameState
+    }
 }

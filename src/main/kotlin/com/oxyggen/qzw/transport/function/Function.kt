@@ -1,7 +1,8 @@
 package com.oxyggen.qzw.transport.function
 
-import com.oxyggen.qzw.engine.network.FunctionCallbackKey
+import com.oxyggen.qzw.engine.network.NetworkCallbackKey
 import com.oxyggen.qzw.engine.network.Network
+import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.extensions.put
 import com.oxyggen.qzw.transport.frame.FrameSOF
 import com.oxyggen.qzw.transport.serialization.SerializableFunctionContext
@@ -16,9 +17,12 @@ abstract class Function(val functionID: FunctionID) : Logging {
 
     open fun getFrame(network: Network): FrameSOF = FrameSOF(network, this)
 
+    open fun getNode(network: Network): Node? = null
+
+    open fun getNetworkCallbackKey(network: Network): NetworkCallbackKey? = null
+
     open fun isFunctionCallbackKeyRequired(): Boolean = false
 
-    open fun getFunctionCallbackKey(): FunctionCallbackKey? = null
 
     fun buildParamList(vararg params: Any): String {
         var result = ""

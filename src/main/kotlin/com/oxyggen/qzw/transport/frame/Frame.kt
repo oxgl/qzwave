@@ -14,19 +14,9 @@ abstract class Frame(val network: Network, predecessor: Frame? = null) {
         protected set
 
     companion object {
-        val SEND_TIMEOUTS_DEFAULT = generateSequence(200L) { it + 1000 }.take(4).toList()
-        val SENT_TIMEOUTS_SEND_ONLY = listOf<Long>(0)
     }
 
-    abstract val sendTimeouts: List<Long>
-
-    //abstract fun isFunctionCallbackKeyRequired(): Boolean
-
-    //abstract fun getFunctionCallbackKey(): FunctionCallbackKey?
-
     abstract suspend fun serialize(outputStream: OutputStream, context: SerializableFrameContext)
-
-    abstract fun getNodeId(): NodeID?
 
     open fun withPredecessor(predecessor: Frame): Frame {
         this.predecessor = predecessor

@@ -1,5 +1,7 @@
 package com.oxyggen.qzw.transport.function
 
+import com.oxyggen.qzw.engine.network.Network
+import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.extensions.getNBytes
 import com.oxyggen.qzw.extensions.getUByte
@@ -68,6 +70,8 @@ abstract class FunctionZWApplicationUpdate {
                 )
             }
         }
+
+        override fun getNode(network: Network): Node? = network.node[nodeID]
 
         override fun toString(): String {
             var ccListDescr = ""
