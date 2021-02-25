@@ -2,15 +2,11 @@ package com.oxyggen.qzw.engine.network
 
 import com.oxyggen.qzw.extensions.init
 import com.oxyggen.qzw.transport.frame.FrameSOF
-import com.oxyggen.qzw.types.FunctionCallbackID
 import com.oxyggen.qzw.types.NodeID
 import kotlinx.coroutines.channels.Channel
 
 class Network {
-    var nodeMap: Map<NodeID, Node> = mutableMapOf()
-
-    val node: Map<NodeID, Node> get() = nodeMap
-
+    private var nodeMap: MutableMap<NodeID, Node> = mutableMapOf()
     private val callbackKeyToFrame = mutableMapOf<NetworkCallbackKey, FrameSOF>()
     private val callbackNextKey = Channel<NetworkCallbackKey>(256)
 
@@ -18,7 +14,7 @@ class Network {
         // Remove all old data
         callbackNextKey.init()
         // Create new sequence
-        for (cbID in FunctionCallbackID.ALL_VALID)
+        for (cbID in NetworkCallbackID.ALL_VALID)
             callbackNextKey.send(NetworkCallbackKey(cbID))
     }
 
@@ -30,6 +26,8 @@ class Network {
 
     fun getCallbackKey(frame: FrameSOF): NetworkCallbackKey? =
         callbackKeyToFrame.filterValues { it == frame }.keys.firstOrNull()
+
+    fun getNode(nodeID: NodeID): Node = nodeMap.getOrPut(nodeID, { Node(nodeID) })
 
     suspend fun provideCallbackKey(frame: FrameSOF): NetworkCallbackKey =
         getCallbackKey(frame) ?: registerCallbackKey(frame)

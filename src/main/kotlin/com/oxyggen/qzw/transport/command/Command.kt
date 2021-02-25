@@ -1,13 +1,13 @@
 package com.oxyggen.qzw.transport.command
 
 import com.oxyggen.qzw.engine.network.Network
+import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.extensions.putByte
 import com.oxyggen.qzw.transport.frame.FrameSOF
 import com.oxyggen.qzw.transport.function.FunctionZWSendData
 import com.oxyggen.qzw.transport.serialization.SerializableCommandContext
 import com.oxyggen.qzw.types.CommandClassID
 import com.oxyggen.qzw.types.CommandID
-import com.oxyggen.qzw.types.NodeID
 import com.oxyggen.qzw.types.TransmitOptions
 import java.io.OutputStream
 
@@ -15,22 +15,22 @@ import java.io.OutputStream
 abstract class Command(val commandClassID: CommandClassID, val commandId: CommandID) {
 
     open fun getSendDataFunctionRequest(
-        nodeId: NodeID,
+        node: Node,
         txOptions: TransmitOptions = TransmitOptions(),
     ) = FunctionZWSendData.Request(
-        nodeID = nodeId,
+        node = node,
         command = this,
         txOptions = txOptions,
     )
 
     open fun getSendDataFrame(
         network: Network,
-        nodeId: NodeID,
+        node: Node,
         txOptions: TransmitOptions = TransmitOptions(),
     ) = FrameSOF(
         network,
         getSendDataFunctionRequest(
-            nodeId = nodeId,
+            node = node,
             txOptions = txOptions,
         )
     )

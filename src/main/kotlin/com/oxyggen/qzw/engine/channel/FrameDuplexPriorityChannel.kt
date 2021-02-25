@@ -39,7 +39,7 @@ class FrameDuplexPriorityChannel(val connection: Connection) : DuplexPriorityCha
             }
         }
 
-        override suspend fun receive(): Frame = select<Frame> {
+        override suspend fun receive(): Frame = select {
             for (channel in channelsIn) {
                 channel.onReceive { it }
             }

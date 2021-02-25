@@ -1,7 +1,6 @@
 package com.oxyggen.qzw.transport.function
 
 import com.oxyggen.qzw.engine.network.Network
-import com.oxyggen.qzw.engine.network.NetworkCallbackKey
 import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.extensions.availableBytes
 import com.oxyggen.qzw.extensions.getByte
@@ -35,7 +34,7 @@ abstract class FunctionApplicationCommandHandler {
 
     class Request(
         val receiveStatus: ReceiveStatus,
-        val sourceNodeID: NodeID,
+        val sourceNode: Node,
         val command: Command,
         val receiveRSSIVal: Byte,
         val securityKey: SecurityKey
@@ -44,23 +43,23 @@ abstract class FunctionApplicationCommandHandler {
             suspend fun deserialize(inputStream: InputStream, context: DeserializableFunctionContext): Request {
                 val receiveStatus = ReceiveStatus.getByByteValue(inputStream.getByte())
                 val sourceNodeID = NodeID.getByByteValue(inputStream.getByte())
-                val currentNode = context.network.node[sourceNodeID] ?: Node.getInitial(sourceNodeID)
+                val sourceNode = context.network.getNode(sourceNodeID)
                 val cmdLength = inputStream.getUByte().toInt()
                 val cmdBytes = inputStream.getNBytes(cmdLength)
-                val command = CommandFactory.deserializeCommand(cmdBytes.inputStream(), context, currentNode)
+                val command = CommandFactory.deserializeCommand(cmdBytes.inputStream(), context, sourceNode)
                 val receiveRSSIVal = if (inputStream.availableBytes() > 0) inputStream.getByte() else 0
                 val securityKey =
                     if (inputStream.availableBytes() > 0) SecurityKey.getByByteValue(inputStream.getByte())
                         ?: SecurityKey.NONE else SecurityKey.NONE
 
-                return Request(receiveStatus, sourceNodeID, command, receiveRSSIVal, securityKey)
+                return Request(receiveStatus, sourceNode, command, receiveRSSIVal, securityKey)
             }
         }
 
-        override fun getNode(network: Network): Node? = network.node[sourceNodeID]
+        override fun getNode(network: Network): Node = sourceNode
 
         override fun toString(): String =
-            buildParamList("source", sourceNodeID, "command", command, "status", receiveStatus)
+            buildParamList("source", sourceNode, "command", command, "status", receiveStatus)
 
     }
 

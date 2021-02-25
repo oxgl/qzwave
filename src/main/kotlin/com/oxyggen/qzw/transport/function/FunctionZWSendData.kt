@@ -1,6 +1,7 @@
 package com.oxyggen.qzw.transport.function
 
 import com.oxyggen.qzw.engine.network.Network
+import com.oxyggen.qzw.engine.network.NetworkCallbackID
 import com.oxyggen.qzw.engine.network.NetworkCallbackKey
 import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.extensions.*
@@ -41,7 +42,7 @@ abstract class FunctionZWSendData {
     }
 
     class Request(
-        val nodeID: NodeID,
+        val node: Node,
         val command: Command,
         val txOptions: TransmitOptions
     ) : FunctionRequest(FunctionID.ZW_SEND_DATA) {
@@ -50,14 +51,13 @@ abstract class FunctionZWSendData {
         // HOST->ZW: REQ | 0x13 | nodeID | dataLength | pData[ ] | txOptions | funcID
         override suspend fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
             super.serialize(outputStream, context)
-            val currentNode = context.frame.network.node[nodeID] ?: Node.getInitial(nodeID)
 
             val commandOS = ByteArrayOutputStream()
-            command.serialize(commandOS, SerializableCommandContext(context, this, currentNode, command.commandClassID))
+            command.serialize(commandOS, SerializableCommandContext(context, this, node, command.commandClassID))
             val commandBytes = commandOS.toByteArray()
 
             // Send nodeID
-            outputStream.put(nodeID)
+            outputStream.put(node.nodeID)
 
             // dataLength & pData[ ]
             outputStream.putUByte(commandBytes.size.toUByte())
@@ -67,16 +67,16 @@ abstract class FunctionZWSendData {
             outputStream.put(txOptions)
 
             // funcID
-            val functionCallbackID = context.frame.network.provideCallbackKey(context.frame).functionCallbackID
+            val functionCallbackID = context.frame.network.provideCallbackKey(context.frame).networkCallbackID
 
             // Send callbackID
             outputStream.put(functionCallbackID)
         }
 
-        override fun getNode(network: Network): Node? = network.node[nodeID]
+        override fun getNode(network: Network): Node = node
 
         override fun toString(): String =
-            "${functionID}(nodeId = $nodeID, $command)"
+            "${functionID}(nodeId = ${node.nodeID}, $command)"
     }
 
     class Response(val success: Boolean) : FunctionResponse(FunctionID.ZW_SEND_DATA) {
@@ -97,13 +97,13 @@ abstract class FunctionZWSendData {
     }
 
     class ZWRequest(
-        val functionCallbackID: FunctionCallbackID,
+        val networkCallbackID: NetworkCallbackID,
         val txStatus: TransmitStatus
     ) : FunctionRequest(FunctionID.ZW_SEND_DATA) {
 
         companion object {
             suspend fun deserialize(inputStream: InputStream): ZWRequest {
-                val functionCallbackID = FunctionCallbackID.getByByteValue(inputStream.getByte())
+                val functionCallbackID = NetworkCallbackID.getByByteValue(inputStream.getByte())
                 val txStatusByte = inputStream.getByte()
                 return ZWRequest(
                     functionCallbackID,
@@ -113,9 +113,9 @@ abstract class FunctionZWSendData {
         }
 
         override fun getNetworkCallbackKey(network: Network): NetworkCallbackKey =
-            NetworkCallbackKey(functionCallbackID)
+            NetworkCallbackKey(networkCallbackID)
 
-        override fun toString(): String = buildParamList("functionCallbackID", functionCallbackID, "txStatus", txStatus)
+        override fun toString(): String = buildParamList("functionCallbackID", networkCallbackID, "txStatus", txStatus)
 
     }
 

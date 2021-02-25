@@ -3,7 +3,7 @@ package com.oxyggen.qzw.engine.network
 import com.oxyggen.qzw.types.CommandClassID
 import com.oxyggen.qzw.types.NodeID
 
-data class Node(val nodeID: NodeID, val supportedCommandClassVersion: Map<CommandClassID, Int>) {
+data class Node(val nodeID: NodeID, val supportedCommandClassVersion: Map<CommandClassID, Int> = mapOf()) {
     fun getSupportedCCVersion(commandClass: CommandClassID) = supportedCommandClassVersion[commandClass] ?: 1
 
     companion object {

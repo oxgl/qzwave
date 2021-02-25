@@ -3,6 +3,8 @@ package com.oxyggen.qzw.transport.function
 import com.oxyggen.qzw.engine.network.Network
 import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.extensions.getAllBytes
+import com.oxyggen.qzw.extensions.getByte
+import com.oxyggen.qzw.extensions.put
 import com.oxyggen.qzw.extensions.putBytes
 import com.oxyggen.qzw.transport.mapper.mapper
 import com.oxyggen.qzw.transport.serialization.BinaryFunctionDeserializer
@@ -32,27 +34,25 @@ abstract class FunctionZWRequestNodeInfo {
             context: DeserializableFunctionContext
         ): Function =
             when (context.frameType) {
-                FrameType.REQUEST -> Request.deserialize(inputStream)
-                FrameType.RESPONSE -> Response.deserialize(inputStream)
+                FrameType.REQUEST -> Request.deserialize(inputStream, context)
+                FrameType.RESPONSE -> Response.deserialize(inputStream, context)
             }
     }
 
-    class Request(val nodeID: NodeID) : FunctionRequest(FunctionID.ZW_REQUEST_NODE_INFO) {
+    class Request(val node: Node) : FunctionRequest(FunctionID.ZW_REQUEST_NODE_INFO) {
         companion object {
-            private val mapper by lazy {
-                mapper<FunctionZWGetNodeProtocolInfo.Request> {
-                    byte("nodeID")
-                }
+            suspend fun deserialize(inputStream: InputStream, context: DeserializableFunctionContext): Request {
+                val nodeID = NodeID.getByByteValue(inputStream.getByte())
+                val node = context.network.getNode(nodeID)
+                return Request(node)
             }
-
-            suspend fun deserialize(inputStream: InputStream) = mapper.deserialize<Request>(inputStream.getAllBytes())
         }
 
-        override fun getNode(network: Network): Node? = network.node[nodeID]
+        override fun getNode(network: Network): Node = node
 
         override suspend fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
             super.serialize(outputStream, context)
-            outputStream.putBytes(mapper.serialize(this))
+            outputStream.put(node.nodeID)
         }
 
     }
@@ -65,7 +65,8 @@ abstract class FunctionZWRequestNodeInfo {
                 }
             }
 
-            suspend fun deserialize(inputStream: InputStream) = mapper.deserialize<Response>(inputStream.getAllBytes())
+            suspend fun deserialize(inputStream: InputStream, context: DeserializableFunctionContext) =
+                mapper.deserialize<Response>(inputStream.getAllBytes())
         }
 
         override suspend fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {

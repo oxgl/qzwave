@@ -3,7 +3,6 @@
 package com.oxyggen.qzw.transport.frame
 
 import com.oxyggen.qzw.engine.network.Network
-import com.oxyggen.qzw.engine.network.NetworkCallbackKey
 import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.extensions.getByte
 import com.oxyggen.qzw.extensions.getNBytes
@@ -18,7 +17,6 @@ import com.oxyggen.qzw.transport.serialization.DeserializableFrameContext
 import com.oxyggen.qzw.transport.serialization.SerializableFrameContext
 import com.oxyggen.qzw.transport.serialization.SerializableFunctionContext
 import com.oxyggen.qzw.types.FrameType
-import com.oxyggen.qzw.types.NodeID
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -87,10 +85,7 @@ open class FrameSOF(network: Network, val function: Function, predecessor: Frame
         else -> FrameType.REQUEST
     }
 
-    open fun getNetworkCallbackKey(): NetworkCallbackKey? = function.getNetworkCallbackKey(network)
-
-    open fun getNode(): Node? =
-        function.getNode(network) ?: getNetworkCallbackKey()?.let { network.getNodeByCallbackKey(it, this) }
+    open fun getNode(): Node? = function.getNode(network)
 
     @ExperimentalUnsignedTypes
     override suspend fun serialize(outputStream: OutputStream, context: SerializableFrameContext) {

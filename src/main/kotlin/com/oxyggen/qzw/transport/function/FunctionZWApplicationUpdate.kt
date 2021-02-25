@@ -23,14 +23,14 @@ abstract class FunctionZWApplicationUpdate {
             context: DeserializableFunctionContext
         ): Function =
             when (context.frameType) {
-                FrameType.REQUEST -> Request.deserialize(inputStream)
+                FrameType.REQUEST -> Request.deserialize(inputStream, context)
                 FrameType.RESPONSE -> throw IOException("Invalid frame ${context.frameType} / ${context.functionID}")
             }
     }
 
     class Request(
         val updateState: UpdateState,
-        val nodeID: NodeID,
+        val node: Node,
         val deviceBasicType: DeviceBasicType,
         val deviceGenericType: DeviceGenericType,
         val deviceSpecificType: DeviceSpecificType,
@@ -38,10 +38,11 @@ abstract class FunctionZWApplicationUpdate {
     ) : FunctionRequest(FunctionID.ZW_APPLICATION_UPDATE) {
 
         companion object {
-            suspend fun deserialize(inputStream: InputStream): Request {
+            suspend fun deserialize(inputStream: InputStream, context: DeserializableFunctionContext): Request {
                 val updateState =
                     UpdateState.getByByteValue(inputStream.getByte()) ?: throw IOException("Invalid update state!")
                 val nodeID = NodeID.getByByteValue(inputStream.getByte())
+                val node = context.network.getNode(nodeID)
                 val cmdLength = inputStream.getUByte().toInt()
                 val deviceBasicType =
                     DeviceBasicType.getByByteValue(inputStream.getByte())
@@ -62,7 +63,7 @@ abstract class FunctionZWApplicationUpdate {
 
                 return Request(
                     updateState,
-                    nodeID,
+                    node,
                     deviceBasicType,
                     deviceGenericType,
                     deviceSpecificType,
@@ -71,7 +72,7 @@ abstract class FunctionZWApplicationUpdate {
             }
         }
 
-        override fun getNode(network: Network): Node? = network.node[nodeID]
+        override fun getNode(network: Network): Node = node
 
         override fun toString(): String {
             var ccListDescr = ""
@@ -81,7 +82,7 @@ abstract class FunctionZWApplicationUpdate {
             }
 
             return "$functionID(state: $updateState, " +
-                    "source: ${nodeID}, " +
+                    "source: ${node}, " +
                     "device: $deviceBasicType / $deviceGenericType / $deviceSpecificType, " +
                     "CC: [$ccListDescr]"
 
