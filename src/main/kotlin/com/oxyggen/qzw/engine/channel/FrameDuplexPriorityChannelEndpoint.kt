@@ -6,5 +6,5 @@ import com.oxyggen.qzw.transport.frame.FrameState
 
 
 interface FrameDuplexPriorityChannelEndpoint : DuplexPriorityChannelEndpoint<Frame> {
-    suspend fun receiveFrameState(frame: FrameSOF): FrameState
+    suspend fun receiveFrameState(frameSOF: FrameSOF): FrameState
 }
