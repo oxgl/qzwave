@@ -10,7 +10,7 @@ import com.oxyggen.qzw.transport.serialization.SerializableFrameContext
 import java.io.InputStream
 import java.io.OutputStream
 
-class FrameACK(network: Network, predecessor: Frame? = null) : FrameState(network, predecessor) {
+class FrameACK internal constructor(network: Network, predecessor: Frame? = null) : FrameState(network, predecessor) {
 
     companion object : BinaryFrameDeserializer {
         const val SIGNATURE = 0x06.toByte()

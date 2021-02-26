@@ -23,7 +23,6 @@ abstract class FunctionZWGetNodeProtocolInfo {
 
     // HOST->ZW: REQ | 0x41 | bNodeID
     // ZW->HOST: RES | 0x41 | nodeInfo (see figure INS13954-Instruction-Z-Wave-500-Series-Appl-Programmers-Guide-v6_8x_0x.pdf)
-
     companion object : BinaryFunctionDeserializer {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.ZW_GET_NODE_PROTOCOL_INFO.byteValue)
@@ -38,7 +37,9 @@ abstract class FunctionZWGetNodeProtocolInfo {
             }
     }
 
-
+    /************************************************************************************
+     * HOST->ZW: REQ | 0x41 | bNodeID
+     ************************************************************************************/
     class Request(val node: Node) : FunctionRequest(FunctionID.ZW_GET_NODE_PROTOCOL_INFO) {
         companion object {
             suspend fun deserialize(inputStream: InputStream, context: DeserializableFunctionContext): Request {
@@ -59,7 +60,10 @@ abstract class FunctionZWGetNodeProtocolInfo {
 
     }
 
-
+    /************************************************************************************
+     * ZW->HOST: RES | 0x41 | nodeInfo (see figure
+     * INS13954-Instruction-Z-Wave-500-Series-Appl-Programmers-Guide-v6_8x_0x.pdf)
+     ************************************************************************************/
     class Response(
         val listening: Boolean,
         val optionalFunctionality: Boolean,

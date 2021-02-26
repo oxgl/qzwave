@@ -5,8 +5,11 @@ import com.oxyggen.qzw.engine.channel.FrameDuplexPriorityChannel.Connection
 import com.oxyggen.qzw.engine.config.EngineConfig
 import com.oxyggen.qzw.engine.exception.EngineStandardStopException
 import com.oxyggen.qzw.engine.network.Network
-import com.oxyggen.qzw.engine.network.NetworkScheduler
+import com.oxyggen.qzw.engine.scheduler.NetworkScheduler
+import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.transport.frame.*
+import com.oxyggen.qzw.transport.function.Function
+import com.oxyggen.qzw.types.NodeID
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -25,7 +28,7 @@ class Engine(val engineConfig: EngineConfig) : Logging {
     private val duplexChannelZW = FrameDuplexPriorityChannel(Connection.ZW)
 
     private val epSW = duplexChannelSW.endpointA
-    private val epZW = duplexChannelZW.endpointB
+    private val epZW = duplexChannelZW.endpointA
 
     private val network = Network()
 
@@ -38,8 +41,18 @@ class Engine(val engineConfig: EngineConfig) : Logging {
 
     fun stop() = executionJob?.cancel(EngineStandardStopException())
 
-    fun sendFrame(frame: Frame, callback: ((frame: Frame) -> Unit)? = null) {
+    fun getNodeByID(nodeID: NodeID): Node = network.getNode(nodeID)
 
+    fun getNodeByID(i: Int): Node = getNodeByID(NodeID(i))
+
+    fun send(frame: Frame, callback: ((frame: Frame) -> Unit)? = null) {
+
+    }
+
+    fun sendFunction(function: Function): FrameSOF {
+        val frame = function.getFrame(network)
+        epSW.offer(frame)
+        return frame
     }
 
     val started: Boolean
@@ -60,6 +73,7 @@ class Engine(val engineConfig: EngineConfig) : Logging {
         }
     }
 
+
     private suspend fun executeJobs(coroutineScope: CoroutineScope) {
         if (!engineConfig.driver.start()) {
             logger.error { "Engine - Main: Unable to start driver!" }
@@ -79,6 +93,9 @@ class Engine(val engineConfig: EngineConfig) : Logging {
 
         // DispatcherChannel -> SendChannel
         val networkSchedulerJob = coroutineScope.launch { networkScheduler.start(this) }
+
+        // Wait for finish
+        joinAll(senderJob, receiverJob, networkSchedulerJob)
     }
 
 
@@ -103,7 +120,7 @@ class Engine(val engineConfig: EngineConfig) : Logging {
         try {
             logger.debug { "$LOG_PFX_RECEIVER: started" }
 
-            while (engineConfig.driver.started) {
+            while (true) {
                 val frame = engineConfig.driver.getFrame(network)
                 frame?.let {
                     logger.debug("$LOG_PFX_RECEIVER: frame received $it")

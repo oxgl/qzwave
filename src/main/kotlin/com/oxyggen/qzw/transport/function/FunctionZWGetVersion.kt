@@ -31,12 +31,19 @@ abstract class FunctionZWGetVersion {
             }
     }
 
+    /************************************************************************************
+     * HOST->ZW: REQ | 0x15
+     ************************************************************************************/
     class Request : FunctionRequest(FunctionID.ZW_GET_VERSION) {
         companion object {
             fun deserialize(inputStream: InputStream): Request = Request()
         }
     }
 
+
+    /************************************************************************************
+     * ZW->HOST: RES | 0x15 | buffer (12 bytes) | library type
+     ************************************************************************************/
     class Response(
         val versionText: String,
         val libraryType: LibraryType
@@ -51,10 +58,7 @@ abstract class FunctionZWGetVersion {
             }
 
             suspend fun deserialize(inputStream: InputStream): Response = mapper.deserialize(inputStream.getAllBytes())
-/*                val versionText = inputStream.readNBytes(12).decodeToString()
-                val libraryType = LibraryType.getByByteValue(inputStream.getByte())
-                return Response(versionText, libraryType ?: LibraryType.CONTROLLER_STATIC)
-            }*/
+
         }
 
         override suspend fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {

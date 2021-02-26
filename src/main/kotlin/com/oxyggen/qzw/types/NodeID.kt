@@ -9,5 +9,7 @@ data class NodeID(override val byteValue: Byte) : TypeToByte {
         val EMPTY = NodeID(0x00)
         override fun getByByteValue(byteValue: Byte): NodeID = NodeID(byteValue)
     }
+
+    override fun toString(): String = byteValue.toString()
 }
 

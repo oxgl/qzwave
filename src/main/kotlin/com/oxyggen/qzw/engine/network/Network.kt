@@ -32,16 +32,8 @@ class Network {
     suspend fun provideCallbackKey(frame: FrameSOF): NetworkCallbackKey =
         getCallbackKey(frame) ?: registerCallbackKey(frame)
 
-    fun getFrameByCallbackKey(networkCallbackKey: NetworkCallbackKey): FrameSOF? =
-        callbackKeyToFrame[networkCallbackKey]
-
-    fun getNodeByCallbackKey(networkCallbackKey: NetworkCallbackKey, callerFrame: FrameSOF? = null): Node? {
-        val foundFrame = getFrameByCallbackKey(networkCallbackKey)
-        return if (foundFrame != callerFrame)
-            foundFrame?.getNode()
-        else
-            null
-    }
+    fun dequeueByCallbackKey(networkCallbackKey: NetworkCallbackKey): FrameSOF? =
+        callbackKeyToFrame.remove(networkCallbackKey)
 
     suspend fun deregisterCallbackKey(cbKey: NetworkCallbackKey): FrameSOF? {
         // Get the frame from callback map

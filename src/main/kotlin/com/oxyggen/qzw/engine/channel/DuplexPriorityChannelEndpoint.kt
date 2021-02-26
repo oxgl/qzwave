@@ -9,6 +9,8 @@ interface DuplexPriorityChannelEndpoint<T> {
 
     suspend fun send(element: T)
 
+    fun offer(element: T): Boolean
+
     suspend fun receive(): T
 
     fun getReceiveChannel(priority: Int): ReceiveChannel<T>

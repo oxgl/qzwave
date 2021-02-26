@@ -28,12 +28,22 @@ abstract class FunctionSerialApiGetInitData {
             }
     }
 
+    /************************************************************************************
+     * HOST->ZW: REQ | 0x02
+     ************************************************************************************/
     class Request : FunctionRequest(FunctionID.SERIAL_API_GET_INIT_DATA) {
         companion object {
             fun deserialize(inputStream: InputStream) = Request()
         }
     }
 
+
+    /************************************************************************************
+     * Controller:
+     * ZW->HOST: RES | 0x02 | ver | capabilities | 29 | nodes[29] | chip_type | chip_version
+     * Slave (not used):
+     * ZW->HOST: RES | 0x02 | ver | capabilities | 0 | chip_type | chip_version
+     ************************************************************************************/
     class Response(
         val serialApiVersion: Byte,
         val capabilities: Capabilities,

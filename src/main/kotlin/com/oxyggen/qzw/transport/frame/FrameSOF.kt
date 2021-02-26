@@ -23,7 +23,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import kotlin.experimental.xor
 
-open class FrameSOF(network: Network, val function: Function, predecessor: Frame? = null) :
+open class FrameSOF internal constructor(network: Network, val function: Function, predecessor: Frame? = null) :
     Frame(network, predecessor) {
 
     companion object : BinaryFrameDeserializer {

@@ -24,8 +24,6 @@ abstract class FunctionZWRequestNodeInfo {
     // status UPDATE_STATE_NODE_INFO_RECEIVED.
 
     companion object : BinaryFunctionDeserializer {
-        // HOST->ZW: REQ | 0x60 | NodeID
-        // ZW->HOST: RES | 0x60 | retVal
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.ZW_REQUEST_NODE_INFO.byteValue)
 
@@ -39,6 +37,9 @@ abstract class FunctionZWRequestNodeInfo {
             }
     }
 
+    /************************************************************************************
+     * HOST->ZW: REQ | 0x60 | NodeID
+     ************************************************************************************/
     class Request(val node: Node) : FunctionRequest(FunctionID.ZW_REQUEST_NODE_INFO) {
         companion object {
             suspend fun deserialize(inputStream: InputStream, context: DeserializableFunctionContext): Request {
@@ -57,6 +58,9 @@ abstract class FunctionZWRequestNodeInfo {
 
     }
 
+    /************************************************************************************
+     * ZW->HOST: RES | 0x60 | retVal
+     ************************************************************************************/
     class Response(val retVal: Boolean) : FunctionResponse(FunctionID.ZW_REQUEST_NODE_INFO) {
         companion object {
             private val mapper by lazy {

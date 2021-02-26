@@ -1,6 +1,8 @@
-package com.oxyggen.qzw.engine.network
+package com.oxyggen.qzw.engine.scheduler
 
 import com.oxyggen.qzw.engine.channel.*
+import com.oxyggen.qzw.engine.network.Node
+import com.oxyggen.qzw.transport.frame.FrameACK
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -16,7 +18,7 @@ class NodeScheduler(
     private val loopJobMutex = Mutex()
 
     suspend fun start(coroutineScope: CoroutineScope) = loopJobMutex.withLock {
-        if (loopJob?.isActive?.not() == true)
+        if (loopJob?.isActive != true)
             loopJob = coroutineScope.launch { loop(this) }
     }
 
@@ -27,15 +29,23 @@ class NodeScheduler(
 
     private suspend fun loop(coroutineScope: CoroutineScope) {
         try {
-            logger.debug { "Node $node scheduler: started" }
+            logger.debug { "$node scheduler: started" }
             while (true) {
-
+                val (ep, frame) = framePrioritySelect(epSW, epZW)
+                when (ep) {
+                    epSW -> epZW.send(frame)
+                    epZW -> {
+                        val frameACK = FrameACK(parent.network, frame)
+                        epZW.send(frameACK)
+                        epSW.send(frameACK)
+                    }
+                }
 
             }
         } catch (e: CancellationException) {
 
         } finally {
-            logger.debug { "Network $node scheduler: stopped" }
+            logger.debug { "$node scheduler: stopped" }
         }
     }
 }

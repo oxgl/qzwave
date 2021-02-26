@@ -41,6 +41,9 @@ abstract class FunctionZWSendData {
             }
     }
 
+    /************************************************************************************
+     * HOST->ZW: REQ | 0x13 | nodeID | dataLength | pData[ ] | txOptions | funcID
+     ************************************************************************************/
     class Request(
         val node: Node,
         val command: Command,
@@ -79,6 +82,10 @@ abstract class FunctionZWSendData {
             "${functionID}(nodeId = ${node.nodeID}, $command)"
     }
 
+
+    /************************************************************************************
+     * ZW->HOST: RES | 0x13 | RetVal
+     ************************************************************************************/
     class Response(val success: Boolean) : FunctionResponse(FunctionID.ZW_SEND_DATA) {
         companion object {
             private val mapper = mapper<Response> {
@@ -96,6 +103,14 @@ abstract class FunctionZWSendData {
         override fun toString(): String = "${functionID}(result = $success)"
     }
 
+    /************************************************************************************
+     * ZW->HOST: REQ | 0x13 | funcID | txStatus | wTransmitTicksMSB | wTransmitTicksLSB |
+     * bRepeaters | rssi_values.incoming[0] | rssi_values.incoming[1] |
+     * rssi_values.incoming[2] | rssi_values.incoming[3] | rssi_values.incoming[4] |
+     * bACKChannelNo | bLastTxChannelNo | bRouteSchemeState | repeater0 |
+     * repeater1 | repeater2 | repeater3 | routespeed | bRouteTries |
+     * bLastFailedLink.from | bLastFailedLink.to
+     ************************************************************************************/
     class ZWRequest(
         val networkCallbackID: NetworkCallbackID,
         val txStatus: TransmitStatus

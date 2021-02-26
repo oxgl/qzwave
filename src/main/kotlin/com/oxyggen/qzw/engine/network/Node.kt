@@ -10,4 +10,6 @@ data class Node(val nodeID: NodeID, val supportedCommandClassVersion: Map<Comman
         fun getInitial(nodeID: NodeID) = Node(nodeID, mapOf())
     }
 
+    override fun toString(): String = "Node[$nodeID]"
+
 }

@@ -28,6 +28,10 @@ abstract class FunctionZWApplicationUpdate {
             }
     }
 
+    /************************************************************************************
+     * ZW->HOST: REQ | 0x49 | bStatus | bNodeID | bLen
+     *               | basic | generic | specific | commandclasses[ ]
+     ************************************************************************************/
     class Request(
         val updateState: UpdateState,
         val node: Node,

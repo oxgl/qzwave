@@ -1,9 +1,11 @@
-package com.oxyggen.qzw.engine.network
+package com.oxyggen.qzw.engine.scheduler
 
 import com.oxyggen.qzw.engine.channel.FrameDuplexPriorityChannel
 import com.oxyggen.qzw.engine.channel.FrameDuplexPriorityChannel.Connection
 import com.oxyggen.qzw.engine.channel.FrameDuplexPriorityChannelEndpoint
 import com.oxyggen.qzw.engine.channel.framePrioritySelect
+import com.oxyggen.qzw.engine.network.Network
+import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.transport.frame.*
 import com.oxyggen.qzw.types.NodeID
 import kotlinx.coroutines.*
@@ -37,24 +39,24 @@ class NetworkScheduler(
 
     private var frameSendTimeouts = generateSequence(200L) { it + 1000 }.take(4).toList()
 
-    private fun createNodeSchedulerExt(node: Node, coroutineScope: CoroutineScope): NodeSchedulerExt {
+    private suspend fun createNodeSchedulerExt(node: Node, coroutineScope: CoroutineScope): NodeSchedulerExt {
         val duplexChannelSW = FrameDuplexPriorityChannel(Connection.SW)
         val duplexChannelZW = FrameDuplexPriorityChannel(Connection.ZW)
 
         val nodeScheduler = NodeScheduler(this, node, duplexChannelSW.endpointB, duplexChannelZW.endpointB)
-
+        nodeScheduler.start(coroutineScope)
 
         return NodeSchedulerExt(
-            NodeScheduler(this, node, duplexChannelSW.endpointB, duplexChannelZW.endpointB),
+            nodeScheduler,
             duplexChannelSW.endpointA, duplexChannelZW.endpointA
         )
     }
 
-    private fun getNodeSchedulerExt(node: Node, coroutineScope: CoroutineScope): NodeSchedulerExt =
+    private suspend fun getNodeSchedulerExt(node: Node, coroutineScope: CoroutineScope): NodeSchedulerExt =
         nodeSchedulerExt.getOrPut(node, { createNodeSchedulerExt(node, coroutineScope) })
 
     suspend fun start(coroutineScope: CoroutineScope) = loopJobMutex.withLock {
-        if (loopJob?.isActive?.not() == true)
+        if (loopJob?.isActive != true)
             loopJob = coroutineScope.launch { loop(this) }
     }
 
@@ -77,7 +79,7 @@ class NetworkScheduler(
                 val node = frame.getNode()
 
                 if (node != null) {       // Node ID found => send frame to node scheduler
-                    logger.debug { "$LOG_PFX: frame $frame received, from node $node" }
+                    logger.debug { "$LOG_PFX: frame $frame received from Z-Wave, sending to node scheduler $node" }
                     val nodeSchedulerExt = getNodeSchedulerExt(node, coroutineScope)
                     nodeSchedulerExt.epZW.send(frame)
                 } else {                    // Node ID not found => ?
@@ -102,11 +104,11 @@ class NetworkScheduler(
                 val node = frame.getNode()
 
                 if (node != null) {       // Node ID found => send frame to node scheduler
-                    logger.debug { "$LOG_PFX: frame $frame received, from node $node" }
+                    logger.debug { "$LOG_PFX: frame $frame received from software, sending to node scheduler $node" }
                     val nodeSchedulerExt = getNodeSchedulerExt(node, coroutineScope)
                     nodeSchedulerExt.epSW.send(frame)
                 } else {                    // Node ID not found => ?
-                    logger.debug { "$LOG_PFX: frame $frame received, without source node => handle it" }
+                    logger.debug { "$LOG_PFX: frame $frame received from software, without source node => handle it" }
 
                 }
             }
@@ -172,23 +174,31 @@ class NetworkScheduler(
 
     private suspend fun loop(coroutineScope: CoroutineScope) {
         try {
-            logger.debug { "Network scheduler: started" }
-            val nodeZwEps = nodeSchedulerExt.map { it.value.epZW }.toTypedArray()
-            val nodeSwEps = nodeSchedulerExt.map { it.value.epSW }.toTypedArray()
+            logger.debug { "$LOG_PFX: started" }
             while (true) {
-                val (ep, frame) = framePrioritySelect(epZW, epSW, *nodeZwEps, *nodeSwEps)
+                val eps = mutableListOf<FrameDuplexPriorityChannelEndpoint>()
+
+                val nodeZWEps = nodeSchedulerExt.map { it.value.epZW }
+                val nodeSWEps = nodeSchedulerExt.map { it.value.epSW }
+
+                eps += epZW
+                eps += epSW
+                eps += nodeZWEps
+                eps += nodeSWEps
+
+                val (ep, frame) = framePrioritySelect(*eps.toTypedArray())
 
                 when (ep) {
                     epZW -> handleFrameFromDriver(ep, frame, coroutineScope)
                     epSW -> handleFrameFromSoftware(ep, frame, coroutineScope)
-                    in nodeZwEps -> handleFrameFromNodeSchedulerToDriver(ep, frame, coroutineScope)
-                    in nodeSwEps -> handleFrameFromNodeSchedulerToSoftware(ep, frame, coroutineScope)
+                    in nodeZWEps -> handleFrameFromNodeSchedulerToDriver(ep, frame, coroutineScope)
+                    in nodeSWEps -> handleFrameFromNodeSchedulerToSoftware(ep, frame, coroutineScope)
                 }
             }
         } catch (e: CancellationException) {
 
         } finally {
-            logger.debug { "Network scheduler: stopped" }
+            logger.debug { "$LOG_PFX: stopped" }
         }
     }
 }

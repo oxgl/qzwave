@@ -20,7 +20,7 @@ class FrameNAK(network: Network, predecessor: Frame? = null) : FrameState(networ
     }
 
     override suspend fun serialize(outputStream: OutputStream, context: SerializableFrameContext) =
-        outputStream.putByte(FrameACK.SIGNATURE)
+        outputStream.putByte(SIGNATURE)
 
     override fun toString() = "NAK"
 

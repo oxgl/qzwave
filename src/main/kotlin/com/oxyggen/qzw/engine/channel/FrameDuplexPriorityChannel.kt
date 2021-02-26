@@ -30,6 +30,14 @@ class FrameDuplexPriorityChannel(val connection: Connection) : DuplexPriorityCha
 
         override fun getReceiveChannel(priority: Int): ReceiveChannel<Frame> = channelsIn[priority]
 
+        override fun offer(element: Frame) = when (element) {
+            is FrameState ->
+                channelsOut[CHANNEL_PRIORITY_STATE].offer(element)
+            else ->
+                channelsOut[CHANNEL_PRIORITY_NORMAL].offer(element)
+        }
+
+
         override suspend fun send(element: Frame) {
             when (element) {
                 is FrameState ->

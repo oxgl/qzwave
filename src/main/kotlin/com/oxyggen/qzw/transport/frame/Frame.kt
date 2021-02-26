@@ -18,7 +18,7 @@ abstract class Frame(val network: Network, predecessor: Frame? = null) {
 
     abstract suspend fun serialize(outputStream: OutputStream, context: SerializableFrameContext)
 
-    open fun withPredecessor(predecessor: Frame): Frame {
+    internal open fun withPredecessor(predecessor: Frame): Frame? {
         this.predecessor = predecessor
         return this
     }

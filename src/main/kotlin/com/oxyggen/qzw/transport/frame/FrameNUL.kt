@@ -6,7 +6,7 @@ import com.oxyggen.qzw.engine.network.Network
 import com.oxyggen.qzw.transport.serialization.SerializableFrameContext
 import java.io.OutputStream
 
-class FrameNUL(network: Network, predecessor: Frame? = null) : FrameState(network, predecessor) {
+class FrameNUL internal constructor(network: Network, predecessor: Frame? = null) : FrameState(network, predecessor) {
     override suspend fun serialize(outputStream: OutputStream, context: SerializableFrameContext) {
         throw NotImplementedError("This frame only for internal usage! Do not serialize!")
     }

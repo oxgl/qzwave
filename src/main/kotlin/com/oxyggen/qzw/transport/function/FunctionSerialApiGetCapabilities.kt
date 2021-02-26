@@ -28,12 +28,24 @@ abstract class FunctionSerialApiGetCapabilities {
         }
     }
 
+    /************************************************************************************
+     * HOST->ZW: REQ | 0x07
+     ************************************************************************************/
     class Request : FunctionRequest(FunctionID.SERIAL_API_GET_CAPABILITIES) {
         companion object {
             fun deserialize(inputStream: InputStream) = Request()
         }
     }
 
+    /************************************************************************************
+     * ZW->HOST: RES | 0x07 | SERIAL_APPL_VERSION | SERIAL_APPL_REVISION |
+     *                        SERIALAPI_MANUFACTURER_ID1 | SERIALAPI_MANUFACTURER_ID2 |
+     *                        SERIALAPI_MANUFACTURER_PRODUCT_TYPE1 |
+     *                        SERIALAPI_MANUFACTURER_PRODUCT_TYPE2 |
+     *                        SERIALAPI_MANUFACTURER_PRODUCT_ID1 |
+     *                        SERIALAPI_MANUFACTURER_PRODUCT_ID2 |
+     *                        FUNCID_SUPPORTED_BITMASK[ ]
+     ************************************************************************************/
     class Response(
         val serialApplVersion: UByte,
         val serialApplRevision: UByte,

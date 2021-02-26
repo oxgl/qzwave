@@ -32,6 +32,10 @@ abstract class FunctionApplicationCommandHandler {
             }
     }
 
+    /************************************************************************************
+     * ZW->HOST: REQ | 0x04 | rxStatus | sourceNode | cmdLength | pCmd[] |
+     *                 rxRSSIVal | securityKey
+     ************************************************************************************/
     class Request(
         val receiveStatus: ReceiveStatus,
         val sourceNode: Node,
