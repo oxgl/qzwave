@@ -1,7 +1,6 @@
 package com.oxyggen.qzw.engine.scheduler
 
 import com.oxyggen.qzw.engine.channel.FrameDuplexPriorityChannel
-import com.oxyggen.qzw.engine.channel.FrameDuplexPriorityChannel.Connection
 import com.oxyggen.qzw.engine.channel.FrameDuplexPriorityChannelEndpoint
 import com.oxyggen.qzw.engine.channel.framePrioritySelect
 import com.oxyggen.qzw.engine.network.Network
@@ -40,8 +39,8 @@ class NetworkScheduler(
     private var frameSendTimeouts = generateSequence(200L) { it + 1000 }.take(4).toList()
 
     private suspend fun createNodeSchedulerExt(node: Node, coroutineScope: CoroutineScope): NodeSchedulerExt {
-        val duplexChannelSW = FrameDuplexPriorityChannel(Connection.SW)
-        val duplexChannelZW = FrameDuplexPriorityChannel(Connection.ZW)
+        val duplexChannelSW = FrameDuplexPriorityChannel("SW/NwSch", "SW/NoSch")
+        val duplexChannelZW = FrameDuplexPriorityChannel("ZW/NwSch", "ZW/NoSch")
 
         val nodeScheduler = NodeScheduler(this, node, duplexChannelSW.endpointB, duplexChannelZW.endpointB)
         nodeScheduler.start(coroutineScope)
@@ -66,49 +65,25 @@ class NetworkScheduler(
     }
 
     // Z-Wave -> Node: Frame came from ZW interface
-    private suspend fun handleFrameFromDriver(
-        epZW: FrameDuplexPriorityChannelEndpoint,
+    private suspend fun routeFrameToNodeScheduler(
+        ep: FrameDuplexPriorityChannelEndpoint,
         frame: Frame,
         coroutineScope: CoroutineScope
     ) {
+
         when (frame) {
             is FrameState -> {              // ACK/SOF/NAK from Z-Wave, but we are not waiting for it => ignore
-                logger.debug { "$LOG_PFX: frame $frame received, ignoring" }
+                logger.debug { "$LOG_PFX: Status frame $frame received without predecessor, ignoring" }
             }
             is FrameSOF -> {                // Data frame received, determine destination node
                 val node = frame.getNode()
 
                 if (node != null) {       // Node ID found => send frame to node scheduler
-                    logger.debug { "$LOG_PFX: frame $frame received from Z-Wave, sending to node scheduler $node" }
+                    logger.debug { "$LOG_PFX: frame $frame received from $ep, sending to node scheduler $node" }
                     val nodeSchedulerExt = getNodeSchedulerExt(node, coroutineScope)
                     nodeSchedulerExt.epZW.send(frame)
                 } else {                    // Node ID not found => ?
                     logger.debug { "$LOG_PFX: frame $frame received, without source node => handle it" }
-
-                }
-            }
-        }
-    }
-
-    // Software -> Node: Frame came from software interface
-    private suspend fun handleFrameFromSoftware(
-        epZW: FrameDuplexPriorityChannelEndpoint,
-        frame: Frame,
-        coroutineScope: CoroutineScope
-    ) {
-        when (frame) {
-            is FrameState -> {              // ACK/SOF/NAK from Z-Wave, but we are not waiting for it => ignore
-                logger.debug { "$LOG_PFX: frame $frame received, ignoring" }
-            }
-            is FrameSOF -> {                // Data frame received, determine destination node
-                val node = frame.getNode()
-
-                if (node != null) {       // Node ID found => send frame to node scheduler
-                    logger.debug { "$LOG_PFX: frame $frame received from software, sending to node scheduler $node" }
-                    val nodeSchedulerExt = getNodeSchedulerExt(node, coroutineScope)
-                    nodeSchedulerExt.epSW.send(frame)
-                } else {                    // Node ID not found => ?
-                    logger.debug { "$LOG_PFX: frame $frame received from software, without source node => handle it" }
 
                 }
             }
@@ -189,8 +164,7 @@ class NetworkScheduler(
                 val (ep, frame) = framePrioritySelect(*eps.toTypedArray())
 
                 when (ep) {
-                    epZW -> handleFrameFromDriver(ep, frame, coroutineScope)
-                    epSW -> handleFrameFromSoftware(ep, frame, coroutineScope)
+                    epZW, epSW -> routeFrameToNodeScheduler(ep, frame, coroutineScope)
                     in nodeZWEps -> handleFrameFromNodeSchedulerToDriver(ep, frame, coroutineScope)
                     in nodeSWEps -> handleFrameFromNodeSchedulerToSoftware(ep, frame, coroutineScope)
                 }

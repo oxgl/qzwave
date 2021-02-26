@@ -17,7 +17,6 @@ import java.io.InputStream
 abstract class FunctionApplicationCommandHandler {
 
     // ZW->HOST: REQ | 0x04 | rxStatus | sourceNode | cmdLength | pCmd[] | rxRSSIVal | securityKey
-
     companion object : BinaryFunctionDeserializer {
 
         override fun getHandledSignatureBytes(): Set<Byte> = setOf(FunctionID.APPLICATION_COMMAND_HANDLER.byteValue)
@@ -46,8 +45,7 @@ abstract class FunctionApplicationCommandHandler {
         companion object {
             suspend fun deserialize(inputStream: InputStream, context: DeserializableFunctionContext): Request {
                 val receiveStatus = ReceiveStatus.getByByteValue(inputStream.getByte())
-                val sourceNodeID = NodeID.getByByteValue(inputStream.getByte())
-                val sourceNode = context.network.getNode(sourceNodeID)
+                val sourceNode = context.network.getNode(NodeID.getByByteValue(inputStream.getByte()))
                 val cmdLength = inputStream.getUByte().toInt()
                 val cmdBytes = inputStream.getNBytes(cmdLength)
                 val command = CommandFactory.deserializeCommand(cmdBytes.inputStream(), context, sourceNode)

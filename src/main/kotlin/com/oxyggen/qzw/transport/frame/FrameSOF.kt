@@ -87,6 +87,8 @@ open class FrameSOF internal constructor(network: Network, val function: Functio
 
     open fun getNode(): Node? = function.getNode(network)
 
+    open fun hasImmediateResponse() = if (function is FunctionRequest) function.isAwaitingResult(network) else false
+
     @ExperimentalUnsignedTypes
     override suspend fun serialize(outputStream: OutputStream, context: SerializableFrameContext) {
         var resultData = ByteArray(0)

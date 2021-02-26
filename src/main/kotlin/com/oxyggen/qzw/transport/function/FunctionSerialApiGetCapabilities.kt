@@ -108,7 +108,6 @@ abstract class FunctionSerialApiGetCapabilities {
             outputStream.putBytes(supportedFuncBitmask)
         }
 
-
         override fun toString(): String = "SERIAL_API_GET_CAPABILITIES(appl: $serialApplVersion.$serialApplRevision, " +
                 "manuf: $serialManufId1/$serialManufId2, " +
                 "prod type: $serialManufProdType1/$serialManufProdType2, " +

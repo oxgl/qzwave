@@ -1,7 +1,6 @@
 package com.oxyggen.qzw.engine
 
 import com.oxyggen.qzw.engine.channel.FrameDuplexPriorityChannel
-import com.oxyggen.qzw.engine.channel.FrameDuplexPriorityChannel.Connection
 import com.oxyggen.qzw.engine.config.EngineConfig
 import com.oxyggen.qzw.engine.exception.EngineStandardStopException
 import com.oxyggen.qzw.engine.network.Network
@@ -24,8 +23,8 @@ class Engine(val engineConfig: EngineConfig) : Logging {
         const val LOG_PFX_DISPATCHER = "<- * ->"
     }
 
-    private val duplexChannelSW = FrameDuplexPriorityChannel(Connection.SW)
-    private val duplexChannelZW = FrameDuplexPriorityChannel(Connection.ZW)
+    private val duplexChannelSW = FrameDuplexPriorityChannel("SW/Software", "SW/NwSch")
+    private val duplexChannelZW = FrameDuplexPriorityChannel("ZW/Software", "ZW/NwSch")
 
     private val epSW = duplexChannelSW.endpointA
     private val epZW = duplexChannelZW.endpointA

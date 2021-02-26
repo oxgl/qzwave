@@ -1,5 +1,6 @@
 package com.oxyggen.qzw.transport.function
 
+import com.oxyggen.qzw.engine.network.Network
 import com.oxyggen.qzw.extensions.*
 import com.oxyggen.qzw.transport.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableFunctionContext
@@ -70,7 +71,6 @@ abstract class FunctionSerialApiGetInitData {
                 )
             }
         }
-
 
         override suspend fun serialize(outputStream: OutputStream, context: SerializableFunctionContext) {
             super.serialize(outputStream, context)

@@ -1,5 +1,6 @@
 package com.oxyggen.qzw.transport.function
 
+import com.oxyggen.qzw.engine.network.Network
 import com.oxyggen.qzw.extensions.getAllBytes
 import com.oxyggen.qzw.extensions.putBytes
 import com.oxyggen.qzw.transport.mapper.mapper

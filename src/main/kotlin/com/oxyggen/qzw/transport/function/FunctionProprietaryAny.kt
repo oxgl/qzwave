@@ -1,5 +1,6 @@
 package com.oxyggen.qzw.transport.function
 
+import com.oxyggen.qzw.engine.network.Network
 import com.oxyggen.qzw.transport.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableFunctionContext
 import com.oxyggen.qzw.types.FrameType
@@ -29,5 +30,4 @@ abstract class FunctionProprietaryAny {
 
     open class Request(functionID: FunctionID) : FunctionRequest(functionID)
     open class Response(functionID: FunctionID) : FunctionResponse(functionID)
-
 }            

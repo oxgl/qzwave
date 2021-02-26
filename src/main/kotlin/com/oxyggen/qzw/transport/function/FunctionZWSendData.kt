@@ -78,6 +78,9 @@ abstract class FunctionZWSendData {
 
         override fun getNode(network: Network): Node = node
 
+        // We don't have immediate response. Function callback ID is used when responding
+        override fun isAwaitingResult(network: Network): Boolean = false
+
         override fun toString(): String =
             "${functionID}(nodeId = ${node.nodeID}, $command)"
     }
@@ -129,6 +132,8 @@ abstract class FunctionZWSendData {
 
         override fun getNetworkCallbackKey(network: Network): NetworkCallbackKey =
             NetworkCallbackKey(networkCallbackID)
+
+        override fun isAwaitingResult(network: Network): Boolean = false
 
         override fun toString(): String = buildParamList("functionCallbackID", networkCallbackID, "txStatus", txStatus)
 

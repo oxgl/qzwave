@@ -6,13 +6,11 @@ import com.oxyggen.qzw.transport.frame.FrameState
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.selects.select
-import java.time.LocalDateTime
 
-class FrameDuplexPriorityChannel(val connection: Connection) : DuplexPriorityChannel<Frame> {
-    enum class Connection {
-        ZW,
-        SW
-    }
+class FrameDuplexPriorityChannel(
+    endpointAName: String = "endpointA",
+    endpointBName: String = "endpointB"
+) : DuplexPriorityChannel<Frame> {
 
     companion object {
         const val CHANNEL_PRIORITY_COUNT = 2
@@ -22,6 +20,7 @@ class FrameDuplexPriorityChannel(val connection: Connection) : DuplexPriorityCha
 
     private class Endpoint(
         override val parent: FrameDuplexPriorityChannel,
+        val name: String,
         val channelsIn: List<Channel<Frame>>,
         val channelsOut: List<Channel<Frame>>
     ) : FrameDuplexPriorityChannelEndpoint {
@@ -61,6 +60,8 @@ class FrameDuplexPriorityChannel(val connection: Connection) : DuplexPriorityCha
                 }
             }
         }
+
+        override fun toString(): String = name
     }
 
     private val channelsAtoB =
@@ -70,8 +71,10 @@ class FrameDuplexPriorityChannel(val connection: Connection) : DuplexPriorityCha
         sequence<Channel<Frame>> { while (true) yield(Channel(Channel.UNLIMITED)) }.take(CHANNEL_PRIORITY_COUNT)
             .toList()
 
-    override val endpointA: FrameDuplexPriorityChannelEndpoint
-        get() = Endpoint(this, channelsBtoA, channelsAtoB)
-    override val endpointB: FrameDuplexPriorityChannelEndpoint
-        get() = Endpoint(this, channelsAtoB, channelsBtoA)
+    override val endpointA: FrameDuplexPriorityChannelEndpoint =
+        Endpoint(this, endpointAName, channelsBtoA, channelsAtoB)
+    override val endpointB: FrameDuplexPriorityChannelEndpoint =
+        Endpoint(this, endpointBName, channelsAtoB, channelsBtoA)
+
+    override fun toString(): String = "$endpointA <-> $endpointB"
 }
