@@ -85,9 +85,15 @@ open class FrameSOF internal constructor(network: Network, val function: Functio
         else -> FrameType.REQUEST
     }
 
-    open fun getNode(): Node? = function.getNode(network)
+    override fun getNode(): Node? = function.getNode(network)
 
-    open fun hasImmediateResponse() = if (function is FunctionRequest) function.isAwaitingResult(network) else false
+    override fun isAwaitingResult() = if (function is FunctionRequest) function.isAwaitingResult(network) else false
+
+    override fun isAwaitedResult(frameSOF: FrameSOF): Boolean =
+        if (function is FunctionRequest && frameSOF.function is FunctionResponse) function.isAwaitedResult(
+            network,
+            frameSOF.function
+        ) else false
 
     @ExperimentalUnsignedTypes
     override suspend fun serialize(outputStream: OutputStream, context: SerializableFrameContext) {

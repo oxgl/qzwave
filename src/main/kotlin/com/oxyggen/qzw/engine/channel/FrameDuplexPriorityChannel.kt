@@ -13,9 +13,11 @@ class FrameDuplexPriorityChannel(
 ) : DuplexPriorityChannel<Frame> {
 
     companion object {
-        const val CHANNEL_PRIORITY_COUNT = 2
-        const val CHANNEL_PRIORITY_STATE = 0            // ACK/NAK/CAN Frames
-        const val CHANNEL_PRIORITY_NORMAL = 1           // Standard Frames
+        const val CHANNEL_PRIORITY_COUNT = 3
+        const val CHANNEL_PRIORITY_STATE = 0                // ACK/NAK/CAN Frames
+        const val CHANNEL_PRIORITY_HIGH = 1                 // High priority frames (for battery devices)
+        const val CHANNEL_PRIORITY_NORMAL = 2               // Standard Frames
+        const val CHANNEL_PRIORITY_DEFAULT = -1
     }
 
     private class Endpoint(
@@ -29,21 +31,18 @@ class FrameDuplexPriorityChannel(
 
         override fun getReceiveChannel(priority: Int): ReceiveChannel<Frame> = channelsIn[priority]
 
-        override fun offer(element: Frame) = when (element) {
-            is FrameState ->
-                channelsOut[CHANNEL_PRIORITY_STATE].offer(element)
-            else ->
-                channelsOut[CHANNEL_PRIORITY_NORMAL].offer(element)
-        }
-
-
-        override suspend fun send(element: Frame) {
-            when (element) {
-                is FrameState ->
-                    channelsOut[CHANNEL_PRIORITY_STATE].send(element)
-                else ->
-                    channelsOut[CHANNEL_PRIORITY_NORMAL].send(element)
+        private fun determinePriority(element: Frame, priority: Int?) =
+            if (priority != null && priority in priorities && priority != CHANNEL_PRIORITY_STATE) priority
+            else when (element) {
+                is FrameState -> CHANNEL_PRIORITY_STATE
+                else -> CHANNEL_PRIORITY_NORMAL
             }
+
+        override fun offer(element: Frame, priority: Int?) =
+            channelsOut[determinePriority(element, priority)].offer(element)
+
+        override suspend fun send(element: Frame, priority: Int?) {
+            channelsOut[determinePriority(element, priority)].send(element)
         }
 
         override suspend fun receive(): Frame = select {

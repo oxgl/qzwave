@@ -3,13 +3,14 @@ package com.oxyggen.qzw.engine.channel
 import kotlinx.coroutines.channels.ReceiveChannel
 
 interface DuplexPriorityChannelEndpoint<T> {
+
     val parent: DuplexPriorityChannel<T>
 
     val priorities: IntRange
 
-    suspend fun send(element: T)
+    suspend fun send(element: T, priority: Int? = null)
 
-    fun offer(element: T): Boolean
+    fun offer(element: T, priority: Int? = null): Boolean
 
     suspend fun receive(): T
 

@@ -31,6 +31,8 @@ class NetworkScheduler(
 
     fun getLocalNodeId() = NodeID(1)
 
+    private val framesAwaitingResult = mutableListOf<Frame>()
+
     private var loopJob: Job? = null
     private val loopJobMutex = Mutex()
 
@@ -76,15 +78,25 @@ class NetworkScheduler(
                 logger.debug { "$LOG_PFX: Status frame $frame received without predecessor, ignoring" }
             }
             is FrameSOF -> {                // Data frame received, determine destination node
-                val node = frame.getNode()
+                val waitingFrame = framesAwaitingResult.find { it.isAwaitedResult(frame) }
+                val receivedFrame = if (waitingFrame != null) {
+                    framesAwaitingResult.remove(waitingFrame)
+                    frame.withPredecessor(waitingFrame) ?: frame
+                } else {
+                    frame
+                }
+                val node = receivedFrame.getNode()
 
-                if (node != null) {       // Node ID found => send frame to node scheduler
-                    logger.debug { "$LOG_PFX: frame $frame received from $ep, sending to node scheduler $node" }
+                if (node != null) {
+                    if (waitingFrame != null) {
+                        logger.debug { "$LOG_PFX: frame $frame received from $ep, frame $waitingFrame was waiting for this result, sending to node scheduler $node" }
+                    } else {
+                        logger.debug { "$LOG_PFX: frame $frame received from $ep, sending to node scheduler $node" }
+                    }
                     val nodeSchedulerExt = getNodeSchedulerExt(node, coroutineScope)
                     nodeSchedulerExt.epZW.send(frame)
-                } else {                    // Node ID not found => ?
-                    logger.debug { "$LOG_PFX: frame $frame received, without source node => handle it" }
-
+                } else {
+                    logger.error { "$LOG_PFX: frame $frame received, but node was not determined, so ignore it!" }
                 }
             }
         }
@@ -128,8 +140,10 @@ class NetworkScheduler(
                     }
 
                 if (result != null) {
-                    // Result received => send back to node
-                    nodeEpZW.send(result)
+                    if (result.isAwaitingResult())
+                        framesAwaitingResult += result
+                    else
+                        nodeEpZW.send(result)
                 } else {
                     // If result was awaited & no result received create dummy frame and send back to node
                     nodeEpZW.send(FrameNUL(network, frame))
