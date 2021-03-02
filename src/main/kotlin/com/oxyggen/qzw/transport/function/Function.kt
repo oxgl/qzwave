@@ -23,7 +23,6 @@ abstract class Function(val functionID: FunctionID) : Logging {
 
     open fun isFunctionCallbackKeyRequired(): Boolean = false
 
-
     fun buildParamList(vararg params: Any): String {
         var result = ""
         for (i in params.indices step 2) {

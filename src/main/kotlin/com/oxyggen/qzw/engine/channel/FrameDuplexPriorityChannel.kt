@@ -29,6 +29,9 @@ class FrameDuplexPriorityChannel(
         override val priorities
             get() = 0 until CHANNEL_PRIORITY_COUNT
 
+        override val remoteEndpoint: FrameDuplexPriorityChannelEndpoint
+            get() = if (parent.endpointA == this) parent.endpointB else parent.endpointA
+
         override fun getReceiveChannel(priority: Int): ReceiveChannel<Frame> = channelsIn[priority]
 
         private fun determinePriority(element: Frame, priority: Int?) =

@@ -13,18 +13,18 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.apache.logging.log4j.kotlin.Logging
+import java.time.LocalDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalUnsignedTypes::class)
 class Engine(val engineConfig: EngineConfig) : Logging {
 
     companion object {
-        const val LOG_PFX_SENDER = "H -> ZW"
-        const val LOG_PFX_RECEIVER = "H <- ZW"
-        const val LOG_PFX_DISPATCHER = "<- * ->"
+        const val LOG_PFX_SENDER = "\uD83D\uDCE1\u2B08"
+        const val LOG_PFX_RECEIVER = "\uD83D\uDCE1\u2B0B"
     }
 
-    private val duplexChannelSW = FrameDuplexPriorityChannel("SW/Software", "SW/NwSch")
-    private val duplexChannelZW = FrameDuplexPriorityChannel("ZW/Software", "ZW/NwSch")
+    private val duplexChannelSW = FrameDuplexPriorityChannel("Software", "NwSch/SW")
+    private val duplexChannelZW = FrameDuplexPriorityChannel("Driver", "NwSch/ZW")
 
     private val epSW = duplexChannelSW.endpointA
     private val epZW = duplexChannelZW.endpointA
@@ -63,10 +63,10 @@ class Engine(val engineConfig: EngineConfig) : Logging {
                 executionJob = coroutineScope.launch { executeJobs(this) }
                 executionJob?.invokeOnCompletion {
                     if (engineConfig.driver.started) {
+                        logger.info { "Stopping driver" }
                         engineConfig.driver.stop()
-                        logger.info { "Engine - Main: Stopping driver" }
                     }
-                    logger.info { "Engine - Main: Driver stopped" }
+                    logger.info { "Driver stopped" }
                 }
             }
         }
@@ -75,10 +75,10 @@ class Engine(val engineConfig: EngineConfig) : Logging {
 
     private suspend fun executeJobs(coroutineScope: CoroutineScope) {
         if (!engineConfig.driver.start()) {
-            logger.error { "Engine - Main: Unable to start driver!" }
-            throw CancellationException("Engine - Main: Unable to start driver!")
+            logger.error { "Unable to start driver!" }
+            throw CancellationException("Unable to start driver!")
         } else {
-            logger.info { "Engine - Main: Driver started" }
+            logger.info { "Driver started" }
         }
 
         // Initialize network
@@ -100,36 +100,38 @@ class Engine(val engineConfig: EngineConfig) : Logging {
 
     private suspend fun sendJob() {
         try {
-            logger.debug { "$LOG_PFX_SENDER: started" }
+            logger.info { "Sender started" }
 
             while (true) {
                 val frame = epZW.receive()
                 engineConfig.driver.putFrame(frame)
+                frame.setSent()
+                logger.debug("$LOG_PFX_SENDER: Frame sent to driver. Frame: $frame")
                 delay(10)
             }
         } catch (e: CancellationException) {
 
         } finally {
-            logger.debug { "$LOG_PFX_SENDER: stopped" }
+            logger.info { "Sender stopped" }
         }
 
     }
 
     private suspend fun receiveJob() {
         try {
-            logger.debug { "$LOG_PFX_RECEIVER: started" }
+            logger.info { "Receiver started" }
 
             while (true) {
                 val frame = engineConfig.driver.getFrame(network)
                 frame?.let {
-                    logger.debug("$LOG_PFX_RECEIVER: frame received $it")
+                    logger.debug("$LOG_PFX_RECEIVER: Frame received from driver. Frame: $it")
                     epZW.send(it)
                 }
             }
         } catch (e: CancellationException) {
 
         } finally {
-            logger.debug { "$LOG_PFX_RECEIVER: job stopped" }
+            logger.info { "Receiver stopped" }
         }
     }
 

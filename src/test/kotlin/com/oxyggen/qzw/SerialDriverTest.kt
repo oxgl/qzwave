@@ -5,6 +5,7 @@ import com.oxyggen.qzw.engine.config.EngineConfig
 import com.oxyggen.qzw.engine.driver.Driver
 import com.oxyggen.qzw.engine.driver.JSerialDriver
 import com.oxyggen.qzw.transport.frame.Frame
+import com.oxyggen.qzw.transport.function.FunctionSerialApiGetInitData
 import com.oxyggen.qzw.transport.function.FunctionZWGetNodeProtocolInfo
 import com.oxyggen.qzw.types.NodeID
 import kotlinx.coroutines.delay
@@ -47,6 +48,10 @@ internal class SerialDriverTest : Logging {
 
             val fn = FunctionZWGetNodeProtocolInfo.Request(n4)
             val frame = e.sendFunction(fn)
+
+            val fn2 = FunctionSerialApiGetInitData.Request()
+            val frame2 = e.sendFunction(fn2)
+
             //val frame = FunctionZWRequestNodeInfo.Request(NodeID(4)).getFrame()
 
             //e.sendFrame(FunctionSerialApiGetInitData.Request().getFrame(), ::resultCallback)

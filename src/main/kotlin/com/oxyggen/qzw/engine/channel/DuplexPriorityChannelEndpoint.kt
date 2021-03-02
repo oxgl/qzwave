@@ -6,6 +6,8 @@ interface DuplexPriorityChannelEndpoint<T> {
 
     val parent: DuplexPriorityChannel<T>
 
+    val remoteEndpoint: DuplexPriorityChannelEndpoint<T>
+
     val priorities: IntRange
 
     suspend fun send(element: T, priority: Int? = null)

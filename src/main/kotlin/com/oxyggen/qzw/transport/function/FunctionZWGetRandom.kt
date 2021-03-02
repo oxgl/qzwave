@@ -1,6 +1,7 @@
 package com.oxyggen.qzw.transport.function
 
 import com.oxyggen.qzw.engine.network.Network
+import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.extensions.getAllBytes
 import com.oxyggen.qzw.extensions.putBytes
 import com.oxyggen.qzw.transport.mapper.mapper
@@ -46,6 +47,8 @@ abstract class FunctionZWGetRandom {
             outputStream.putBytes(mapper.serialize(this))
         }
 
+        override fun getNode(network: Network): Node = Node.SERIAL_API
+
         override fun toString(): String = "$functionID($noRandomBytes)"
     }
 
@@ -67,6 +70,8 @@ abstract class FunctionZWGetRandom {
             super.serialize(outputStream, context)
             outputStream.putBytes(mapper.serialize(this))
         }
+
+        override fun getNode(network: Network): Node = Node.SERIAL_API
 
         override fun toString(): String = "$functionID(out ${randomBytes.size}, out ${randomBytes.toList()})"
     }

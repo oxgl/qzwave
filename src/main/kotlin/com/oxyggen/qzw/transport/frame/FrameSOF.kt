@@ -32,11 +32,11 @@ open class FrameSOF internal constructor(network: Network, val function: Functio
         override fun getHandledSignatureBytes() = setOf(SIGNATURE)
 
         private fun calculateChecksum(data: ByteArray): Byte {
-            var chksum = 0xff.toByte()
+            var checksum = 0xff.toByte()
             data.forEach {
-                chksum = chksum.xor(it)
+                checksum = checksum.xor(it)
             }
-            return chksum
+            return checksum
         }
 
         @ExperimentalUnsignedTypes
@@ -85,7 +85,7 @@ open class FrameSOF internal constructor(network: Network, val function: Functio
         else -> FrameType.REQUEST
     }
 
-    override fun getNode(): Node? = function.getNode(network)
+    override fun getNode(): Node? = predecessor?.getNode() ?: function.getNode(network)
 
     override fun isAwaitingResult() = if (function is FunctionRequest) function.isAwaitingResult(network) else false
 

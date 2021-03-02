@@ -1,6 +1,7 @@
 package com.oxyggen.qzw.transport.function
 
 import com.oxyggen.qzw.engine.network.Network
+import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.extensions.*
 import com.oxyggen.qzw.transport.serialization.BinaryFunctionDeserializer
 import com.oxyggen.qzw.transport.serialization.DeserializableFunctionContext
@@ -36,6 +37,8 @@ abstract class FunctionSerialApiGetInitData {
         companion object {
             fun deserialize(inputStream: InputStream) = Request()
         }
+
+        override fun getNode(network: Network): Node = Node.SERIAL_API
     }
 
 
@@ -84,6 +87,8 @@ abstract class FunctionSerialApiGetInitData {
             outputStream.putByte(chipType)
             outputStream.putByte(chipVersion)
         }
+
+        override fun getNode(network: Network): Node = Node.SERIAL_API
 
         override fun toString() = buildParamList(
             "version", serialApiVersion,

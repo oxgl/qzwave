@@ -1,4 +1,5 @@
-@file:Suppress("RedundantSuspendModifier", "RedundantSuspendModifier", "RedundantSuspendModifier",
+@file:Suppress(
+    "RedundantSuspendModifier", "RedundantSuspendModifier", "RedundantSuspendModifier",
     "RedundantSuspendModifier", "RedundantSuspendModifier", "RedundantSuspendModifier", "RedundantSuspendModifier",
     "RedundantSuspendModifier", "RedundantSuspendModifier", "RedundantSuspendModifier", "RedundantSuspendModifier"
 )
@@ -55,6 +56,8 @@ abstract class FunctionZWGetNodeProtocolInfo {
             super.serialize(outputStream, context)
             outputStream.put(node.nodeID)
         }
+
+        override fun isAwaitingResult(network: Network): Boolean = true
 
         override fun toString() = buildParamList("node", node)
 

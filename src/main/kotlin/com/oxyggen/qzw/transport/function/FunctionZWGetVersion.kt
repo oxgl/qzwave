@@ -1,6 +1,7 @@
 package com.oxyggen.qzw.transport.function
 
 import com.oxyggen.qzw.engine.network.Network
+import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.extensions.getAllBytes
 import com.oxyggen.qzw.extensions.putBytes
 import com.oxyggen.qzw.transport.mapper.mapper
@@ -39,6 +40,8 @@ abstract class FunctionZWGetVersion {
         companion object {
             fun deserialize(inputStream: InputStream): Request = Request()
         }
+
+        override fun getNode(network: Network): Node = Node.SERIAL_API
     }
 
 
@@ -66,6 +69,8 @@ abstract class FunctionZWGetVersion {
             super.serialize(outputStream, context)
             outputStream.putBytes(mapper.serialize(this))
         }
+
+        override fun getNode(network: Network): Node = Node.SERIAL_API
 
         override fun toString(): String {
             return "$functionID('$versionText', $libraryType)"

@@ -1,5 +1,7 @@
 package com.oxyggen.qzw.transport.function
 
+import com.oxyggen.qzw.engine.network.Network
+import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.extensions.getAllBytes
 import com.oxyggen.qzw.extensions.getUByte
 import com.oxyggen.qzw.extensions.putBytes
@@ -35,6 +37,8 @@ abstract class FunctionSerialApiGetCapabilities {
         companion object {
             fun deserialize(inputStream: InputStream) = Request()
         }
+
+        override fun getNode(network: Network): Node = Node.SERIAL_API
     }
 
     /************************************************************************************
@@ -107,6 +111,8 @@ abstract class FunctionSerialApiGetCapabilities {
             val supportedFuncBitmask = BitmaskUtils.compressUByteSetToBitmask(supportedFuncBytes)
             outputStream.putBytes(supportedFuncBitmask)
         }
+
+        override fun getNode(network: Network): Node = Node.SERIAL_API
 
         override fun toString(): String = "SERIAL_API_GET_CAPABILITIES(appl: $serialApplVersion.$serialApplRevision, " +
                 "manuf: $serialManufId1/$serialManufId2, " +

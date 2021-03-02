@@ -4,12 +4,12 @@ import com.oxyggen.qzw.types.CommandClassID
 import com.oxyggen.qzw.types.NodeID
 
 data class Node(val nodeID: NodeID, val supportedCommandClassVersion: Map<CommandClassID, Int> = mapOf()) {
-    fun getSupportedCCVersion(commandClass: CommandClassID) = supportedCommandClassVersion[commandClass] ?: 1
-
     companion object {
-        fun getInitial(nodeID: NodeID) = Node(nodeID, mapOf())
+        val SERIAL_API = Node(NodeID.SERIAL_API)
     }
 
-    override fun toString(): String = "Node[$nodeID]"
+    fun getSupportedCCVersion(commandClass: CommandClassID) = supportedCommandClassVersion[commandClass] ?: 1
+
+    override fun toString(): String = if (nodeID == NodeID.SERIAL_API) "SERIAL_API" else "Node[$nodeID]"
 
 }

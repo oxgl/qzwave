@@ -29,15 +29,16 @@ class NodeScheduler(
 
     private suspend fun loop(coroutineScope: CoroutineScope) {
         try {
-            logger.debug { "$node scheduler: started" }
+            logger.info { "$node scheduler started" }
             while (true) {
                 val (ep, frame) = framePrioritySelect(epSW, epZW)
                 when (ep) {
-                    epSW -> epZW.send(frame)
+                    epSW -> {
+                        logger.debug { "$node: Frame received from ${ep.remoteEndpoint}, sending to driver. Frame $frame" }
+                        epZW.send(frame)
+                    }
                     epZW -> {
-                        val frameACK = FrameACK(parent.network, frame)
-                        epZW.send(frameACK)
-                        epSW.send(frameACK)
+                        logger.debug { "$node: Frame received from ${ep.remoteEndpoint}, sending ACK, informing software. Frame sequence ${frame.toStringWithPredecessor()}" }
                     }
                 }
 
@@ -45,7 +46,7 @@ class NodeScheduler(
         } catch (e: CancellationException) {
 
         } finally {
-            logger.debug { "$node scheduler: stopped" }
+            logger.info { "$node scheduler stopped" }
         }
     }
 }

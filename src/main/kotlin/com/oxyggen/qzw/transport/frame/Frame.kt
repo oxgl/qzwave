@@ -12,8 +12,25 @@ abstract class Frame(val network: Network, predecessor: Frame? = null) {
 
     val created: LocalDateTime = LocalDateTime.now()
 
+    var sent: LocalDateTime? = null
+        protected set
+
     var predecessor: Frame? = predecessor
         protected set
+
+    val lastPredecessorSOF: FrameSOF? by lazy<FrameSOF> { findPredecessor { it is FrameSOF } as FrameSOF }
+
+    internal fun setSent(time: LocalDateTime = LocalDateTime.now()) {
+        sent = time
+    }
+
+    fun findPredecessor(filter: (frame: Frame) -> Boolean): Frame? {
+        var frame: Frame? = this
+        while (frame != null && !filter(frame)) {
+            frame = frame.predecessor
+        }
+        return frame
+    }
 
     abstract suspend fun serialize(outputStream: OutputStream, context: SerializableFrameContext)
 
@@ -23,12 +40,18 @@ abstract class Frame(val network: Network, predecessor: Frame? = null) {
 
     abstract fun isAwaitedResult(frameSOF: FrameSOF): Boolean
 
-    internal open fun withPredecessor(predecessor: Frame): Frame? {
-        this.predecessor = predecessor
+    internal open fun withPredecessor(predecessor: Frame): Frame {
+        val firstFrame = findPredecessor { it.predecessor == null }
+        if (firstFrame != null) firstFrame.predecessor = predecessor
         return this
     }
 
-    open fun toStringWithPredecessor(): String =
-        predecessor?.let { predecessor?.toStringWithPredecessor() + " -> " } + toString()
+    open fun toStringWithPredecessor(): String {
+        var result = ""
+        predecessor?.let { result += predecessor?.toStringWithPredecessor() + " -> " }
+        result += toString()
+        return result
+    }
+
 
 }
