@@ -3,6 +3,7 @@ package com.oxyggen.qzw.engine.scheduler
 import com.oxyggen.qzw.engine.channel.FrameDuplexPriorityChannel
 import com.oxyggen.qzw.engine.channel.FrameDuplexPriorityChannelEndpoint
 import com.oxyggen.qzw.engine.channel.framePrioritySelect
+import com.oxyggen.qzw.engine.channel.framePrioritySelectWithTimeout
 import com.oxyggen.qzw.engine.network.Network
 import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.transport.frame.*
@@ -34,7 +35,7 @@ class NetworkScheduler(
 
     private var nodeSchedulerExt = mutableMapOf<Node, NodeSchedulerExt>()
 
-    private var frameSendTimeouts = generateSequence(200L) { it + 1000 }.take(4).toList()
+    private var frameSendTimeouts = generateSequence(1500L) { it }.take(4).toList()
 
     private suspend fun createNodeSchedulerExt(node: Node, coroutineScope: CoroutineScope): NodeSchedulerExt {
         val endpointBPrefix = if (node == Node.SERIAL_API) "SerialApiSch" else "NoSch[${node.nodeID}]"
@@ -80,7 +81,7 @@ class NetworkScheduler(
                 // frameWaiting is returned when frame was waiting in queue
                 // frameReceived is returned always. If waiting frame was found
                 //               received frame contains it as predecessor
-                val (frameWaiting, frameReceived) = waitingFrameQueue.dequeue(frame)
+                val (predecessorFrameInfo, frameReceived) = waitingFrameQueue.dequeue(frame)
 
                 val node = frameReceived.getNode()
 
@@ -88,13 +89,13 @@ class NetworkScheduler(
                     val nodeSchedulerExt = getNodeSchedulerExt(node, coroutineScope)
                     val epDst = nodeSchedulerExt.epZW
 
-                    val frameWithACK = FrameACK(network,frameReceived)
+                    val frameWithACK = FrameACK(network, frameReceived)
 
                     // Send ACK back to ZW driver
                     epZW.send(frameWithACK)
 
-                    if (frameWaiting != null) {
-                        logger.debug { "$epSrc ⟹ ${epDst.remoteEndpoint} frame $frameReceived (is answer for predecessor ${frameWaiting.toStringWithPredecessor()})" }
+                    if (predecessorFrameInfo != null) {
+                        logger.debug { "$epSrc ⟹ ${epDst.remoteEndpoint} frame $frameReceived (is answer for predecessor ${predecessorFrameInfo.frame.toStringWithPredecessor()})" }
                     } else {
                         logger.debug { "$epSrc ⟹ ${epDst.remoteEndpoint} frame $frameReceived" }
                     }
@@ -152,7 +153,7 @@ class NetworkScheduler(
                             logger.debug { "Frame sent, waiting ${timeout.value}ms for ACK (${timeout.index + 1}/${frameSendTimeouts.size}). Frame: $frame" }
                             val frameState =
                                 withTimeout(timeout.value) { epZW.receiveFrameState(frame) }
-                            logger.debug { "Status received: $frameState" }
+                            logger.debug { "Status received: $frameState, response time: ${frameState.responseTime} ms" }
                             if (frameState is FrameACK) {       // ACK received before timeout, so break the loop
                                 result = frameState
                                 break
@@ -169,7 +170,7 @@ class NetworkScheduler(
                 if (result != null) {
                     if (result.isAwaitingResult()) {
                         logger.debug { "Frame is waiting for result, so adding it to waiting frame queue. Frame: ${result.toStringWithPredecessor()} " }
-                        waitingFrameQueue.add(result)
+                        waitingFrameQueue.add(result, nodeEpZW)
                     } else {
                         logger.debug { "Frame is not waiting for result, sending back to ${nodeEpZW.remoteEndpoint}. Frame: ${frame.toStringWithPredecessor()}" }
                         nodeEpZW.send(result)
@@ -206,24 +207,32 @@ class NetworkScheduler(
                 // Add all endpoints
                 eps += epZW
                 eps += epSW
+                // Suspend receiving ZW frames from node scheduler while frame is waiting in queue
                 if (waitingFrameQueue.isEmpty()) eps += nodeZWEps
                 eps += nodeSWEps
 
-                // Select highest priority frame
-                val (ep, frame) = framePrioritySelect(*eps.toTypedArray())
+                // Calculate next timeout when frame is waiting in queue
+                val nextTimeout = waitingFrameQueue.nextTimeout()
 
-                // Collect timed out waiting frames
+                // Select highest priority frame
+                val result = framePrioritySelectWithTimeout(nextTimeout, *eps.toTypedArray())
+
+                // Collect timed out waiting frames => very important to inform node scheduler!
                 val timedOut = waitingFrameQueue.collectTimedOut()
                 timedOut.forEach {
-                    logger.warn("Frame timed out ${it.toStringWithPredecessor()}")
+                    logger.warn("Frame timed out ${it.frame.toStringWithPredecessor()}, informing node scheduler ")
+                    val noResultFrame = FrameNUL(network, it.frame)
+                    it.sourceEndpoint.send(noResultFrame)
                 }
 
                 // Determine route
-                when (ep) {
-                    epZW -> routeFromDriverToNodeScheduler(ep, frame, coroutineScope)
-                    epSW -> routeFromSoftwareToNodeScheduler(ep, frame, coroutineScope)
-                    in nodeZWEps -> routeFromNodeSchedulerToDriver(ep, frame, coroutineScope)
-                    in nodeSWEps -> routeFromNodeSchedulerToSoftware(ep, frame, coroutineScope)
+                if (result != null) {
+                    when (result.endpoint) {
+                        epZW -> routeFromDriverToNodeScheduler(result.endpoint, result.frame, coroutineScope)
+                        epSW -> routeFromSoftwareToNodeScheduler(result.endpoint, result.frame, coroutineScope)
+                        in nodeZWEps -> routeFromNodeSchedulerToDriver(result.endpoint, result.frame, coroutineScope)
+                        in nodeSWEps -> routeFromNodeSchedulerToSoftware(result.endpoint, result.frame, coroutineScope)
+                    }
                 }
             }
         } catch (e: CancellationException) {

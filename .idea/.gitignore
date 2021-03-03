@@ -45,6 +45,9 @@ cmake-build-*/
 out/
 build/
 
+### Gradle ###
+.gradle/
+
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 

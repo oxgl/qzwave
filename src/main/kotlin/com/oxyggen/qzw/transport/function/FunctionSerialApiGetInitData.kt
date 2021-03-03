@@ -51,7 +51,7 @@ abstract class FunctionSerialApiGetInitData {
     class Response(
         val serialApiVersion: Byte,
         val capabilities: Capabilities,
-        val nodes: Set<NodeID>,
+        val nodeIDs: Set<NodeID>,
         val chipType: Byte,
         val chipVersion: Byte
     ) : FunctionResponse(FunctionID.SERIAL_API_GET_INIT_DATA) {
@@ -79,9 +79,9 @@ abstract class FunctionSerialApiGetInitData {
             super.serialize(outputStream, context)
             outputStream.putByte(serialApiVersion)
             outputStream.putByte(capabilities.byteValue)
-            outputStream.putByte(if (!nodes.isNullOrEmpty()) 29 else 0)
-            if (!nodes.isNullOrEmpty()) {
-                val nodeBitmask = BitmaskUtils.compressObjectSetToBitmask(nodes, resultBytes = 29)
+            outputStream.putByte(if (!nodeIDs.isNullOrEmpty()) 29 else 0)
+            if (!nodeIDs.isNullOrEmpty()) {
+                val nodeBitmask = BitmaskUtils.compressObjectSetToBitmask(nodeIDs, resultBytes = 29)
                 outputStream.putBytes(nodeBitmask)
             }
             outputStream.putByte(chipType)
@@ -94,7 +94,7 @@ abstract class FunctionSerialApiGetInitData {
             "version", serialApiVersion,
             "capabilities", "[$capabilities]",
             "chip type/version", "$chipType/$chipVersion",
-            "nodes", "$nodes"
+            "nodes", "$nodeIDs"
         )
     }
 }

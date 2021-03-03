@@ -1,6 +1,7 @@
 package com.oxyggen.qzw.engine
 
 import com.oxyggen.qzw.engine.channel.FrameDuplexPriorityChannel
+import com.oxyggen.qzw.engine.channel.framePrioritySelect
 import com.oxyggen.qzw.engine.config.EngineConfig
 import com.oxyggen.qzw.engine.exception.EngineStandardStopException
 import com.oxyggen.qzw.engine.network.Network
@@ -8,12 +9,12 @@ import com.oxyggen.qzw.engine.scheduler.NetworkScheduler
 import com.oxyggen.qzw.engine.network.Node
 import com.oxyggen.qzw.transport.frame.*
 import com.oxyggen.qzw.transport.function.Function
+import com.oxyggen.qzw.types.FrameResultCallback
 import com.oxyggen.qzw.types.NodeID
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.apache.logging.log4j.kotlin.Logging
-import java.time.LocalDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalUnsignedTypes::class)
 class Engine(val engineConfig: EngineConfig) : Logging {
@@ -25,6 +26,11 @@ class Engine(val engineConfig: EngineConfig) : Logging {
 
     private val duplexChannelSW = FrameDuplexPriorityChannel("Software", "NwSch/SW")
     private val duplexChannelZW = FrameDuplexPriorityChannel("Driver", "NwSch/ZW")
+
+    private data class FrameCallbackPair(val frame: Frame, val callback: FrameResultCallback)
+
+    private val genericCallbacks = mutableSetOf<FrameResultCallback>()
+    private val frameCallbacks = mutableListOf<FrameCallbackPair>()
 
     private val epSW = duplexChannelSW.endpointA
     private val epZW = duplexChannelZW.endpointA
@@ -44,13 +50,18 @@ class Engine(val engineConfig: EngineConfig) : Logging {
 
     fun getNodeByID(i: Int): Node = getNodeByID(NodeID(i))
 
-    fun send(frame: Frame, callback: ((frame: Frame) -> Unit)? = null) {
+    fun registerGenericCallback(callback: FrameResultCallback) = genericCallbacks.add(callback)
 
+    fun deregisterGenericCallback(callback: FrameResultCallback) = genericCallbacks.remove(callback)
+
+    fun send(frame: Frame, callback: FrameResultCallback? = null) {
+        epSW.offer(frame)
+        if (callback != null) frameCallbacks += FrameCallbackPair(frame, callback)
     }
 
-    fun sendFunction(function: Function): FrameSOF {
+    fun sendFunction(function: Function, callback: FrameResultCallback? = null): FrameSOF {
         val frame = function.getFrame(network)
-        epSW.offer(frame)
+        send(frame, callback)
         return frame
     }
 
@@ -84,42 +95,67 @@ class Engine(val engineConfig: EngineConfig) : Logging {
         // Initialize network
         network.initCallbackKeys()
 
-        // SendChannel -> Driver
-        val senderJob = coroutineScope.launch(Dispatchers.IO) { sendJob() }
+        // Network scheduler -> Driver
+        val driverSenderJob = coroutineScope.launch(Dispatchers.IO) { driverSendJob() }
 
-        // Driver -> DispatcherChannel
-        val receiverJob = coroutineScope.launch(Dispatchers.IO) { receiveJob() }
+        // Driver -> Network scheduler
+        val driverReceiverJob = coroutineScope.launch(Dispatchers.IO) { driverReceiveJob() }
 
-        // DispatcherChannel -> SendChannel
+        // Network scheduler -> Software callback
+        val resultDispatcherJob = coroutineScope.launch { resultDispatcherJob() }
+
+        // Network scheduler
         val networkSchedulerJob = coroutineScope.launch { networkScheduler.start(this) }
 
         // Wait for finish
-        joinAll(senderJob, receiverJob, networkSchedulerJob)
+        joinAll(driverSenderJob, driverReceiverJob, resultDispatcherJob, networkSchedulerJob)
+    }
+
+    private suspend fun resultDispatcherJob() {
+        try {
+            logger.info { "Result distributor started" }
+
+            while (true) {
+                val result = framePrioritySelect(epSW)
+                val cb = frameCallbacks.find { it.frame.isPredecessorOf(result.frame) }
+                if (cb != null) {
+                    cb.callback.invoke(result.frame)
+                } else {
+                    genericCallbacks.forEach {
+                        it.invoke(result.frame)
+                    }
+                }
+            }
+        } catch (e: CancellationException) {
+
+        } finally {
+            logger.info { "Result distributor stopped" }
+        }
     }
 
 
-    private suspend fun sendJob() {
+    private suspend fun driverSendJob() {
         try {
-            logger.info { "Sender started" }
+            logger.info { "Driver sender started" }
 
             while (true) {
                 val frame = epZW.receive()
                 engineConfig.driver.putFrame(frame)
                 frame.setSent()
                 logger.debug("$LOG_PFX_SENDER: Frame sent to driver. Frame: $frame")
-                delay(10)
+                delay(50)
             }
         } catch (e: CancellationException) {
 
         } finally {
-            logger.info { "Sender stopped" }
+            logger.info { "Driver sender stopped" }
         }
 
     }
 
-    private suspend fun receiveJob() {
+    private suspend fun driverReceiveJob() {
         try {
-            logger.info { "Receiver started" }
+            logger.info { "Driver receiver started" }
 
             while (true) {
                 val frame = engineConfig.driver.getFrame(network)
@@ -131,7 +167,7 @@ class Engine(val engineConfig: EngineConfig) : Logging {
         } catch (e: CancellationException) {
 
         } finally {
-            logger.info { "Receiver stopped" }
+            logger.info { "Driver receiver stopped" }
         }
     }
 

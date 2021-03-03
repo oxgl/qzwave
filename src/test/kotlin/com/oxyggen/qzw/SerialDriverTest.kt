@@ -7,7 +7,6 @@ import com.oxyggen.qzw.engine.driver.JSerialDriver
 import com.oxyggen.qzw.transport.frame.Frame
 import com.oxyggen.qzw.transport.function.FunctionSerialApiGetInitData
 import com.oxyggen.qzw.transport.function.FunctionZWGetNodeProtocolInfo
-import com.oxyggen.qzw.types.NodeID
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.Logging
@@ -42,15 +41,32 @@ internal class SerialDriverTest : Logging {
 
             e.start()
 
+            e.registerGenericCallback { logger.info("-----> RESULT GENERIC: ${it.toStringWithPredecessor()}") }
+
             logger.debug { "Test: Engine started: ${e.started}" }
 
-            val n4 = e.getNodeByID(4)
+            val fn2 = FunctionSerialApiGetInitData.Request()
+            val frame2 = e.sendFunction(fn2) {
+                logger.info("-----> RESULT 2: ${it.toStringWithPredecessor()}")
+                val frameSOF = it.lastSOF
+                if (frameSOF!=null && frameSOF.function is FunctionSerialApiGetInitData.Response) {
+                    val func = frameSOF.function as FunctionSerialApiGetInitData.Response
+                    for (nodeId in func.nodeIDs) {
+                        val node = e.getNodeByID(nodeId)
+                        val fn = FunctionZWGetNodeProtocolInfo.Request(node)
+                        val frame = e.sendFunction(fn) { logger.info("-----> RESULT for $node: ${it.toStringWithPredecessor()}") }
+                    }
+                }
+
+            }
+
+
+/*            val n4 = e.getNodeByID(4)
+
 
             val fn = FunctionZWGetNodeProtocolInfo.Request(n4)
-            val frame = e.sendFunction(fn)
+            val frame = e.sendFunction(fn) { logger.info("-----> RESULT 1: ${it.toStringWithPredecessor()}") }*/
 
-            val fn2 = FunctionSerialApiGetInitData.Request()
-            val frame2 = e.sendFunction(fn2)
 
             //val frame = FunctionZWRequestNodeInfo.Request(NodeID(4)).getFrame()
 

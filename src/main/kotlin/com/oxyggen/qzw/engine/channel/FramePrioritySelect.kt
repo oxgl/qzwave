@@ -1,11 +1,15 @@
 package com.oxyggen.qzw.engine.channel
 
 import com.oxyggen.qzw.transport.frame.Frame
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.selects.select
+import kotlinx.coroutines.withTimeout
 import kotlin.math.max
 import kotlin.math.min
 
-suspend fun framePrioritySelect(vararg eps: FrameDuplexPriorityChannelEndpoint): Pair<FrameDuplexPriorityChannelEndpoint, Frame> {
+data class FramePrioritySelectResult(val endpoint: FrameDuplexPriorityChannelEndpoint, val frame: Frame)
+
+suspend fun framePrioritySelect(vararg eps: FrameDuplexPriorityChannelEndpoint): FramePrioritySelectResult {
     // Find the min/max channel priority from endpoints
     var minPriority = Int.MAX_VALUE
     var maxPriority = Int.MIN_VALUE
@@ -19,6 +23,26 @@ suspend fun framePrioritySelect(vararg eps: FrameDuplexPriorityChannelEndpoint):
             for (priority in minPriority..maxPriority)
                 for (ep in eps)
                     if (priority in ep.priorities)
-                        ep.getReceiveChannel(priority).onReceive { ep to it }
+                        ep.getReceiveChannel(priority).onReceive { FramePrioritySelectResult(ep, it) }
     }
 }
+
+suspend fun framePrioritySelectWithTimeout(
+    timeout: Long,
+    vararg eps: FrameDuplexPriorityChannelEndpoint
+): FramePrioritySelectResult? =
+    if (timeout == 0L) {
+        // No timeout parameter => standard select without timeout
+        framePrioritySelect(*eps)
+    } else {
+        try {
+            // Try to select with timeout
+            withTimeout(timeout) {
+                framePrioritySelect(*eps)
+            }
+        } catch (e: TimeoutCancellationException) {
+            // Timeout, return null
+            null
+        }
+    }
+

@@ -2,6 +2,7 @@ package com.oxyggen.qzw.engine.scheduler
 
 import com.oxyggen.qzw.engine.channel.*
 import com.oxyggen.qzw.engine.network.Node
+import com.oxyggen.qzw.transport.frame.Frame
 import com.oxyggen.qzw.transport.frame.FrameACK
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
@@ -30,15 +31,40 @@ class NodeScheduler(
     private suspend fun loop(coroutineScope: CoroutineScope) {
         try {
             logger.info { "$node scheduler started" }
+            var frameAwaitingResult: Frame? = null
             while (true) {
-                val (ep, frame) = framePrioritySelect(epSW, epZW)
+                // Create endpoint list for select
+                val eps = mutableListOf<FrameDuplexPriorityChannelEndpoint>()
+                // Always add ZW
+                eps.add(epZW)
+                // Receive data from software also if no frame is waiting for result
+                if (frameAwaitingResult == null)
+                    eps.add(epSW)
+
+                val (ep, frame) = framePrioritySelect(*eps.toTypedArray())
                 when (ep) {
                     epSW -> {
-                        logger.debug { "$node: Frame received from ${ep.remoteEndpoint}, sending to driver. Frame $frame" }
+                        // Frame received from software, sending to driver
+                        if (frame.isAwaitingResult()) {
+                            logger.debug { "$node: Frame received from ${ep.remoteEndpoint}, sending to driver. Frame is waiting for result, suspending node scheduler. Frame $frame" }
+                            // Save frame awaiting result
+                            frameAwaitingResult = frame
+                        } else {
+                            logger.debug { "$node: Frame received from ${ep.remoteEndpoint}, sending to driver. Frame $frame" }
+                        }
                         epZW.send(frame)
                     }
                     epZW -> {
-                        logger.debug { "$node: Frame received from ${ep.remoteEndpoint}, sending ACK, informing software. Frame sequence ${frame.toStringWithPredecessor()}" }
+                        // Frame received from driver, sending back to software
+                        if (frameAwaitingResult?.isPredecessorOf(frame) == true) {
+                            // If the received frame is successor of frame awaiting result, reset
+                            logger.debug { "$node: Frame received from ${ep.remoteEndpoint}, informing software. Resuming node scheduler. Frame sequence ${frame.toStringWithPredecessor()}" }
+                            // Remove frame awaiting result
+                            frameAwaitingResult = null
+                        } else {
+                            logger.debug { "$node: Frame received from ${ep.remoteEndpoint}, informing software. Frame sequence ${frame.toStringWithPredecessor()}" }
+                        }
+                        epSW.send(frame)
                     }
                 }
 
