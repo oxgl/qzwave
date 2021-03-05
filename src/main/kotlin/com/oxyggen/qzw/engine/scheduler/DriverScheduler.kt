@@ -64,57 +64,70 @@ class DriverScheduler(
                     }
                     is FrameSOF -> {
                         val frameSOF = result.frame
-                        var resultStateFrame: FrameState?
+                        var resultFrameState: FrameState?
                         // Data frame received means we should send data frame to Z-Wave
                         // and wait for ACK result
+                        // Try to send maximum 4 times
                         for (schedule in frameSendSchedule) {
-                            resultStateFrame = null
+                            resultFrameState = null
 
                             // Send the frame into network
                             driver.putFrame(frameSOF)
                             frameSOF.setSent()
                             logger.debug { "Frame sent, waiting ${schedule.timeout}ms for ACK (${schedule.iteration}/${frameSendSchedule.size}). Frame: ${frameSOF}" }
 
+                            // Frame sent, wait for ACK & handle also out of order frames
                             var remainingMillis = schedule.timeout
-                            while (remainingMillis > 0 && resultStateFrame == null) {
+                            while (remainingMillis > 0 && resultFrameState == null) {
                                 val elapsedMillis = measureTimeMillis {
                                     val resultState =
                                         framePrioritySelectWithTimeout(remainingMillis, channelZWDirect.endpointA)
 
-                                    if (resultState == null) {        // Null means timeout!
+                                    if (resultState == null) {
+                                        // Null means timeout!
                                         logger.debug { "Timeout when waiting for ACK" }
                                         remainingMillis = -1
                                     } else {
+                                        // Something received, this channel only sends state frames,
+                                        // so cast to state frame
                                         val frameState = resultState.frame as FrameState
+
                                         if (frameState.predecessor != null) {
                                             // State frame with predecessor means receiver received an out of order data frame,
-                                            // so we need to send an ACK frame to Z-Wave network and we will continue with waiting
+                                            // so we need to send an ACK frame to Z-Wave network and we will continue waiting
                                             logger.debug("${Engine.LOG_PFX_SENDER}: Out of turn state frame received, sending to network, without waiting for answer. Frame: ${result.frame.toStringWithPredecessor()}")
                                             driver.putFrame(result.frame)
                                             result.frame.setSent()
                                         } else {
                                             // State frame without predecessor is expected after data frame sent to network...
+                                            // Check whether this frame was received after data frame was sent
                                             if (frameState is FrameACK && frameState.created.isAfter(frameSOF.sent)) {
-                                                resultStateFrame = frameState.withPredecessor(frameSOF)
+                                                // Set resultStateFrame => exit from while loop
+                                                resultFrameState = frameState.withPredecessor(frameSOF)
                                             } else {
+                                                // Continue in while loop
                                                 logger.debug { "${Engine.LOG_PFX_SENDER}: Not expected out of order state frame received. Ignoring." }
                                             }
 
                                         }
                                     }
                                 }
+                                // Calculate remaining timeout
                                 remainingMillis -= elapsedMillis
-                            }
 
-                            resultStateFrame?.let {
+                            } // End of timeout loop
+
+                            resultFrameState?.let {
+                                // State frame received, so send back to framework
                                 logger.debug { "${Engine.LOG_PFX_SENDER}: State frame $it received, informing framework" }
                                 epZW.send(it)
                             } ?: run {
+                                // State frame not received, so send back NUL to framework
                                 logger.debug { "${Engine.LOG_PFX_SENDER}: State frame not received, informing framework" }
                                 epZW.send(FrameNUL(network, frameSOF))
                             }
 
-                        }
+                        } // End of schedule loop
                     }
                 }
 
