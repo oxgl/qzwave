@@ -18,45 +18,91 @@ class FrameDuplexPriorityChannel(
         const val CHANNEL_PRIORITY_HIGH = 1                 // High priority frames (for battery devices)
         const val CHANNEL_PRIORITY_NORMAL = 2               // Standard Frames
         const val CHANNEL_PRIORITY_DEFAULT = -1
+
+        val CHANNEL_PRIORITY_ALL = (0 until CHANNEL_PRIORITY_COUNT).toList()
     }
 
     private class Endpoint(
-        override val parent: FrameDuplexPriorityChannel,
-        val name: String,
-        val channelsIn: List<Channel<Frame>>,
-        val channelsOut: List<Channel<Frame>>
+        override val channel: FrameDuplexPriorityChannel,
+        val parentEndpoint: Endpoint? = null,
+        override val priorities: Collection<Int>,
+        override val name: String,
+        val channelsIn: Map<Int, Channel<Frame>>,
+        val channelsOut: Map<Int, Channel<Frame>>
     ) : FrameDuplexPriorityChannelEndpoint {
-        override val priorities
-            get() = 0 until CHANNEL_PRIORITY_COUNT
 
         override val remoteEndpoint: FrameDuplexPriorityChannelEndpoint
-            get() = if (parent.endpointA == this) parent.endpointB else parent.endpointA
+            get() = if (channel.endpointA == this) channel.endpointB else channel.endpointA
 
         override fun getReceiveChannel(priority: Int): ReceiveChannel<Frame> = channelsIn[priority]
+            ?: throw Exception("Internal error! Endpoint does not contain channel with priority $priority!")
 
-        private fun determinePriority(element: Frame, priority: Int?) =
-            if (priority != null && priority in priorities && priority != CHANNEL_PRIORITY_STATE) priority
-            else when (element) {
-                is FrameState -> CHANNEL_PRIORITY_STATE
-                else -> CHANNEL_PRIORITY_NORMAL
-            }
+        override fun getPartialChannelEndpoint(
+            priorityFilter: (Int) -> Boolean,
+            subChannelName: String?
+        ): FrameDuplexPriorityChannelEndpoint {
+            val filteredPriorities = priorities.filter { priorityFilter(it) }
+            return Endpoint(
+                channel,
+                this,
+                filteredPriorities,
+                subChannelName ?: name,
+                channelsIn,
+                channelsOut
+            )
+        }
+
+        override fun splitChannelEndpoint(
+            belongsToFirst: (Int) -> Boolean,
+            firstEndpointName: String?,
+            secondEndpointName: String?
+        ): Pair<FrameDuplexPriorityChannelEndpoint, FrameDuplexPriorityChannelEndpoint> =
+            Endpoint(
+                channel,
+                this,
+                priorities.filter { belongsToFirst(it) },
+                firstEndpointName ?: "$name/1",
+                channelsIn,
+                channelsOut
+            ) to Endpoint(
+                channel,
+                this,
+                priorities.filter { !belongsToFirst(it) },
+                secondEndpointName ?: "$name/2",
+                channelsIn,
+                channelsOut
+            )
+
+        private fun determinePriority(element: Frame, priority: Int?): Int {
+            val determinedPriority =
+                if (priority != null && priority in priorities && priority != CHANNEL_PRIORITY_STATE) priority
+                else when (element) {
+                    is FrameState -> CHANNEL_PRIORITY_STATE
+                    else -> CHANNEL_PRIORITY_NORMAL
+                }
+            if (determinedPriority !in channelsOut.keys)
+                throw Exception("Internal error! Endpoint does not contain channel with priority $determinedPriority!")
+            return determinedPriority
+        }
 
         override fun offer(element: Frame, priority: Int?) =
-            channelsOut[determinePriority(element, priority)].offer(element)
+            channelsOut[determinePriority(element, priority)]?.offer(element) ?: false
 
         override suspend fun send(element: Frame, priority: Int?) {
-            channelsOut[determinePriority(element, priority)].send(element)
+            channelsOut[determinePriority(element, priority)]?.send(element)
         }
 
         override suspend fun receive(): Frame = select {
             for (channel in channelsIn) {
-                channel.onReceive { it }
+                channel.value.onReceive { it }
             }
         }
 
         override suspend fun receiveFrameState(frameSOF: FrameSOF): FrameState {
+            val channelIn = channelsIn[CHANNEL_PRIORITY_STATE]
+                ?: throw Exception("Internal error! Endpoint does not contain channel with priority $CHANNEL_PRIORITY_STATE!")
             while (true) {
-                val frame = channelsIn[CHANNEL_PRIORITY_STATE].receive()
+                val frame = channelIn.receive()
                 if (frame.created.isAfter(frameSOF.created)) {
                     return frame.withPredecessor(frameSOF) as FrameState
                 }
@@ -66,17 +112,19 @@ class FrameDuplexPriorityChannel(
         override fun toString(): String = name
     }
 
-    private val channelsAtoB =
-        sequence<Channel<Frame>> { while (true) yield(Channel(Channel.UNLIMITED)) }.take(CHANNEL_PRIORITY_COUNT)
-            .toList()
-    private val channelsBtoA =
-        sequence<Channel<Frame>> { while (true) yield(Channel(Channel.UNLIMITED)) }.take(CHANNEL_PRIORITY_COUNT)
-            .toList()
+    private fun createChannelList(): Map<Int, Channel<Frame>> {
+        val result = mutableMapOf<Int, Channel<Frame>>()
+        for (priority in 0 until CHANNEL_PRIORITY_COUNT) result[priority] = Channel(Channel.UNLIMITED)
+        return result
+    }
+
+    private val channelsAtoB = createChannelList()
+    private val channelsBtoA = createChannelList()
 
     override val endpointA: FrameDuplexPriorityChannelEndpoint =
-        Endpoint(this, endpointAName, channelsBtoA, channelsAtoB)
+        Endpoint(this, null, CHANNEL_PRIORITY_ALL, endpointAName, channelsBtoA, channelsAtoB)
     override val endpointB: FrameDuplexPriorityChannelEndpoint =
-        Endpoint(this, endpointBName, channelsAtoB, channelsBtoA)
+        Endpoint(this, null, CHANNEL_PRIORITY_ALL, endpointBName, channelsAtoB, channelsBtoA)
 
     override fun toString(): String = "$endpointA <-> $endpointB"
 }

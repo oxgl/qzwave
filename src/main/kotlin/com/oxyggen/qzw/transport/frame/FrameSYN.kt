@@ -7,12 +7,12 @@ import com.oxyggen.qzw.transport.serialization.SerializableFrameContext
 import java.io.OutputStream
 
 /**
- * Internal frame: No result received
+ * Internal frame: Synchronize node list
  */
-class FrameNUL internal constructor(network: Network, predecessor: Frame? = null) : FrameState(network, predecessor) {
+class FrameSYN internal constructor(network: Network, predecessor: Frame? = null) : FrameState(network, predecessor) {
     override suspend fun serialize(outputStream: OutputStream, context: SerializableFrameContext) {
         throw NotImplementedError("This frame only for internal usage! Do not serialize!")
     }
 
-    override fun toString() = "[NO RESULT]"
+    override fun toString() = "[SYNC NODE LIST]"
 }

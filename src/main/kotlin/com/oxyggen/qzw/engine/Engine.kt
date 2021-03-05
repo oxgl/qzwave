@@ -20,8 +20,8 @@ import org.apache.logging.log4j.kotlin.Logging
 class Engine(val engineConfig: EngineConfig) : Logging {
 
     companion object {
-        const val LOG_PFX_SENDER = "\uD83D\uDCE1\u2B08"
-        const val LOG_PFX_RECEIVER = "\uD83D\uDCE1\u2B0B"
+        const val LOG_PFX_SENDER = "\uD83D\uDCE1 => \uD83D\uDCF1"
+        const val LOG_PFX_RECEIVER = "\uD83D\uDCE1 <= \uD83D\uDCF1"
     }
 
     private val duplexChannelSW = FrameDuplexPriorityChannel("Software", "NwSch/SW")

@@ -14,8 +14,8 @@ suspend fun framePrioritySelect(vararg eps: FrameDuplexPriorityChannelEndpoint):
     var minPriority = Int.MAX_VALUE
     var maxPriority = Int.MIN_VALUE
     for (ep in eps) {
-        minPriority = min(minPriority, ep.priorities.first)
-        maxPriority = max(maxPriority, ep.priorities.last)
+        minPriority = min(minPriority, ep.priorities.minOrNull() ?: Int.MAX_VALUE)
+        maxPriority = max(maxPriority, ep.priorities.maxOrNull() ?: Int.MIN_VALUE)
     }
     // Select frame with highest priority
     return select {

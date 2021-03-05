@@ -7,6 +7,7 @@ import com.oxyggen.qzw.engine.driver.JSerialDriver
 import com.oxyggen.qzw.transport.frame.Frame
 import com.oxyggen.qzw.transport.function.FunctionSerialApiGetInitData
 import com.oxyggen.qzw.transport.function.FunctionZWGetNodeProtocolInfo
+import com.oxyggen.qzw.transport.function.FunctionZWRequestNodeInfo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.apache.logging.log4j.kotlin.Logging
@@ -53,7 +54,7 @@ internal class SerialDriverTest : Logging {
                     val func = frameSOF.function as FunctionSerialApiGetInitData.Response
                     for (nodeId in func.nodeIDs) {
                         val node = e.getNodeByID(nodeId)
-                        val fn = FunctionZWGetNodeProtocolInfo.Request(node)
+                        val fn = FunctionZWRequestNodeInfo.Request(node)
                         val frame = e.sendFunction(fn) { logger.info("-----> RESULT for $node: ${it.toStringWithPredecessor()}") }
                     }
                 }

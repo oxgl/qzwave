@@ -56,6 +56,8 @@ abstract class FunctionZWRequestNodeInfo {
             outputStream.put(node.nodeID)
         }
 
+        override fun toString(): String = buildParamList("node", node)
+
     }
 
     /************************************************************************************
