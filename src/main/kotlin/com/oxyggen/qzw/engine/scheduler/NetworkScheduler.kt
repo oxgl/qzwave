@@ -123,6 +123,13 @@ class NetworkScheduler(
 
         when (frame) {
             is FrameState -> {              // ACK/SOF/NAK from Z-Wave, but we are not waiting for it => ignore
+                if (frame.isAwaitingResult()) {
+                    logger.debug { "Frame is waiting for result, so adding it to waiting frame queue. Frame: ${frame.toStringWithPredecessor()} " }
+                    //waitingFrameQueue.add(result, srcEpZW)
+                } else {
+                    //logger.debug { "Frame is not waiting for result, sending back to ${srcEpZW.remoteEndpoint}. Frame: ${frame.toStringWithPredecessor()}" }
+                    //srcEpZW.send(result)
+                }
                 logger.debug { "Status frame received without predecessor, ignoring. Frame: $frame" }
             }
             is FrameSOF -> {                // Data frame received, determine destination node
@@ -186,49 +193,7 @@ class NetworkScheduler(
         frame: Frame,
         coroutineScope: CoroutineScope
     ) {
-        when (frame) {
-            is FrameState -> {
-                // ACK/SOF/NAK from NodeScheduler => send to ZW and continue
-                epZW.send(frame)
-            }
-            is FrameSOF -> {
-                // Data frame from NodeScheduler => send to ZW and wait for timeout
-                var result: FrameState? = null
-                for (schedule in frameSendSchedule)
-                    try {
-                        // Send out this frame to ZW interface
-                        epZW.send(frame)
-
-                        logger.debug { "Frame sent, waiting ${schedule.timeout}ms for ACK (${schedule.iteration}/${frameSendSchedule.size}). Frame: $frame" }
-                        val frameState =
-                            withTimeout(schedule.timeout) { epZWState.receiveFrameState(frame) }
-                        if (frameState is FrameACK) {       // ACK received before timeout, so break the loop
-                            logger.debug { "Status received: $frameState, response time: ${frameState.responseTime} ms" }
-                            result = frameState
-                            break
-                        } else {                            // CAN/NAK received, wait 100ms + n*1000ms
-                            logger.debug { "Status received: $frameState, response time: ${frameState.responseTime} ms, retransmitting after ${schedule.retransmissionWait} ms" }
-                            delay(schedule.retransmissionWait)
-                        }
-                    } catch (e: TimeoutCancellationException) {
-                        // Catch timeout, and try again (if was not the last iteration)
-                        logger.debug { "Timeout when waiting for ACK" }
-                    }
-
-                if (result != null) {
-                    if (result.isAwaitingResult()) {
-                        logger.debug { "Frame is waiting for result, so adding it to waiting frame queue. Frame: ${result.toStringWithPredecessor()} " }
-                        waitingFrameQueue.add(result, srcEpZW)
-                    } else {
-                        logger.debug { "Frame is not waiting for result, sending back to ${srcEpZW.remoteEndpoint}. Frame: ${frame.toStringWithPredecessor()}" }
-                        srcEpZW.send(result)
-                    }
-                } else {
-                    // If result was awaited & no result received create dummy frame and send back to node
-                    srcEpZW.send(FrameNUL(network, frame))
-                }
-            }
-        }
+        epZW.send(frame)
     }
 
     // Node -> Software: Handle frame from node to software

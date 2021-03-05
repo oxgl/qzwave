@@ -7,6 +7,7 @@ import com.oxyggen.qzw.engine.exception.EngineStandardStopException
 import com.oxyggen.qzw.engine.network.Network
 import com.oxyggen.qzw.engine.scheduler.NetworkScheduler
 import com.oxyggen.qzw.engine.network.Node
+import com.oxyggen.qzw.engine.scheduler.DriverScheduler
 import com.oxyggen.qzw.transport.frame.*
 import com.oxyggen.qzw.transport.function.Function
 import com.oxyggen.qzw.types.FrameResultCallback
@@ -33,11 +34,12 @@ class Engine(val engineConfig: EngineConfig) : Logging {
     private val frameCallbacks = mutableListOf<FrameCallbackPair>()
 
     private val epSW = duplexChannelSW.endpointA
-    private val epZW = duplexChannelZW.endpointA
+    //private val epZW = duplexChannelZW.endpointA
 
     private val network = Network()
 
     private val networkScheduler = NetworkScheduler(network, duplexChannelSW.endpointB, duplexChannelZW.endpointB)
+    private val driverScheduler = DriverScheduler(network, duplexChannelZW.endpointA, engineConfig.driver)
 
     private var executionJob: Job? = null
     private val executionJobMutex = Mutex()
@@ -95,20 +97,17 @@ class Engine(val engineConfig: EngineConfig) : Logging {
         // Initialize network
         network.initCallbackKeys()
 
-        // Network scheduler -> Driver
-        val driverSenderJob = coroutineScope.launch(Dispatchers.IO) { driverSendJob() }
+        // Network scheduler
+        val networkSchedulerJob = coroutineScope.launch { networkScheduler.start(this) }
 
-        // Driver -> Network scheduler
-        val driverReceiverJob = coroutineScope.launch(Dispatchers.IO) { driverReceiveJob() }
+        // Driver scheduler
+        val driverSchedulerJob = coroutineScope.launch { driverScheduler.start(this) }
 
         // Network scheduler -> Software callback
         val resultDispatcherJob = coroutineScope.launch { resultDispatcherJob() }
 
-        // Network scheduler
-        val networkSchedulerJob = coroutineScope.launch { networkScheduler.start(this) }
-
         // Wait for finish
-        joinAll(driverSenderJob, driverReceiverJob, resultDispatcherJob, networkSchedulerJob)
+        joinAll(networkSchedulerJob, driverSchedulerJob, resultDispatcherJob)
     }
 
     private suspend fun resultDispatcherJob() {
@@ -130,44 +129,6 @@ class Engine(val engineConfig: EngineConfig) : Logging {
 
         } finally {
             logger.info { "Result distributor stopped" }
-        }
-    }
-
-
-    private suspend fun driverSendJob() {
-        try {
-            logger.info { "Driver sender started" }
-
-            while (true) {
-                val frame = epZW.receive()
-                engineConfig.driver.putFrame(frame)
-                frame.setSent()
-                logger.debug("$LOG_PFX_SENDER: Frame sent to driver. Frame: $frame")
-                delay(50)
-            }
-        } catch (e: CancellationException) {
-
-        } finally {
-            logger.info { "Driver sender stopped" }
-        }
-
-    }
-
-    private suspend fun driverReceiveJob() {
-        try {
-            logger.info { "Driver receiver started" }
-
-            while (true) {
-                val frame = engineConfig.driver.getFrame(network)
-                frame?.let {
-                    logger.debug("$LOG_PFX_RECEIVER: Frame received from driver. Frame: $it")
-                    epZW.send(it)
-                }
-            }
-        } catch (e: CancellationException) {
-
-        } finally {
-            logger.info { "Driver receiver stopped" }
         }
     }
 
