@@ -65,7 +65,7 @@ class DriverScheduler(
                     is FrameSOF -> {
                         val frameSOF = result.frame
                         var resultFrameState: FrameState?
-                        // Data frame received means we should send data frame to Z-Wave
+                        // Data frame received means we should send it to Z-Wave
                         // and wait for ACK result
                         // Try to send maximum 4 times
                         for (schedule in frameSendSchedule) {
@@ -95,7 +95,7 @@ class DriverScheduler(
                                         if (frameState.predecessor != null) {
                                             // State frame with predecessor means receiver received an out of order data frame,
                                             // so we need to send an ACK frame to Z-Wave network and we will continue waiting
-                                            logger.debug("${Engine.LOG_PFX_SENDER}: Out of turn state frame received, sending to network, without waiting for answer. Frame: ${result.frame.toStringWithPredecessor()}")
+                                            logger.debug("${Engine.LOG_PFX_SENDER}: Out of order state frame received, sending to network, without waiting for answer. Frame: ${result.frame.toStringWithPredecessor()}")
                                             driver.putFrame(result.frame)
                                             result.frame.setSent()
                                         } else {
@@ -130,7 +130,6 @@ class DriverScheduler(
                         } // End of schedule loop
                     }
                 }
-
 
                 driver.putFrame(result.frame)
                 result.frame.setSent()
